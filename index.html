@@ -194,11 +194,31 @@
                               </script>
                             </div>
                             </div>
-                        <div class="lg:col-span-1 space-y-6">
-                            <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
-                            <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
-                            <div class="mt-4 bg-gray-800 p-4 rounded-xl max-h-48 overflow-y-auto">
-                                <template x-for="log in marketCompassLog" :key="log.id"><div class="text-sm text-gray-400 border-b border-gray-700/50 py-1" x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場判斷為 ${log.sentiment === 'Bull' ? '牛市' : log.sentiment === 'Bear' ? '熊市' : '震盪'}`"></div></template>
+                        <div class="lg:col-span-1 space-y-4">
+                            <div class="bg-gray-800 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                            <div class="bg-gray-800 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                            <div class="bg-gray-800 p-4 rounded-xl max-h-64 overflow-y-auto">
+                                <h3 class="text-lg font-bold text-center mb-2">市場判斷日誌</h3>
+                                <template x-for="log in marketCompassLog" :key="log.id">
+                                    <div class="text-sm text-gray-400 border-b border-gray-700/50 py-2">
+                                        <div x-show="editingCompassLogId !== log.id" class="flex justify-between items-center">
+                                            <span x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場為 ${log.sentiment === 'Bull' ? '牛市 🐂' : log.sentiment === 'Bear' ? '熊市 🐻' : '震盪 ⚖️'}`"></span>
+                                            <div class="flex-shrink-0 ml-2">
+                                                <button @click="editCompassLog(log)" class="text-blue-400 hover:text-blue-300 text-xs">編輯</button>
+                                                <button @click="deleteCompassLog(log.id)" class="text-red-400 hover:text-red-300 text-xs ml-2">刪除</button>
+                                            </div>
+                                        </div>
+                                        <div x-show="editingCompassLogId === log.id" x-cloak class="space-y-2">
+                                            <p x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - 更新 ${log.market === 'US' ? '美股' : '港股'} 市場狀態:`"></p>
+                                            <div class="flex justify-around items-center">
+                                                <button @click="updateCompassLog(log, 'Bull')" class="text-2xl px-3 py-1 rounded-lg bg-green-800 hover:bg-green-700">🐂</button>
+                                                <button @click="updateCompassLog(log, 'Bear')" class="text-2xl px-3 py-1 rounded-lg bg-red-800 hover:bg-red-700">🐻</button>
+                                                <button @click="updateCompassLog(log, 'Neutral')" class="text-2xl px-3 py-1 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button>
+                                                <button @click="cancelEditCompassLog()" class="text-gray-400 hover:text-white text-xs bg-gray-600 px-2 py-1 rounded">取消</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                                 <p x-show="marketCompassLog.length === 0" class="text-gray-500 text-center py-4">暫無羅盤記錄</p>
                             </div>
                         </div>
@@ -281,7 +301,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
                      <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
-                    <div class="tradingview-widget-container" style="height: 600px;">
+                    <div class="tradingview-widget-container" style="height: 700px;">
                       <div class="tradingview-widget-container__widget"></div>
                       <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/news/top-providers/tradingview/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
                       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -294,7 +314,7 @@
                     </div>
                 <div>
                      <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場新聞 (Market News)</h2>
-                    <div class="tradingview-widget-container" style="height: 600px;">
+                    <div class="tradingview-widget-container" style="height: 700px;">
                       <div class="tradingview-widget-container__widget"></div>
                       <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/news/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
                       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -721,7 +741,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
 
         function tradingApp() {
@@ -737,7 +757,7 @@
                 authView: 'login',
                 authForm: { email: '', password: '' },
                 authError: '',
-                appVersion: '2.0.3',
+                appVersion: '2.0.4',
                 lastUpdated: '2024-07-28',
 
                 // Firebase
@@ -764,6 +784,7 @@
                 editingBuyPlanId: null, buyPlanForm: {},
                 editingModelBookId: null, modelBookForm: {},
                 editingReflectionId: null, reflectionForm: {},
+                editingCompassLogId: null,
                 
                 // Search
                 searchTerm: '',
@@ -901,7 +922,11 @@
                         const data = { ...formData };
                         const collectionRef = collection(this.db, `users/${this.userId}/${collectionName}`);
                         if (entityId) {
-                            await setDoc(doc(collectionRef, entityId), data, { merge: true });
+                            if (collectionName === 'marketCompassLog') {
+                                await updateDoc(doc(collectionRef, entityId), { sentiment: data.sentiment });
+                            } else {
+                                await setDoc(doc(collectionRef, entityId), data, { merge: true });
+                            }
                         } else {
                             data.createdAt = serverTimestamp();
                             if(collectionName === 'marketCompassLog') data.timestamp = serverTimestamp();
@@ -973,9 +998,18 @@
                 editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = { ...this.getBlankModelBookForm(), ...model }; this.activeTab = 'modelBook'; },
                 editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...this.getBlankReflectionForm(), ...entry }; this.activeTab = 'reflection'; },
 
+                // --- Market Compass Functions ---
                 async setMarketCompass(market, sentiment) {
                     await this.saveEntity('marketCompassLog', null, { market, sentiment });
                 },
+                editCompassLog(log) { this.editingCompassLogId = log.id; },
+                cancelEditCompassLog() { this.editingCompassLogId = null; },
+                async updateCompassLog(log, newSentiment) {
+                    await this.saveEntity('marketCompassLog', log.id, { sentiment: newSentiment });
+                    this.cancelEditCompassLog();
+                },
+                async deleteCompassLog(id) { await this.deleteEntity('marketCompassLog', id); },
+
 
                 search() {
                     if (!this.searchTerm) { this.searchResults = []; return; }
@@ -1035,8 +1069,12 @@
                 },
 
                 async callGeminiApi(systemPrompt, userQuery, isJsonOutput) {
-                    const apiKey = "AIzaSyBtEE_70BID6abB3KWlKAQsFmk7gcIHoo4"; 
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    const apiKey = ""; // <--- 在這裡貼上您自己的 Gemini API 金鑰
+                    if (!apiKey) {
+                        console.error("Gemini API Key is missing.");
+                        return "錯誤：Gemini API 金鑰未設定。請修改 index.html 檔案並填入您的金鑰。";
+                    }
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
                     const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
                     if (isJsonOutput) { payload.generationConfig = { responseMimeType: "application/json" }; }
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
