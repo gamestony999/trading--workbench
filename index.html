@@ -193,23 +193,40 @@
             </div>
         </div>
 
-        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-6">
-            <div class="h-[70vh] bg-gray-800 rounded-xl p-2">
+        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
+            <div class="h-[70vh] bg-gray-800 rounded-xl">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
-                  <div id="tradingview_chart" style="height:100%;width:100%"></div>
-                  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                  <script type="text/javascript">
-                  function initTradingView() {
-                    if (document.getElementById('tradingview_chart').innerHTML !== '' && window.tvWidget) { return; }
-                    if (typeof TradingView !== 'undefined') {
-                      window.tvWidget = new TradingView.widget({
-                        "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "D", "timezone": "Etc/UTC",
-                        "theme": "dark", "style": "1", "locale": "zh_TW", "toolbar_bg": "#f1f3f6",
-                        "enable_publishing": false, "allow_symbol_change": true, "container_id": "tradingview_chart"
-                      });
-                    }
+                  <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+                  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank"><span class="blue-text">AAPL stock chart</span></a><span class="trademark"> by TradingView</span></div>
+                  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                  {
+                    "allow_symbol_change": true,
+                    "calendar": false,
+                    "details": true,
+                    "hide_side_toolbar": false,
+                    "hide_top_toolbar": false,
+                    "hide_legend": false,
+                    "hide_volume": false,
+                    "hotlist": true,
+                    "interval": "D",
+                    "locale": "zh_TW",
+                    "save_image": true,
+                    "style": "1",
+                    "symbol": "NASDAQ:AAPL",
+                    "theme": "dark",
+                    "timezone": "Etc/UTC",
+                    "backgroundColor": "#1f2937",
+                    "gridColor": "rgba(242, 242, 242, 0.06)",
+                    "watchlist": [],
+                    "withdateranges": true,
+                    "range": "YTD",
+                    "compareSymbols": [],
+                    "studies": [
+                      "STD;SMA",
+                      "STD;WMA"
+                    ],
+                    "autosize": true
                   }
-                  window.initTradingView = initTradingView;
                   </script>
                 </div>
                 </div>
@@ -228,12 +245,12 @@
                     }
                     </script>
                 </div>
-            </div>
+                </div>
     
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
                     <h2 class="text-2xl font-semibold mb-4 text-blue-300">股票篩選器 (Stock Screener)</h2>
-                    <div class="tradingview-widget-container" style="height: 550px;">
+                    <div class="tradingview-widget-container" style="height: 600px;">
                       <div class="tradingview-widget-container__widget"></div>
                       <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/screener/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
                       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
@@ -247,7 +264,7 @@
                     </div>
                 <div>
                      <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
-                    <div class="tradingview-widget-container" style="height: 550px;">
+                    <div class="tradingview-widget-container" style="height: 600px;">
                       <div class="tradingview-widget-container__widget"></div>
                       <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/news/top-providers/tradingview/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
                       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -260,6 +277,7 @@
                     </div>
             </div>
         </div>
+
 
         <div x-show="activeTab === 'reflection'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -688,8 +706,8 @@
                 authView: 'login',
                 authForm: { email: '', password: '' },
                 authError: '',
-                appVersion: '2.0.0',
-                lastUpdated: '2024-07-26',
+                appVersion: '2.0.1',
+                lastUpdated: '2024-07-27',
 
                 // Firebase
                 db: null, 
@@ -768,9 +786,7 @@
                         if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
                            this.$nextTick(() => { if (document.getElementById('plChart')) this.renderChart(); });
                         }
-                        if (newTab === 'tradingView') {
-                            setTimeout(() => { if (typeof window.initTradingView === 'function') window.initTradingView(); }, 100);
-                        }
+                        // No longer need initTradingView as advanced chart handles itself
                     });
                 },
 
