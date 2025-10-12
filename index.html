@@ -25,7 +25,6 @@
 </head>
 <body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8" x-data="tradingApp()">
 
-    <!-- Loading Screen -->
     <div x-show="!isInitialized" class="min-h-screen flex items-center justify-center text-center">
         <div>
             <svg class="animate-spin h-8 w-8 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -33,7 +32,6 @@
         </div>
     </div>
 
-    <!-- Auth Screen -->
     <div x-show="isInitialized && !isLoggedIn" x-cloak class="min-h-screen flex items-center justify-center">
         <div class="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
             <h2 class="text-2xl font-bold text-center text-blue-400 mb-6" x-text="authView === 'login' ? '登入工作台' : '註冊新帳號'"></h2>
@@ -67,7 +65,6 @@
         </div>
     </div>
 
-    <!-- Main App -->
     <div x-show="isInitialized && isLoggedIn" x-cloak class="max-w-7xl mx-auto">
         <header class="mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -94,7 +91,6 @@
             </p>
         </header>
 
-        <!-- Tabs -->
         <div class="mb-6">
             <div class="border-b border-gray-700">
                  <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
@@ -117,7 +113,6 @@
             <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
         </div>
         
-        <!-- Dashboard Tab -->
         <div x-show="activeTab === 'dashboard'" x-cloak>
             <div class="space-y-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -198,36 +193,74 @@
             </div>
         </div>
 
-        <!-- TradingView Chart Tab -->
-        <div x-show="activeTab === 'tradingView'" x-cloak>
-            <div class="h-[80vh] bg-gray-800 rounded-xl p-2">
-                <!-- TradingView Widget BEGIN -->
+        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-6">
+            <div class="h-[70vh] bg-gray-800 rounded-xl p-2">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                   <div id="tradingview_chart" style="height:100%;width:100%"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                   <script type="text/javascript">
                   function initTradingView() {
-                    if (document.getElementById('tradingview_chart').innerHTML !== '' && window.tvWidget) {
-                        return; // Already initialized
-                    }
+                    if (document.getElementById('tradingview_chart').innerHTML !== '' && window.tvWidget) { return; }
                     if (typeof TradingView !== 'undefined') {
-                      window.tvWidget = new TradingView.widget(
-                      {
-                        "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "D",
-                        "timezone": "Etc/UTC", "theme": "dark", "style": "1",
-                        "locale": "zh_TW", "toolbar_bg": "#f1f3f6", "enable_publishing": false,
-                        "allow_symbol_change": true, "container_id": "tradingview_chart"
+                      window.tvWidget = new TradingView.widget({
+                        "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "D", "timezone": "Etc/UTC",
+                        "theme": "dark", "style": "1", "locale": "zh_TW", "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false, "allow_symbol_change": true, "container_id": "tradingview_chart"
                       });
                     }
                   }
                   window.initTradingView = initTradingView;
                   </script>
                 </div>
-                <!-- TradingView Widget END -->
+                </div>
+    
+            <div>
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場熱圖 (Market Heatmap)</h2>
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/heatmap/stock/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
+                    {
+                        "dataSource": "SPX500", "blockSize": "market_cap_basic", "blockColor": "change",
+                        "grouping": "sector", "locale": "zh_TW", "symbolUrl": "", "colorTheme": "dark",
+                        "exchanges": [], "hasTopBar": true, "isDataSetEnabled": true, "isZoomEnabled": true,
+                        "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 600
+                    }
+                    </script>
+                </div>
+            </div>
+    
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">股票篩選器 (Stock Screener)</h2>
+                    <div class="tradingview-widget-container" style="height: 550px;">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/screener/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+                      {
+                        "market": "america", "showToolbar": true, "defaultColumn": "overview",
+                        "defaultScreen": "most_capitalized", "isTransparent": false, "locale": "zh_TW",
+                        "colorTheme": "dark", "width": "100%", "height": "100%"
+                      }
+                      </script>
+                    </div>
+                    </div>
+                <div>
+                     <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
+                    <div class="tradingview-widget-container" style="height: 550px;">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/news/top-providers/tradingview/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                      {
+                        "displayMode": "regular", "feedMode": "all_symbols", "colorTheme": "dark",
+                        "isTransparent": false, "locale": "zh_TW", "width": "100%", "height": "100%"
+                      }
+                      </script>
+                    </div>
+                    </div>
             </div>
         </div>
 
-        <!-- Reflection Tab -->
         <div x-show="activeTab === 'reflection'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -264,7 +297,6 @@
             </div>
         </div>
 
-        <!-- Market Journal Tab -->
         <div x-show="activeTab === 'marketJournal'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -306,7 +338,6 @@
             </div>
         </div>
 
-        <!-- Buy Plan Tab -->
         <div x-show="activeTab === 'buyPlan'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -365,7 +396,6 @@
             </div>
         </div>
         
-        <!-- Calculator Tab -->
         <div x-show="activeTab === 'calculator'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -409,7 +439,6 @@
             </div>
         </div>
 
-        <!-- Journal Tab -->
         <div x-show="activeTab === 'journal'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
@@ -472,7 +501,6 @@
             </div>
         </div>
 
-        <!-- Model Book Tab -->
         <div x-show="activeTab === 'modelBook'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
@@ -530,7 +558,6 @@
             </div>
         </div>
 
-        <!-- Playbook Tab -->
         <div x-show="activeTab === 'playbook'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
@@ -575,7 +602,6 @@
             </div>
         </div>
 
-        <!-- Performance Tab -->
         <div x-show="activeTab === 'performance'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率 (Win Rate)</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
@@ -606,7 +632,6 @@
             </div>
         </div>
         
-        <!-- Settings Tab -->
         <div x-show="activeTab === 'settings'" x-cloak>
             <div class="max-w-2xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 text-blue-300 border-b border-gray-600 pb-2">AI 分析設定</h2>
@@ -1070,4 +1095,3 @@
     </script>
 </body>
 </html>
-
