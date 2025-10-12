@@ -89,7 +89,25 @@
             <p class="text-xl text-yellow-400 mt-4 font-bold text-center max-w-3xl mx-auto">
                 "長期（10 萬次交易） → 個別輸贏完全不重要，真正的輸贏來自「次數 + 紀律」的複利及精準買入點。"
             </p>
-        </header>
+            <div class="tradingview-widget-container mt-4">
+              <div class="tradingview-widget-container__widget"></div>
+              <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/markets/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+              {
+                "symbols": [
+                  { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500 Index" },
+                  { "proName": "FOREXCOM:NSXUSD", "title": "US 100 Cash CFD" },
+                  { "proName": "FX_IDC:EURUSD", "title": "EUR to USD" },
+                  { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
+                  { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
+                  { "proName": "HKEX:HSI1!", "title": "HK INDEX" }
+                ],
+                "colorTheme": "dark", "locale": "zh_TW", "largeChartUrl": "",
+                "isTransparent": false, "showSymbolLogo": false, "displayMode": "adaptive"
+              }
+              </script>
+            </div>
+            </header>
 
         <div class="mb-6">
             <div class="border-b border-gray-700">
@@ -144,13 +162,46 @@
 
                 <div>
                     <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤 (Market Compass)</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
-                        <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
-                    </div>
-                    <div class="mt-4 bg-gray-800 p-4 rounded-xl max-h-48 overflow-y-auto">
-                        <template x-for="log in marketCompassLog" :key="log.id"><div class="text-sm text-gray-400 border-b border-gray-700/50 py-1" x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場判斷為 ${log.sentiment === 'Bull' ? '牛市' : log.sentiment === 'Bear' ? '熊市' : '震盪'}`"></div></template>
-                        <p x-show="marketCompassLog.length === 0" class="text-gray-500 text-center py-4">暫無羅盤記錄</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-1">
+                            <div class="tradingview-widget-container">
+                              <div class="tradingview-widget-container__widget"></div>
+                              <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/" rel="noopener nofollow" target="_blank"><span class="blue-text">Market summary</span></a> by TradingView</div>
+                              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+                              {
+                                "colorTheme": "dark", "locale": "en", "largeChartUrl": "", "isTransparent": false,
+                                "showSymbolLogo": true, "backgroundColor": "#1f2937", "width": "100%", "height": 450,
+                                "symbolsGroups": [
+                                  { "name": "Indices", "symbols": [ { "name": "FOREXCOM:SPXUSD", "displayName": "S&P 500" }, { "name": "FOREXCOM:NSXUSD", "displayName": "US 100" }, { "name": "FOREXCOM:DJI", "displayName": "Dow 30" }, { "name": "INDEX:NKY", "displayName": "Nikkei 225" }, { "name": "INDEX:DEU40", "displayName": "DAX" }, { "name": "FOREXCOM:UKXGBP", "displayName": "UK 100" }, { "name": "HSI:HSI", "displayName": "Hang Seng" } ] },
+                                  { "name": "Futures", "symbols": [ { "name": "CME_MINI:ES1!", "displayName": "S&P 500" }, { "name": "CME:6E1!", "displayName": "Euro" }, { "name": "COMEX:GC1!", "displayName": "Gold" }, { "name": "NYMEX:CL1!", "displayName": "Crude Oil" }, { "name": "CBOT:ZS1!", "displayName": "Soybeans" } ] },
+                                  { "name": "Bonds", "symbols": [ { "name": "CBOT:ZB1!", "displayName": "T-Bond" }, { "name": "CBOT:ZN1!", "displayName": "10-Year T-Note" }, { "name": "CBOT:ZF1!", "displayName": "5-Year T-Note" } ] },
+                                  { "name": "Forex", "symbols": [ { "name": "FX:EURUSD", "displayName": "EUR/USD" }, { "name": "FX:GBPUSD", "displayName": "GBP/USD" }, { "name": "FX:USDJPY", "displayName": "USD/JPY" }, { "name": "FX:USDCHF", "displayName": "USD/CHF" }, { "name": "FX:AUDUSD", "displayName": "AUD/USD" }, { "name": "FX:USDCAD", "displayName": "USD/CAD" } ] }
+                                ]
+                              }
+                              </script>
+                            </div>
+                            </div>
+                        <div class="lg:col-span-1">
+                            <div class="tradingview-widget-container">
+                              <div class="tradingview-widget-container__widget"></div>
+                              <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/economic-calendar/" rel="noopener nofollow" target="_blank"><span class="blue-text">Economic Calendar</span></a> by TradingView</div>
+                              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                              {
+                                "colorTheme": "dark", "isTransparent": false, "locale": "zh_TW",
+                                "countryFilter": "ar,au,br,ca,cn,fr,de,in,id,it,jp,kr,mx,ru,sa,za,tr,gb,us,eu",
+                                "importanceFilter": "-1,0,1", "width": "100%", "height": 450
+                              }
+                              </script>
+                            </div>
+                            </div>
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                            <div class="bg-gray-800 p-6 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-6 py-3 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-6 py-3 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-6 py-3 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                            <div class="mt-4 bg-gray-800 p-4 rounded-xl max-h-48 overflow-y-auto">
+                                <template x-for="log in marketCompassLog" :key="log.id"><div class="text-sm text-gray-400 border-b border-gray-700/50 py-1" x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場判斷為 ${log.sentiment === 'Bull' ? '牛市' : log.sentiment === 'Bear' ? '熊市' : '震盪'}`"></div></template>
+                                <p x-show="marketCompassLog.length === 0" class="text-gray-500 text-center py-4">暫無羅盤記錄</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -200,32 +251,12 @@
                   <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank"><span class="blue-text">AAPL stock chart</span></a><span class="trademark"> by TradingView</span></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
                   {
-                    "allow_symbol_change": true,
-                    "calendar": false,
-                    "details": true,
-                    "hide_side_toolbar": false,
-                    "hide_top_toolbar": false,
-                    "hide_legend": false,
-                    "hide_volume": false,
-                    "hotlist": true,
-                    "interval": "D",
-                    "locale": "zh_TW",
-                    "save_image": true,
-                    "style": "1",
-                    "symbol": "NASDAQ:AAPL",
-                    "theme": "dark",
-                    "timezone": "Etc/UTC",
-                    "backgroundColor": "#1f2937",
-                    "gridColor": "rgba(242, 242, 242, 0.06)",
-                    "watchlist": [],
-                    "withdateranges": true,
-                    "range": "YTD",
-                    "compareSymbols": [],
-                    "studies": [
-                      "STD;SMA",
-                      "STD;WMA"
-                    ],
-                    "autosize": true
+                    "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false,
+                    "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true,
+                    "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1",
+                    "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "#1f2937",
+                    "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true,
+                    "range": "YTD", "studies": [], "autosize": true
                   }
                   </script>
                 </div>
@@ -241,27 +272,13 @@
                         "dataSource": "SPX500", "blockSize": "market_cap_basic", "blockColor": "change",
                         "grouping": "sector", "locale": "zh_TW", "symbolUrl": "", "colorTheme": "dark",
                         "exchanges": [], "hasTopBar": true, "isDataSetEnabled": true, "isZoomEnabled": true,
-                        "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 600
+                        "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 700
                     }
                     </script>
                 </div>
                 </div>
     
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">股票篩選器 (Stock Screener)</h2>
-                    <div class="tradingview-widget-container" style="height: 600px;">
-                      <div class="tradingview-widget-container__widget"></div>
-                      <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/screener/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
-                      {
-                        "market": "america", "showToolbar": true, "defaultColumn": "overview",
-                        "defaultScreen": "most_capitalized", "isTransparent": false, "locale": "zh_TW",
-                        "colorTheme": "dark", "width": "100%", "height": "100%"
-                      }
-                      </script>
-                    </div>
-                    </div>
                 <div>
                      <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
                     <div class="tradingview-widget-container" style="height: 600px;">
@@ -271,6 +288,20 @@
                       {
                         "displayMode": "regular", "feedMode": "all_symbols", "colorTheme": "dark",
                         "isTransparent": false, "locale": "zh_TW", "width": "100%", "height": "100%"
+                      }
+                      </script>
+                    </div>
+                    </div>
+                <div>
+                     <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場新聞 (Market News)</h2>
+                    <div class="tradingview-widget-container" style="height: 600px;">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/news/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                      {
+                        "feedMode": "market", "market": "us", "isTransparent": false,
+                        "displayMode": "regular", "width": "100%", "height": "100%",
+                        "colorTheme": "dark", "locale": "zh_TW"
                       }
                       </script>
                     </div>
@@ -706,8 +737,8 @@
                 authView: 'login',
                 authForm: { email: '', password: '' },
                 authError: '',
-                appVersion: '2.0.1',
-                lastUpdated: '2024-07-27',
+                appVersion: '2.0.3',
+                lastUpdated: '2024-07-28',
 
                 // Firebase
                 db: null, 
@@ -786,7 +817,6 @@
                         if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
                            this.$nextTick(() => { if (document.getElementById('plChart')) this.renderChart(); });
                         }
-                        // No longer need initTradingView as advanced chart handles itself
                     });
                 },
 
