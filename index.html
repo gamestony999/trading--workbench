@@ -131,34 +131,71 @@
             <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
         </div>
         
-        <div x-show="activeTab === 'dashboard'" x-cloak>
-            <div class="space-y-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                     <div>
-                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">核心績效</h2>
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
-                            <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧</h3><p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
-                            <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3><p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
-                            <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
-                        </div>
+<div x-show="activeTab === 'dashboard'" x-cloak>
+    <div class="space-y-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">核心績效</h2>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center col-span-2">
+                        <h3 class="text-sm font-medium text-gray-400">股票戶口本金</h3>
+                        <p class="mt-2 text-3xl font-bold text-blue-400" x-text="`USD ${formatCurrency(usdPrincipal, 'USD')}`"></p>
                     </div>
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">近期反思</h2>
-                        <div class="bg-gray-700/50 p-4 rounded-lg min-h-[150px] flex items-center justify-center">
-                            <template x-if="latestReflection">
-                                <div class="text-left w-full">
-                                    <p class="text-sm text-gray-400" x-text="latestReflection.date"></p>
-                                    <p class="text-lg font-bold mt-2 text-yellow-300" x-text="latestReflection.problem"></p>
-                                    <p class="text-sm mt-2 text-gray-300" x-text="latestReflection.thoughts.substring(0, 100) + (latestReflection.thoughts.length > 100 ? '...' : '')"></p>
-                                </div>
-                            </template>
-                             <div x-show="!latestReflection" class="text-gray-500">
-                                <p>暫無反思記錄，快去「自我反思」分頁新增吧！</p>
-                            </div>
-                        </div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧</h3><p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3><p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
+                </div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+                <canvas id="dashboardPlChart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤 (Market Compass)</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/markets/" rel="noopener nofollow" target="_blank"><span class="blue-text">Market summary</span></a> by TradingView</div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+                      { "colorTheme": "dark", "locale": "en", "isTransparent": false, "showSymbolLogo": true, "backgroundColor": "#1f2937", "width": "100%", "height": 450 }
+                      </script>
                     </div>
                 </div>
+                <div>
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://tw.tradingview.com/economic-calendar/" rel="noopener nofollow" target="_blank"><span class="blue-text">Economic Calendar</span></a> by TradingView</div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                      { "colorTheme": "dark", "isTransparent": false, "locale": "zh_TW", "countryFilter": "ar,au,br,ca,cn,fr,de,in,id,it,jp,kr,mx,ru,sa,za,tr,gb,us,eu", "importanceFilter": "-1,0,1", "width": "100%", "height": 450 }
+                      </script>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-gray-800 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                    <div class="bg-gray-800 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                    <div class="bg-gray-800 p-4 rounded-xl max-h-64 overflow-y-auto">
+                        <h3 class="text-lg font-bold text-center mb-2">市場判斷日誌</h3>
+                        <template x-for="log in marketCompassLog" :key="log.id"><div class="text-sm text-gray-400 border-b border-gray-700/50 py-2"><div x-show="editingCompassLogId !== log.id" class="flex justify-between items-center"><span x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場為 ${log.sentiment === 'Bull' ? '牛市 🐂' : log.sentiment === 'Bear' ? '熊市 🐻' : '震盪 ⚖️'}`"></span><div class="flex-shrink-0 ml-2"><button @click="editCompassLog(log)" class="text-blue-400 hover:text-blue-300 text-xs">編輯</button><button @click="deleteCompassLog(log.id)" class="text-red-400 hover:text-red-300 text-xs ml-2">刪除</button></div></div><div x-show="editingCompassLogId === log.id" x-cloak class="space-y-2"><p x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - 更新 ${log.market === 'US' ? '美股' : '港股'} 市場狀態:`"></p><div class="flex justify-around items-center"><button @click="updateCompassLog(log, 'Bull')" class="text-2xl px-3 py-1 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="updateCompassLog(log, 'Bear')" class="text-2xl px-3 py-1 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="updateCompassLog(log, 'Neutral')" class="text-2xl px-3 py-1 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button><button @click="cancelEditCompassLog()" class="text-gray-400 hover:text-white text-xs bg-gray-600 px-2 py-1 rounded">取消</button></div></div></div></template>
+                        <p x-show="marketCompassLog.length === 0" class="text-gray-500 text-center py-4">暫無羅盤記錄</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
+            </div>
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">最新交易記錄</h2>
+            </div>
+
+    </div>
+</div>
 
                 <div>
                     <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤 (Market Compass)</h2>
@@ -508,45 +545,52 @@
             </div>
         </div>
 
-        <div x-show="activeTab === 'journal'" x-cloak>
-             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯交易' : '新增交易日誌'"></h2>
-                    <form @submit.prevent="saveTrade" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div> <label class="block text-sm">日期</label> <input type="date" x-model="journalForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                            <div> <label class="block text-sm">代號</label> <input type="text" x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div> <label class="block text-sm">方向</label> <select x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2 mt-1"> <option>Long</option> <option>Short</option> </select> </div>
-                            <div> <label class="block text-sm">行業/板塊</label> <input type="text" x-model="journalForm.sector" placeholder="科技" class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm">交易止損幅度 (%)</label>
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" step="any" x-model.number="journalForm.tradeStopLossPercent" placeholder="例如: 4.6" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                                    <button @click.prevent="journalForm.tradeStopLossPercent = stopLossPercent" class="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded-lg" title="套用計算機設定"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm10.096 3.146a.5.5 0 1 1 .707.708L6.707 9.95h2.768a.5.5 0 1 1 0 1H5.5a.5.5 0 0 1-.5-.5V6.475a.5.5 0 1 1 1 0v2.768l4.096-4.097z"/> </svg></button>
-                                </div>
-                            </div>
-                            <div> <label class="block text-sm">最終盈虧 (P/L $)</label> <input type="number" step="any" x-model.number="journalForm.plAmount" placeholder="例如: 500" required class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm">風險金額 (Risk $)</label>
-                            <div class="flex items-center space-x-2"><input type="number" step="any" x-model.number="journalForm.riskAmount" placeholder="例如: 350" required class="w-full bg-gray-700 rounded p-2 mt-1"><select @change="journalForm.riskAmount = parseFloat((rValueUsd * $event.target.value).toFixed(2)); $event.target.value=''" class="bg-gray-600 hover:bg-gray-500 text-xs text-white font-bold py-2.5 px-3 rounded-lg appearance-none text-center"><option value="" disabled selected>套用R</option> <option value="0.25">0.25R</option> <option value="0.5">0.5R</option> <option value="0.75">0.75R</option> <option value="1">1R</option> <option value="1.5">1.5R</option> <option value="2">2R</option></select></div>
-                        </div>
-                        <div> <label class="block text-sm">進場條件</label> <textarea x-model="journalForm.entryCriteria" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄進場的技術或基本面原因..."></textarea> </div>
-                        <div> <label class="block text-sm">出場條件</label> <textarea x-model="journalForm.exitCriteria" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄出場是觸及止損、目標或..."></textarea> </div>
-                        <div><label class="block text-sm">股價圖片</label><div class="flex items-center space-x-2 mt-1"><input type="file" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"><svg x-show="isUploadingImage" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path> </svg></div>
-                            <template x-if="journalForm.chartImage"><div class="relative mt-2"><img :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="journalForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
-                        </div>
-                        <div> <label class="block text-sm">情緒標籤</label> <input type="text" x-model="journalForm.emotions" placeholder="FOMO, 冷靜, 猶豫..." class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                        <div> <label class="block text-sm">交易策略 / Setup</label> <input type="text" x-model="journalForm.setup" placeholder="趨勢突破, 盤整買入..." class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
-                        <div class="flex justify-between items-center pt-2">
-                             <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新' : '儲存'"></button>
-                             <button type="button" @click="resetForm" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                        </div>
-                    </form>
+        <form @submit.prevent="saveTrade" class="space-y-4">
+    <div class="grid grid-cols-2 gap-4">
+        <div> <label class="block text-sm">日期</label> <input type="date" x-model="journalForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
+        <div> <label class="block text-sm">代號</label> <input type="text" x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div> <label class="block text-sm">方向</label> <select x-model="journalForm.direction" @change="calculatePl" class="w-full bg-gray-700 rounded p-2 mt-1"> <option>Long</option> <option>Short</option> </select> </div>
+        <div> <label class="block text-sm">行業/板塊</label> <input type="text" x-model="journalForm.sector" placeholder="科技" class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-sm">買入價 (Entry)</label><input type="number" step="any" x-model.number="journalForm.entryPrice" @input.debounce="calculatePl" placeholder="150.50" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+        <div><label class="block text-sm">數量 (Quantity)</label><input type="number" step="any" x-model.number="journalForm.quantity" @input.debounce="calculatePl" placeholder="100" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+    </div>
+    <div><label class="block text-sm">賣出價 (Exit)</label><input type="number" step="any" x-model.number="journalForm.exitPrice" @input.debounce="calculatePl" placeholder="155.75" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+    
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm">交易止損幅度 (%)</label>
+            <div class="flex items-center space-x-2">
+                <input type="number" step="any" x-model.number="journalForm.tradeStopLossPercent" placeholder="例如: 4.6" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                <button @click.prevent="journalForm.tradeStopLossPercent = stopLossPercent" class="bg-gray-600 hover:bg-gray-500 text-white p-2 rounded-lg" title="套用計算機設定"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm10.096 3.146a.5.5 0 1 1 .707.708L6.707 9.95h2.768a.5.5 0 1 1 0 1H5.5a.5.5 0 0 1-.5-.5V6.475a.5.5 0 1 1 1 0v2.768l4.096-4.097z"/> </svg></button>
+            </div>
+        </div>
+        <div> 
+            <label class="block text-sm">最終盈虧 (P/L $)</label> 
+            <input type="number" step="any" x-model.number="journalForm.plAmount" placeholder="自動計算" required readonly class="w-full bg-gray-600 rounded p-2 mt-1"> 
+        </div>
+    </div>
+    
+    <div>
+        <label class="block text-sm">風險金額 (Risk $)</label>
+        <div class="flex items-center space-x-2"><input type="number" step="any" x-model.number="journalForm.riskAmount" placeholder="例如: 350" required class="w-full bg-gray-700 rounded p-2 mt-1"><select @change="journalForm.riskAmount = parseFloat((rValueUsd * $event.target.value).toFixed(2)); $event.target.value=''" class="bg-gray-600 hover:bg-gray-500 text-xs text-white font-bold py-2.5 px-3 rounded-lg appearance-none text-center"><option value="" disabled selected>套用R</option> <option value="0.25">0.25R</option> <option value="0.5">0.5R</option> <option value="0.75">0.75R</option> <option value="1">1R</option> <option value="1.5">1.5R</option> <option value="2">2R</option></select></div>
+    </div>
+    <div> <label class="block text-sm">進場條件</label> <textarea x-model="journalForm.entryCriteria" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄進場的技術或基本面原因..."></textarea> </div>
+    <div> <label class="block text-sm">出場條件</label> <textarea x-model="journalForm.exitCriteria" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄出場是觸及止損、目標或..."></textarea> </div>
+    <div><label class="block text-sm">股價圖片</label><div class="flex items-center space-x-2 mt-1"><input type="file" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"><svg x-show="isUploadingImage" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"> <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path> </svg></div>
+        <template x-if="journalForm.chartImage"><div class="relative mt-2"><img :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="journalForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
+    </div>
+    <div> <label class="block text-sm">情緒標籤</label> <input type="text" x-model="journalForm.emotions" placeholder="FOMO, 冷靜, 猶豫..." class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
+    <div> <label class="block text-sm">交易策略 / Setup</label> <input type="text" x-model="journalForm.setup" placeholder="趨勢突破, 盤整買入..." class="w-full bg-gray-700 rounded p-2 mt-1"> </div>
+    <div class="flex justify-between items-center pt-2">
+         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新' : '儲存'"></button>
+         <button type="button" @click="resetForm" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+    </div>
+</form>
                 </div>
                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
                     <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">交易記錄</h2>
@@ -798,6 +842,7 @@
                 
                 // AI & Performance
                 plChart: null,
+                dashboardPlChart: null,
                 aiAnalysisResult: '<p class="text-gray-500">點擊「獲取分析」按鈕，讓 AI 根據您當前的設定提供交易策略建議。</p>',
                 maxDrawdownAnalysis: '<p class="text-gray-500">點擊按鈕，讓 AI 為您分析交易數據中的最大資金回撤。</p>',
                 aiEmotionAnalysisResult: '<p class="text-gray-500">點擊按鈕，讓 AI 分析您的情緒標籤與交易結果之間的關聯。</p>',
@@ -830,16 +875,21 @@
                     return this.reflections.length > 0 ? this.reflections[0] : null;
                 },
                 
-                init() {
-                    this.loadSettings();
-                    this.resetAllForms();
-                    this.initFirebase();
-                    this.$watch('activeTab', (newTab) => {
-                        if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
-                           this.$nextTick(() => { if (document.getElementById('plChart')) this.renderChart(); });
-                        }
-                    });
-                },
+                // 取代原本的 init() 函數
+init() {
+    this.loadSettings();
+    this.resetAllForms();
+    this.initFirebase();
+    this.$watch('activeTab', (newTab) => {
+        // 當分頁切換到 performance 或 dashboard 時，重新渲染圖表
+        if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
+           this.$nextTick(() => { 
+               this.renderChart('plChart'); // 績效回顧頁的圖表
+               this.renderChart('dashboardPlChart'); // 儀表板的圖表
+           });
+        }
+    });
+},
 
                 loadSettings() { const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v1'); if (savedSettings) { this.settings = JSON.parse(savedSettings); } },
                 saveSettings() { localStorage.setItem('tradingWorkbenchSettings_v1', JSON.stringify(this.settings)); alert('設定已儲存！'); },
@@ -963,7 +1013,16 @@
                     this.resetForm(); this.resetPlaybookForm(); this.resetMarketJournalForm();
                     this.resetBuyPlanForm(); this.resetModelBookForm(); this.resetReflectionForm();
                 },
-                getBlankForm() { return { date: new Date().toISOString().split('T')[0], ticker: '', direction: 'Long', sector: '', tradeStopLossPercent: null, riskAmount: null, plAmount: null, entryCriteria: '', exitCriteria: '', chartImage: '', emotions: '', setup: '', notes: '' }; },
+                // 取代原本的 getBlankForm() 函數
+getBlankForm() { 
+    return { 
+        date: new Date().toISOString().split('T')[0], ticker: '', direction: 'Long', 
+        sector: '', tradeStopLossPercent: null, riskAmount: null, plAmount: null, 
+        entryCriteria: '', exitCriteria: '', chartImage: '', emotions: '', setup: '', notes: '',
+        // 新增欄位
+        entryPrice: null, exitPrice: null, quantity: null 
+    }; 
+},
                 getBlankPlaybookForm() { return { name: '', marketCondition: '多頭 (Bull)', criteria: '', chartImage: '', notes: ''}; },
                 getBlankMarketJournalForm() { return { date: new Date().toISOString().split('T')[0], marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', sentiment: 3, summary: '' }; },
                 getBlankBuyPlanForm() { return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' }; },
@@ -1028,23 +1087,38 @@
                     this.searchTerm = ''; this.searchResults = [];
                 },
 
-                renderChart() {
-                    const canvas = document.getElementById('plChart');
-                    if (!canvas || !this.trades.length) return;
-                    const ctx = canvas.getContext('2d');
-                    const sortedTrades = [...this.trades].sort((a, b) => new Date(a.date) - new Date(b.date));
-                    let cumulativePl = 0;
-                    const dataPoints = sortedTrades.map(t => cumulativePl += (t.plAmount || 0));
-                    if(this.plChart) this.plChart.destroy();
-                    this.plChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: sortedTrades.map((t, i) => `Trade ${i+1}`),
-                            datasets: [{ label: '累計盈虧 (USD)', data: dataPoints, borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.1, fill: true, }]
-                        },
-                        options: { responsive: true, scales: { y: { beginAtZero: false, ticks: { color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' } } }, plugins: { legend: { labels: { color: '#d1d5db' } } } }
-                    });
-                },
+                // 取代原本的 renderChart() 函數
+renderChart(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !this.trades.length) return;
+    const ctx = canvas.getContext('2d');
+    const sortedTrades = [...this.trades].sort((a, b) => new Date(a.date) - new Date(b.date));
+    let cumulativePl = 0;
+    const dataPoints = sortedTrades.map(t => cumulativePl += (t.plAmount || 0));
+    
+    // 根據 canvasId 決定要銷毀哪個圖表實例
+    if (canvasId === 'plChart' && this.plChart) {
+        this.plChart.destroy();
+    } else if (canvasId === 'dashboardPlChart' && this.dashboardPlChart) {
+        this.dashboardPlChart.destroy();
+    }
+
+    const chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: sortedTrades.map((t, i) => `Trade ${i+1}`),
+            datasets: [{ label: '累計盈虧 (USD)', data: dataPoints, borderColor: 'rgba(59, 130, 246, 0.8)', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.1, fill: true, }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false, ticks: { color: '#9ca3af' } }, x: { ticks: { color: '#9ca3af' } } }, plugins: { legend: { labels: { color: '#d1d5db' } } } }
+    });
+
+    // 將新的圖表實例儲存到對應的變數
+    if (canvasId === 'plChart') {
+        this.plChart = chartInstance;
+    } else if (canvasId === 'dashboardPlChart') {
+        this.dashboardPlChart = chartInstance;
+    }
+},
                 
                 async callAiApi(systemPrompt, userQuery, formatHtml = true, isJsonOutput = false) {
                     this.isLoading = true;
@@ -1170,7 +1244,20 @@
                         } else { throw new Error("AI 回應中未找到有效的 JSON 內容。"); }
                     } catch (error) { console.error("Error parsing AI performance review:", error); this.reviewNotes.monthly = `生成失敗：${error.message}`;
                     } finally { this.isLoading = false; }
-                }
+                }, // <--- 請注意這裡有一個逗號！
+                // 新增的函數
+calculatePl() {
+    const { entryPrice, exitPrice, quantity, direction } = this.journalForm;
+    if (entryPrice > 0 && exitPrice > 0 && quantity > 0) {
+        let pl = 0;
+        if (direction === 'Long') {
+            pl = (exitPrice - entryPrice) * quantity;
+        } else { // Short
+            pl = (entryPrice - exitPrice) * quantity;
+        }
+        this.journalForm.plAmount = parseFloat(pl.toFixed(2));
+    }
+}
             }
         }
         
