@@ -264,7 +264,7 @@
             </div>
         </div>
 
-        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
+        <div x-if="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                   <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
