@@ -20,7 +20,7 @@
         .modal-content { background-color: #1f2937; padding: 1rem; border-radius: 0.5rem; max-width: 90vw; max-height: 90vh; overflow: auto; }
         .search-input { background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 12px center; padding-left: 40px; }
         
-        /* NEW Calendar Styles */
+        /* Calendar Styles */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
         .calendar-day { min-height: 120px; }
         .calendar-day.other-month { background-color: rgba(31, 41, 55, 0.5); }
@@ -120,6 +120,40 @@
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
                         <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
                         <canvas id="dashboardPlChart"></canvas>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤 (Market Compass)</h2>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gray-700/50 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">美股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('US', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('US', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('US', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                            <div class="bg-gray-700/50 p-4 rounded-xl"><h3 class="text-lg font-bold text-center mb-4">港股市場</h3><div class="flex justify-center gap-4"><button @click="setMarketCompass('HK', 'Bull')" class="text-2xl px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700">🐂</button><button @click="setMarketCompass('HK', 'Bear')" class="text-2xl px-4 py-2 rounded-lg bg-red-800 hover:bg-red-700">🐻</button><button @click="setMarketCompass('HK', 'Neutral')" class="text-2xl px-4 py-2 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button></div></div>
+                        </div>
+                        <div class="mt-6 bg-gray-700/50 p-4 rounded-xl max-h-64 overflow-y-auto">
+                            <h3 class="text-lg font-bold text-center mb-2">市場判斷日誌</h3>
+                            <template x-for="log in marketCompassLog" :key="log.id">
+                                <div class="text-sm text-gray-400 border-b border-gray-700/50 py-2">
+                                    <div x-show="editingCompassLogId !== log.id" class="flex justify-between items-center">
+                                        <span x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - ${log.market === 'US' ? '美股' : '港股'} 市場為 ${log.sentiment === 'Bull' ? '牛市 🐂' : log.sentiment === 'Bear' ? '熊市 🐻' : '震盪 ⚖️'}`"></span>
+                                        <div class="flex-shrink-0 ml-2">
+                                            <button @click="editCompassLog(log)" class="text-blue-400 hover:text-blue-300 text-xs">編輯</button>
+                                            <button @click="deleteCompassLog(log.id)" class="text-red-400 hover:text-red-300 text-xs ml-2">刪除</button>
+                                        </div>
+                                    </div>
+                                    <div x-show="editingCompassLogId === log.id" x-cloak class="space-y-2">
+                                        <p x-text="`${log.timestamp ? log.timestamp.toLocaleString() : ''} - 更新 ${log.market === 'US' ? '美股' : '港股'} 市場狀態:`"></p>
+                                        <div class="flex justify-around items-center">
+                                            <button @click="updateCompassLog(log, 'Bull')" class="text-2xl px-3 py-1 rounded-lg bg-green-800 hover:bg-green-700">🐂</button>
+                                            <button @click="updateCompassLog(log, 'Bear')" class="text-2xl px-3 py-1 rounded-lg bg-red-800 hover:bg-red-700">🐻</button>
+                                            <button @click="updateCompassLog(log, 'Neutral')" class="text-2xl px-3 py-1 rounded-lg bg-yellow-800 hover:bg-yellow-700">⚖️</button>
+                                            <button @click="cancelEditCompassLog()" class="text-gray-400 hover:text-white text-xs bg-gray-600 px-2 py-1 rounded">取消</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            <p x-show="marketCompassLog.length === 0" class="text-gray-500 text-center py-4">暫無羅盤記錄</p>
+                        </div>
                     </div>
                 </div>
 
@@ -610,7 +644,7 @@
                 isInitialized: false, isLoggedIn: false, activeTab: 'dashboard',
                 isLoading: false, isUploadingImage: false, isModalOpen: false, modalImageUrl: '',
                 authView: 'login', authForm: { email: '', password: '' }, authError: '',
-                appVersion: '4.0.1', lastUpdated: '2024-07-31',
+                appVersion: '4.0.2', lastUpdated: '2024-07-31',
 
                 // Firebase
                 db: null, auth: null, userId: null,
@@ -622,7 +656,7 @@
                 trades: [], marketJournals: [], buyPlans: [], modelBooks: [],
                 reflections: [], marketCompassLog: [],
 
-                // Journal v3.0 State
+                // Journal v4.0 State
                 selectedTradeId: null,
                 selectedTrade: null,
                 showTxnForm: false,
@@ -682,6 +716,9 @@
                     this.$watch('calendar.month', () => this.generateCalendar());
                     this.$watch('trades', () => this.generateCalendar());
 
+                    // Initial calculation for quicksizer
+                    this.quickSizer.riskAmount = (this.usdPrincipal * (this.quickSizer.riskPercent / 100));
+
                     this.$watch('quickSizer.riskPercent', (val) => {
                         this.quickSizer.riskAmount = (this.usdPrincipal * (val / 100));
                     });
@@ -733,7 +770,7 @@
                     this.loadCollection(`users/${this.userId}/marketCompassLog`, 'marketCompassLog', 'timestamp');
                 },
                 
-                // Auth methods, save/delete/edit/reset methods, etc. (condensed for brevity)
+                // All other methods are placed below...
                 async register() { this.authError = ''; try { await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password); this.authForm = { email: '', password: '' }; } catch (error) { this.authError = this.getFirebaseAuthErrorMessage(error); } },
                 async login() { this.authError = ''; try { await signInWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password); this.authForm = { email: '', password: '' }; } catch (error) { this.authError = this.getFirebaseAuthErrorMessage(error); } },
                 async loginWithGoogle() { this.authError = ''; try { const provider = new GoogleAuthProvider(); await signInWithPopup(this.auth, provider); } catch (error) { this.authError = this.getFirebaseAuthErrorMessage(error); console.error("Google Sign-in Error:", error); } },
@@ -835,7 +872,7 @@
                     this.resetTxnForm();
                 },
                 getTradeDetails(trade) {
-                    if (!trade) return { totalPl: 0, rMultiple: 0, status: 'N/A' };
+                    if (!trade) return { totalPl: 0, rMultiple: 0, status: 'N/A', totalBuyQty: 0, totalBuyCost: 0, totalSellQty: 0, totalSellValue: 0 };
                     const txns = trade.transactions || [];
                     let totalPl = 0; let totalBuyCost = 0; let totalSellValue = 0;
                     let totalBuyQty = 0; let totalSellQty = 0;
@@ -852,17 +889,18 @@
                         }
                     });
 
+                    let avgBuyPrice = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+                    let avgSellPrice = totalSellQty > 0 ? totalSellValue / totalSellQty : 0;
+                    
                     if (trade.direction === 'Long') {
-                        const avgBuyPrice = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
                         totalPl = totalSellValue - (totalSellQty * avgBuyPrice);
-                    } else { // Short - Note: This is a simplified calculation for short selling
-                        const avgSellPrice = totalSellQty > 0 ? totalSellValue / totalSellQty : 0;
-                        totalPl = (totalBuyQty * avgSellPrice) - totalBuyCost;
+                    } else { // Short
+                        totalPl = (totalSellQty * avgSellPrice) - (totalBuyQty * avgBuyPrice); // Simplified P/L for now
                     }
 
                     const rMultiple = trade.riskAmount > 0 ? totalPl / trade.riskAmount : 0;
-                    const status = totalBuyQty === totalSellQty && totalBuyQty > 0 ? 'Closed' : 'Open';
-                    return { totalPl, rMultiple, status };
+                    const status = totalBuyQty <= totalSellQty && totalBuyQty > 0 ? 'Closed' : 'Open';
+                    return { totalPl, rMultiple, status, totalBuyQty, totalBuyCost, totalSellQty, totalSellValue };
                 },
                 getBlankForm() { return { entryDate: new Date().toISOString().split('T')[0], ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: null, setup: '', rationale: '', chartImage: '', transactions: [] }; },
                 resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm(); },
@@ -940,18 +978,24 @@
                         days.push({ date: date.toISOString().split('T')[0], dayOfMonth: i, isCurrentMonth: false, pl: 0, tradeCount: 0 });
                     }
 
-                    // Populate with trade data
+                    const dailyPL = {};
                     this.trades.forEach(trade => {
-                        (trade.transactions || []).forEach(txn => {
-                            const day = days.find(d => d.date === txn.date);
-                            if (day && txn.type === 'Sell') {
-                                const details = this.getTradeDetails(trade);
-                                const avgBuyPrice = (details.totalBuyQty > 0) ? details.totalBuyCost / details.totalBuyQty : 0;
-                                const plForThisTxn = (trade.direction === 'Long') ? (txn.price - avgBuyPrice) * txn.quantity : (avgBuyPrice - txn.price) * txn.quantity;
-                                day.pl += plForThisTxn;
-                                day.tradeCount += 1;
+                        const details = this.getTradeDetails(trade);
+                        if (details.status === 'Closed') {
+                            const lastTxnDate = trade.transactions.filter(t => t.type === 'Sell').sort((a,b) => new Date(b.date) - new Date(a.date))[0]?.date;
+                            if (lastTxnDate) {
+                                if (!dailyPL[lastTxnDate]) dailyPL[lastTxnDate] = { pl: 0, count: 0};
+                                dailyPL[lastTxnDate].pl += details.totalPl;
+                                dailyPL[lastTxnDate].count += 1;
                             }
-                        });
+                        }
+                    });
+
+                    days.forEach(day => {
+                        if (dailyPL[day.date]) {
+                            day.pl = dailyPL[day.date].pl;
+                            day.tradeCount = dailyPL[day.date].count;
+                        }
                     });
 
                     this.calendar.days = days;
@@ -989,10 +1033,7 @@
                 },
                 async callGeminiApi(systemPrompt, userQuery, isJsonOutput) {
                     const apiKey = ""; // <--- 在這裡貼上您自己的 Gemini API 金鑰
-                    if (!apiKey) {
-                        console.error("Gemini API Key is missing.");
-                        return "錯誤：Gemini API 金鑰未設定。請修改 index.html 檔案並填入您的金鑰。";
-                    }
+                    if (!apiKey) { console.error("Gemini API Key is missing."); return "錯誤：Gemini API 金鑰未設定。請修改 index.html 檔案並填入您的金鑰。"; }
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
                     const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, };
                     if (isJsonOutput) { payload.generationConfig = { responseMimeType: "application/json" }; }
@@ -1014,7 +1055,7 @@
                     if (!text) throw new Error('無法從自訂 API 獲取有效的分析結果。');
                     return text;
                 },
-                getAiPrompts(type) { /* ... Omitted for brevity, but logic is present ... */ return { systemPrompt: "You are a helpful trading assistant.", userQuery: "Please analyze my data." }; },
+                getAiPrompts(type) { /* ... Omitted for brevity ... */ return { systemPrompt: "You are a helpful trading assistant.", userQuery: "Please analyze my data." }; },
                 async getAiDashboardSummary() { this.aiDashboardSummary = await this.callAiApi("Analyze this dashboard data.", JSON.stringify(this.performance)); },
                 async askAi() { if(!this.aiQuery) return; const query = this.aiQuery; this.aiQuery = ''; this.aiDashboardSummary = `<blockquote><strong>你的提問:</strong> ${query}</blockquote><br><p>AI 正在思考中...</p>`; const answer = await this.callAiApi("Answer the user's question based on their trading data.", `Data: ${JSON.stringify({trades: this.trades.map(t=>this.getTradeDetails(t)), performance: this.performance})} \nQuestion: ${query}`); this.aiDashboardSummary = `<blockquote><strong>你的提問:</strong> ${query}</blockquote><br>${answer}`; },
                 async getAiAnalysis() { this.aiAnalysisResult = await this.callAiApi("Analyze this risk setup.", JSON.stringify({principal: this.usdPrincipal, riskPercent: this.currentRiskPercent, stopLoss: this.stopLossPercent})); },
@@ -1022,7 +1063,7 @@
                 async getAiEmotionAnalysis() { this.aiEmotionAnalysisResult = await this.callAiApi("Analyze the relationship between emotions and performance.", JSON.stringify(this.trades.map(t => ({ emotions: t.emotions, rMultiple: this.getTradeDetails(t).rMultiple })))); },
                 async getAiModelBookAnalysis() { this.aiModelBookAnalysis = await this.callAiApi("Find common patterns in these successful models.", JSON.stringify(this.modelBooks)); },
                 async getAiPerformanceReview() { const review = await this.callAiApi("Generate a performance review in JSON format.", JSON.stringify({performance: this.performance, trades: this.trades.slice(-20).map(t=>this.getTradeDetails(t))}), false, true); try { const parsed = JSON.parse(review.match(/\{[\s\S]*\}/)[0]); this.reviewNotes.monthly = parsed.monthlyPerformance; this.reviewNotes.improve = parsed.areasToImprove; this.reviewNotes.goals = parsed.nextMonthGoals; } catch(e) { console.error(e); this.reviewNotes.monthly = "AI 回應格式錯誤。"; }}
-            }
+            };
         }
         
         Alpine.data('tradingApp', tradingApp);
