@@ -1231,19 +1231,12 @@
                         const app = initializeApp(firebaseConfig);
                         this.db = getFirestore(app); this.auth = getAuth(app); 
                         onAuthStateChanged(this.auth, (user) => {
-    this.isInitialized = true; // ✅ 修正拼寫
-    if (user) { 
-        this.isLoggedIn = true; 
-        this.userId = user.uid; 
-        this.initializeDataListeners(); 
-    } 
-    else { 
-        this.isLoggedIn = false; 
-        this.userId = null; 
-        this.clearAllData(); 
-    }
-});
-
+                            this.isIntialized = true;
+                            if (user) { this.isLoggedIn = true; this.userId = user.uid; this.initializeDataListeners(); } 
+                            else { this.isLoggedIn = false; this.userId = null; this.clearAllData(); }
+                        });
+                    } catch(e) { console.error("Firebase initialization failed:", e); this.authError = "Firebase 初始化失敗。"; this.isInitialized = true; }
+                },
 
                 initializeDataListeners() {
                     if (!this.userId) return;
