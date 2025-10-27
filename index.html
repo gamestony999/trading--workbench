@@ -192,8 +192,6 @@
                         </div>
                     </div>
                 </div>
-
-                ```
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -259,7 +257,6 @@
 
             </div>
         </div>
-        ```
         <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
                 <div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{ "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false, "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true, "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1", "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "rgba(17, 24, 39, 1)", "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true, "range": "YTD", "studies": [], "autosize": true }</script></div>
@@ -463,9 +460,7 @@
                 <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-2 text-sm text-gray-400">分析中，請稍候...</p></div>
             </div>
         </div>
-
-        ```
-        <div x-show="activeTab === 'journal'" x-cloak>
+<div x-show="activeTab === 'journal'" x-cloak>
             <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
                  <h3 class="text-lg font-semibold text-blue-300 mb-3">快速注碼計算</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -806,7 +801,7 @@
                 isInitialized: false, isLoggedIn: false, activeTab: 'dashboard',
                 isLoading: false, isUploadingImage: false, isModalOpen: false, modalImageUrl: '',
                 authView: 'login', authForm: { email: '', password: '' }, authError: '',
-                appVersion: '6.0.0', lastUpdated: '2025-10-27', // Version updated
+                appVersion: '6.1.0-fix', lastUpdated: '2025-10-27', // Version updated
 
                 // Firebase (NO CHANGES)
                 db: null, auth: null, userId: null,
@@ -983,12 +978,70 @@
                 },
 
                 // === INITIALIZATION & WATCHERS ===
-                init() { /* ... (same as before) ... */ },
-                loadSettings() { /* ... (same as before) ... */ },
-                saveSettings(showAlert = false) { /* ... (same as before) ... */ },
+                init() {
+                    // *** BUG FIX STARTS HERE ***
+                    // Set a timeout to prevent getting stuck on the loading screen.
+                    const initializationTimeout = setTimeout(() => {
+                        if (!this.isInitialized) {
+                            console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
+                            this.isInitialized = true;
+                        }
+                    }, 5000); // 5 seconds
+                    
+                    this.$watch('isInitialized', (value) => {
+                        if (value) {
+                            // If initialization completes, clear the timeout so it doesn't fire unnecessarily.
+                            clearTimeout(initializationTimeout);
+                        }
+                    });
+                    // *** BUG FIX ENDS HERE ***
+
+                    this.loadSettings();
+                    this.resetAllForms();
+                    this.initFirebase();
+                    
+                    this.generateCalendar();
+                    this.$watch('calendar.month', () => this.generateCalendar());
+                    this.$watch('trades', () => this.generateCalendar());
+                    this.$watch('quickSizer.riskPercent', (val) => {
+                        this.quickSizer.riskAmount = (this.settings.usdPrincipal * (val / 100));
+                    });
+                    this.$watch('settings.usdPrincipal', (val) => {
+                        this.quickSizer.riskAmount = (val * (this.quickSizer.riskPercent / 100));
+                    });
+                    this.$watch('activeTab', (newTab) => {
+                        if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
+                           this.$nextTick(() => { 
+                               this.renderChart('plChart');
+                               this.renderChart('dashboardPlChart');
+                           });
+                        }
+                    });
+                },
+                loadSettings() { const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3'); if (savedSettings) { this.settings = { ...this.settings, ...JSON.parse(savedSettings) }; } },
+                saveSettings(showAlert = false) { localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings)); if (showAlert) alert('設定已儲存！'); },
 
                 // === FIREBASE (NO CHANGES) ===
-                async initFirebase() { /* ... (same as before) ... */ },
+                async initFirebase() {
+                    try {
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
+                            authDomain: "my-trading-workbench.firebaseapp.com",
+                            projectId: "my-trading-workbench",
+                            storageBucket: "my-trading-workbench.appspot.com",
+                            messagingSenderId: "386958713208",
+                            appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
+                            measurementId: "G-2WEVVMRHV7"
+                        };
+                        const app = initializeApp(firebaseConfig);
+                        this.db = getFirestore(app); this.auth = getAuth(app);
+                        onAuthStateChanged(this.auth, (user) => {
+                            this.isInitialized = true; // This will now clear the timeout
+                            if (user) { this.isLoggedIn = true; this.userId = user.uid; this.initializeDataListeners(); } 
+                            else { this.isLoggedIn = false; this.userId = null; this.clearAllData(); }
+                        });
+                    } catch(e) { console.error("Firebase initialization failed:", e); this.authError = "Firebase 初始化失敗。"; this.isInitialized = true; }
+                },
                 initializeDataListeners() { /* ... (same as before) ... */ },
                 
                 // === AUTH METHODS (NO CHANGES) ===
