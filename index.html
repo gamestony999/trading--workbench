@@ -45,836 +45,959 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8" x-data="tradingApp()" x-init="init()">
-
-    <div x-show="!isInitialized" class="min-h-screen flex items-center justify-center text-center">
-        <div>
-            <svg class="animate-spin h-8 w-8 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <p class="mt-4 text-gray-400">正在連接雲端...</p>
-        </div>
+<div x-show="!isInitialized" class="min-h-screen flex items-center justify-center text-center">
+    <div>
+        <svg class="animate-spin h-8 w-8 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p class="mt-4 text-gray-400">正在連接雲端...</p>
     </div>
+</div>
 
-    <div x-show="isInitialized && !isLoggedIn" x-cloak class="min-h-screen flex items-center justify-center">
-        <div class="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-            <h2 class="text-2xl font-bold text-center text-blue-400 mb-6" x-text="authView === 'login' ? '登入工作台' : '註冊新帳號'"></h2>
-            <form @submit.prevent="authView === 'login' ? login() : register()">
-                <div class="space-y-4">
-                    <div><label for="email" class="block text-sm font-medium text-gray-300">電子郵件</label><input id="email" type="email" x-model="authForm.email" required class="w-full bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500 focus:border-blue-500"></div>
-                    <div><label for="password" class="block text-sm font-medium text-gray-300">密碼</label><input id="password" type="password" x-model="authForm.password" required class="w-full bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500 focus:border-blue-500"></div>
+<div x-show="isInitialized && !isLoggedIn" x-cloak class="min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
+        <h2 class="text-2xl font-bold text-center text-blue-400 mb-6" x-text="authView === 'login' ? '登入工作台' : '註冊新帳號'"></h2>
+        <form @submit.prevent="authView === 'login' ? login() : register()">
+            <div class="space-y-4">
+                <div><label for="email" class="block text-sm font-medium text-gray-300">電子郵件</label><input id="email" type="email" x-model="authForm.email" required class="w-full bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500 focus:border-blue-500"></div>
+                <div><label for="password" class="block text-sm font-medium text-gray-300">密碼</label><input id="password" type="password" x-model="authForm.password" required class="w-full bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500 focus:border-blue-500"></div>
+            </div>
+            <p x-show="authError" class="text-red-400 text-sm mt-4" x-text="authError"></p>
+            <div class="mt-6"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="authView === 'login' ? '登入' : '註冊'"></button></div>
+        </form>
+        <div class="relative my-6"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-800 text-gray-400">或</span></div></div>
+        <div><button @click.prevent="loginWithGoogle()" class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" fill="#EA4335"/></svg><span>使用 Google 登入</span></button></div>
+        <div class="mt-4 text-center"><button @click="authView = (authView === 'login' ? 'register' : 'login')" class="text-sm text-gray-400 hover:text-white" x-text="authView === 'login' ? '還沒有帳號？註冊一個' : '已經有帳號？前往登入'"></button></div>
+    </div>
+</div>
+
+<div x-show="isInitialized && isLoggedIn" x-cloak class="max-w-7xl mx-auto">
+    <header class="mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 ✨</h1>
+                <p class="text-gray-400 mt-2">由 AI 驅動的整合式交易分析系統</p>
+            </div>
+            <div class="relative w-full md:w-1/3">
+                <input type="text" x-model="searchTerm" @input.debounce.300ms="search" placeholder="搜尋交易日誌或模型庫..." class="search-input w-full bg-gray-800 border border-gray-700 rounded-full py-2 px-4 text-white focus:ring-blue-500 focus:border-blue-500">
+                <div x-show="searchTerm && searchResults.length > 0" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                    <ul><template x-for="item in searchResults" :key="item.id"><li @click="goToSearchResult(item)" class="px-4 py-3 hover:bg-gray-700 cursor-pointer"><p class="font-semibold text-white" x-text="item.ticker || item.name"></p><p class="text-sm text-gray-400" x-text="`${item.type} - ${item.date || item.pattern}`"></p></li></template></ul>
                 </div>
-                <p x-show="authError" class="text-red-400 text-sm mt-4" x-text="authError"></p>
-                <div class="mt-6"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="authView === 'login' ? '登入' : '註冊'"></button></div>
-            </form>
-            <div class="relative my-6"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-800 text-gray-400">或</span></div></div>
-            <div><button @click.prevent="loginWithGoogle()" class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" fill="#EA4335"/></svg><span>使用 Google 登入</span></button></div>
-            <div class="mt-4 text-center"><button @click="authView = (authView === 'login' ? 'register' : 'login')" class="text-sm text-gray-400 hover:text-white" x-text="authView === 'login' ? '還沒有帳號？註冊一個' : '已經有帳號？前往登入'"></button></div>
+            </div>
+        </div>
+        <div class="tradingview-widget-container mt-6">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+            { "symbols": [ { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" }, { "proName": "FOREXCOM:NSXUSD", "title": "US 100" }, { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" }, { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }, { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" }, { "proName": "HSI:HSI", "title": "Hang Seng" } ], "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": false, "displayMode": "adaptive", "locale": "zh_TW" }
+            </script>
+        </div>
+    </header>
+
+    <div class="mb-6">
+        <div class="border-b border-gray-700">
+            <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
+                <button @click="activeTab = 'dashboard'" :class="{ 'active': activeTab === 'dashboard' }" class="tab-btn">儀表板</button>
+                <button @click="activeTab = 'tradingView'" :class="{ 'active': activeTab === 'tradingView' }" class="tab-btn">市場圖表</button>
+                <button @click="activeTab = 'reflection'" :class="{ 'active': activeTab === 'reflection' }" class="tab-btn">自我反思</button>
+                <button @click="activeTab = 'marketJournal'" :class="{ 'active': activeTab === 'marketJournal' }" class="tab-btn">市場日誌</button>
+                <button @click="activeTab = 'buyPlan'" :class="{ 'active': activeTab === 'buyPlan' }" class="tab-btn">買入計劃</button>
+                <button @click="activeTab = 'calculator'" :class="{ 'active': activeTab === 'calculator' }" class="tab-btn">注碼計算機</button>
+                <button @click="activeTab = 'journal'" :class="{ 'active': activeTab === 'journal' }" class="tab-btn">交易日誌</button>
+                <button @click="activeTab = 'modelBook'" :class="{ 'active': activeTab === 'modelBook' }" class="tab-btn">模型庫</button>
+                <button @click="activeTab = 'performance'" :class="{ 'active': activeTab === 'performance' }" class="tab-btn">績效回顧</button>
+                <button @click="activeTab = 'settings'" :class="{ 'active': activeTab === 'settings' }" class="tab-btn">設定</button>
+            </nav>
         </div>
     </div>
 
-    <div x-show="isInitialized && isLoggedIn" x-cloak class="max-w-7xl mx-auto">
-        
-        <header class="mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="flex justify-between items-center text-center mb-4 text-xs text-gray-500">
+        <p>User ID: <span x-text="userId || 'N/A'"></span></p>
+        <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
+    </div>
+<!-- ===== 儀表板專屬開始 ===== -->
+<div x-show="activeTab === 'dashboard'" x-cloak>
+    <div class="space-y-8">
+        <!-- 績效卡片列 -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">總盈虧 (Net P&L)</h3>
+                <p class="mt-2 text-2xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">勝率 (Win %)</h3>
+                <p class="mt-2 text-2xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
+                <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
+                <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)} : 1`"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center col-span-2 md:col-span-1 lg:col-span-1">
+                <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
+                <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
+            </div>
+        </div>
+
+        <!-- 交易者評分 / 資金曲線圖 / 帳戶狀況 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="radar-chart-container">
+                        <svg viewBox="0 0 200 200" class="radar-chart-svg">
+                            <polygon x-for="i in 5" :key="i" class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
+                            <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+                            <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
+                            <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <h3 class="text-sm font-medium text-gray-400">你的綜合分數</h3>
+                    <p class="text-4xl font-bold text-indigo-400 mt-1" x-text="traderScore.score.toFixed(2)"></p>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
+                        <div class="bg-indigo-500 h-2.5 rounded-full" :style="`width: ${traderScore.score}%`"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+                <div class="h-80"><canvas id="dashboardPlChart"></canvas></div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
                 <div>
-                    <h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 ✨</h1>
-                    <p class="text-gray-400 mt-2">由 AI 驅動的整合式交易分析系統</p>
-                </div>
-                <div class="relative w-full md:w-1/3">
-                    <input type="text" x-model="searchTerm" @input.debounce.300ms="search" placeholder="搜尋交易日誌或模型庫..." class="search-input w-full bg-gray-800 border border-gray-700 rounded-full py-2 px-4 text-white focus:ring-blue-500 focus:border-blue-500">
-                    <div x-show="searchTerm && searchResults.length > 0" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
-                        <ul><template x-for="item in searchResults" :key="item.id"><li @click="goToSearchResult(item)" class="px-4 py-3 hover:bg-gray-700 cursor-pointer"><p class="font-semibold text-white" x-text="item.ticker || item.name"></p><p class="text-sm text-gray-400" x-text="`${item.type} - ${item.date || item.pattern}`"></p></li></template></ul>
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
+                    <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
+                    <div class="input-group">
+                        <span class="text-lg font-bold text-blue-400">$</span>
+                        <input type="number" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
                     </div>
                 </div>
-            </div>
-            <div class="tradingview-widget-container mt-6">
-                <div class="tradingview-widget-container__widget"></div>
-                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-                { "symbols": [ { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" }, { "proName": "FOREXCOM:NSXUSD", "title": "US 100" }, { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" }, { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }, { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" }, { "proName": "HSI:HSI", "title": "Hang Seng" } ], "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": false, "displayMode": "adaptive", "locale": "zh_TW" }
-                </script>
-            </div>
-        </header>
-
-        <div class="mb-6">
-            <div class="border-b border-gray-700">
-                <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
-                    <button @click="activeTab = 'dashboard'" :class="{ 'active': activeTab === 'dashboard' }" class="tab-btn">儀表板</button>
-                    <button @click="activeTab = 'tradingView'" :class="{ 'active': activeTab === 'tradingView' }" class="tab-btn">市場圖表</button>
-                    <button @click="activeTab = 'reflection'" :class="{ 'active': activeTab === 'reflection' }" class="tab-btn">自我反思</button>
-                    <button @click="activeTab = 'marketJournal'" :class="{ 'active': activeTab === 'marketJournal' }" class="tab-btn">市場日誌</button>
-                    <button @click="activeTab = 'buyPlan'" :class="{ 'active': activeTab === 'buyPlan' }" class="tab-btn">買入計劃</button>
-                    <button @click="activeTab = 'calculator'" :class="{ 'active': activeTab === 'calculator' }" class="tab-btn">注碼計算機</button>
-                    <button @click="activeTab = 'journal'" :class="{ 'active': activeTab === 'journal' }" class="tab-btn">交易日誌</button>
-                    <button @click="activeTab = 'modelBook'" :class="{ 'active': activeTab === 'modelBook' }" class="tab-btn">模型庫</button>
-                    <button @click="activeTab = 'performance'" :class="{ 'active': activeTab === 'performance' }" class="tab-btn">績效回顧</button>
-                    <button @click="activeTab = 'settings'" :class="{ 'active': activeTab === 'settings' }" class="tab-btn">設定</button>
-                </nav>
-            </div>
-        </div>
-       
-        <div class="flex justify-between items-center text-center mb-4 text-xs text-gray-500">
-            <p>User ID: <span x-text="userId || 'N/A'"></span></p>
-            <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
-        </div>
-
-        <div x-show="activeTab === 'dashboard'" x-cloak>
-            <div class="space-y-8">
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">總盈虧 (Net P&L)</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">勝率 (Win %)</h3>
-                        <p class="mt-2 text-2xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)} : 1`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center col-span-2 md:col-span-1 lg:col-span-1">
-                        <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
-                        <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
-                    </div>
-                </div>
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
-                            <div class="flex items-center gap-2">
-                                <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                                </button>
-                                <select x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1">
-                                    <template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)">
-                                        <option :value="y" x-text="y + '年'"></option>
-                                    </template>
-                                </select>
-                                <select x-model.number="calendar.month" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1">
-                                    <template x-for="(m, i) in ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']">
-                                        <option :value="i" x-text="m"></option>
-                                    </template>
-                                </select>
-                                <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm">回到本月</button>
-                                <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="calendar-grid border-t border-l border-gray-700">
-                            <template x-for="day in ['日','一','二','三','四','五','六']">
-                                <div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div>
-                            </template>
-                          <template x-for="(day, index) in calendar.days" :key="day.date || index">
-                                <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}" @click="day.tradeCount > 0 ? showTradesForDate(day.date) : ''">
-                                    <span class="text-sm" :class="{'text-gray-500': !day.isCurrentMonth, 'font-bold text-blue-400': day.isToday}" x-text="day.dayOfMonth"></span>
-                                    <div x-show="day.tradeCount > 0" class="day-pl mt-2 p-2 rounded-md text-xs space-y-1 flex-grow flex flex-col justify-center" :class="{ 'profit': day.pl > 0, 'loss': day.pl < 0, 'breakeven': day.pl === 0 }">
-                                        <p class="font-bold text-lg" :class="{ 'text-green-400': day.pl > 0, 'text-red-400': day.pl < 0, 'text-gray-300': day.pl === 0 }" x-text="formatCurrency(day.pl)"></p>
-                                        <p class="text-gray-400 text-[10px]" x-text="`${day.tradeCount} 筆交易`"></p>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
-                        <div>
-                            <h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
-                            <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
-                            <div class="input-group">
-                                <span class="text-lg font-bold text-blue-400">$</span>
-                                <input type="number" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
-                            </div>
-                        </div>
-                        <div class="mt-6 space-y-4">
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
-                                <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
-                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div x-show="activeTab === 'journal'" x-cloak>
-            <!-- 新增：交易日誌頂部即時計算框架 -->
-            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
-                <h3 class="-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">總盈虧 (Net P&L)</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">勝率 (Win %)</h3>
-                        <p class="mt-2 text-2xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)} : 1`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center col-span-2 md:col-span-1 lg:col-span-1">
-                        <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
-                        <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
-                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
-                        <div class="flex-grow flex items-center justify-center">
-                            <div class="radar-chart-container">
-                                <svg viewBox="0 0 200 200" class="radar-chart-svg">
-                                    <polygon x-for="i in 5" :key="i" class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
-                                    <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
-                                    <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
-                                    <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4">
-                            <h3 class="text-sm font-medium text-gray-400">你的綜合分數</h3>
-                            <p class="text-4xl font-bold text-indigo-400 mt-1" x-text="traderScore.score.toFixed(2)"></p>
-                            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
-                                <div class="bg-indigo-500 h-2.5 rounded-full" :style="`width: ${traderScore.score}%`"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
-                        <div class="h-80">
-                           <canvas id="dashboardPlChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
-                        <div>
-                            <h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
-                            <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
-                            <div class="input-group">
-                                <span class="text-lg font-bold text-blue-400">$</span>
-                                <input type="number" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
-                            </div>
-                        </div>
-                        <div class="mt-6 space-y-4">
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
-                                <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
-                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
-                            <div class="flex items-center gap-2">
-                                <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                                </button>
-                                <select x-model.number="calendar.year" class="bg-gray-700 border border-gray-600 rounded p-1 text-sm">
-                                    <template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)">
-                                        <option :value="y" x-text="y + ' 年'"></option>
-                                    </template>
-                                </select>
-                                <select x-model.number="calendar.month" class="bg-gray-700 border border-gray-600 rounded p-1 text-sm">
-                                    <template x-for="(m, i) in ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']">
-                                        <option :value="i" x-text="m"></option>
-                                    </template>
-                                </select>
-                                <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth()" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200 bg-blue-600 text-white">
-                                    回到本月
-                                </button>
-                                <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="calendar-grid border-t border-l border-gray-700">
-                            <template x-for="day in ['日', '一', '二', '三', '四', '五', '六']">
-                                <div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div>
-                            </template>
-                            <template x-for="day in calendar.days" :key="day.date">
-                                <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}" @click="day.tradeCount > 0 ? showTradesForDate(day.date) : ''">
-                                    <span class="text-sm" :class="{'text-gray-500': !day.isCurrentMonth, 'font-bold text-blue-400': day.isToday}" x-text="day.dayOfMonth"></span>
-                                    <div x-show="day.tradeCount > 0" class="day-pl mt-2 p-2 rounded-md text-xs space-y-1 flex-grow flex flex-col justify-center" :class="{ 'profit': day.pl > 0, 'loss': day.pl < 0, 'breakeven': day.pl === 0 }">
-                                        <p class="font-bold text-lg" :class="{ 'text-green-400': day.pl > 0, 'text-red-400': day.pl < 0, 'text-gray-300': day.pl === 0 }" x-text="formatCurrency(day.pl)"></p>
-                                        <p class="text-gray-400 text-[10px]" x-text="`${day.tradeCount} 筆交易`"></p>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
-                        <div class="h-full flex flex-col">
-                            <button @click="getAiDashboardSummary()" :disabled="isLoading" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">產生總結</button>
-                            <div x-ref="aiSummaryContainer" class="mt-4 flex-grow h-80 overflow-y-auto space-y-4 p-4 bg-gray-700/50 rounded-lg flex flex-col">
-                                <template x-for="(message, index) in aiChatHistory" :key="index">
-                                    <div class="ai-chat-bubble" :class="message.role === 'user' ? 'ai-chat-user' : 'ai-chat-ai'">
-                                        <div x-html="message.content"></div>
-                                    </div>
-                                </template>
-                                <div x-show="isLoading && aiQuery === ''" class="text-center py-4">
-                                    <p class="text-sm text-gray-400">AI 總結中...</p>
-                                </div>
-                            </div>
-                            <div class="mt-6">
-                                <form @submit.prevent="askAi" class="flex gap-4">
-                                    <input type="text" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
-                                    <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div x-show="activeTab === 'journal'" x-cloak>
-            <!-- 新增：交易日誌頂部即時計算框架 -->
-            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
-                <h3 class="text-lg font-semibold text-blue-300 mb-3">快速注碼計算</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="mt-6 space-y-4">
                     <div>
-                        <label class="text-xs text-gray-400">戶口本金 (USD)</label>
-                        <p class="text-lg font-bold" x-text="formatCurrency(settings.usdPrincipal, 'USD')"></p>
+                        <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
+                        <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
                     </div>
                     <div>
-                        <label for="quickRiskPercent" class="text-xs text-gray-400">風險倉位 (R%)</label>
-                        <input type="number" id="quickRiskPercent" x-model.number="quickSizer.riskPercent" class="w-full bg-gray-700 rounded p-2 mt-1">
+                        <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
+                        <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-400">單次交易風險 (1R)</label>
-                        <p class="text-lg font-bold text-yellow-400" x-text="`$${quickSizer.riskAmount.toFixed(2)}`"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交易日曆 + AI 對話 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
+                    <div class="flex items-center gap-2">
+                        <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></button>
+                        <select x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1"><template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)"><option :value="y" x-text="y + '年'"></option></template></select>
+                        <select x-model.number="calendar.month" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1"><template x-for="(m, i) in ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']"><option :value="i" x-text="m"></option></template></select>
+                        <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white">回到本月</button>
+                        <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg></button>
                     </div>
-                    <button @click="applyQuickSizer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-3 rounded-lg">套用至表單</button>
+                </div>
+                <div class="calendar-grid border-t border-l border-gray-700">
+                    <template x-for="day in ['日','一','二','三','四','五','六']"><div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div></template>
+                    <template x-for="(day, index) in calendar.days" :key="day.date || index"><div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tr %)</h3>
+                <p class="mt-2 text-2xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
+                <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
+                <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
+                <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)} : 1`"></p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center col-span-2 md:col-span-1 lg:col-span-1">
+                <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
+                <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
+            </div>
+        </div>
+
+        <!-- 交易者評分 / 資金曲線 / 帳戶狀況 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="radar-chart-container">
+                        <svg viewBox="0 0 200 200" class="radar-chart-svg">
+                            <polygon x-for="i in 5" :key="i" class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
+                            <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+                            <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
+                            <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <h3 class="text-sm font-medium text-gray-400">你的綜合分數</h3>
+                    <p class="text-4xl font-bold text-indigo-400 mt-1" x-text="traderScore.score.toFixed(2)"></p>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
+                        <div class="bg-indigo-500 h-2.5 rounded-full" :style="`width: ${traderScore.score}%`"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯主交易' : '新增主交易 (開倉)'"></h2>
-                    <form @submit.prevent="saveTrade" class="space-y-4">
-                        <div><label class="block text-sm">開倉日期</label><input type="date" x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div><label class="block text-sm">代號</label><input type="text" x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div><label class="block text-sm">方向</label><select x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2 mt-1"><option>Long</option><option>Short</option></select></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm">風險倉位 (R%)</label>
-                                <input type="number" step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-full bg-gray-700 rounded p-2 mt-1">
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+                <div class="h-80">
+                    <canvas id="dashboardPlChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
+                    <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
+                    <div class="input-group">
+                        <span class="text-lg font-bold text-blue-400">$</span>
+                        <input type="number" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
+                    </div>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
+                        <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
+                        <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交易日曆 & AI 對話 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
+                    <div class="flex items-center gap-2">
+                        <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></button>
+                        <select x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm"><template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)"><option :value="y" x-text="y + '年'"></option></template></select>
+                        <select x-model.number="calendar.month" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm"><template x-for="(m, i) in ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']"><option :value="i" x-text="m"></option></template></select>
+                        <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white">回到本月</button>
+                        <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg></button>
+                    </div>
+                </div>
+                <div class="calendar-grid border-t border-l border-gray-700">
+                    <template x-for="day in ['日','一','二','三','四','五','六']"><div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div></template>
+                    <template x-for="(day, idx) in calendar.days" :key="day.date || idx">
+                        <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}" @click="day.tradeCount > 0 ? showTradesForDate(day.date) : ''">
+                            <span class="text-sm" :class="{'text-gray-500': !day.isCurrentMonth, 'font-bold text-blue-400': day.isToday}" x-text="day.dayOfMonth"></span>
+                            <div x-show="day.tradeCount > 0" class="day-pl mt-2 p-2 rounded-md text-xs space-y-1 flex-grow flex flex-col justify-center" :class="{ 'profit': day.pl > 0, 'loss': day.pl < 0, 'breakeven': day.pl === 0 }">
+                                <p class="font-bold text-lg" :class="{ 'text-green-400': day.pl > 0, 'text-red-400': day.pl < 0, 'text-gray-300': day.pl === 0 }" x-text="formatCurrency(day.pl)"></p>
+                                <p class="text-gray-400 text-[10px]" x-text="`${day.tradeCount} 筆交易`"></p>
                             </div>
-                            <div>
-                                <label class="block text-sm">初始風險金額 (1R)</label>
-                                <input type="number" step="any" x-model.number="journalForm.riskAmount" placeholder="350" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
+                <div class="h-full flex flex-col">
+                    <button @click="getAiDashboardSummary()" :disabled="isLoading" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">產生總結</button>
+                    <div x-ref="aiSummaryContainer" class="mt-4 flex-grow h-80 overflow-y-auto space-y-4 p-4 bg-gray-700/50 rounded-lg flex flex-col">
+                        <template x-for="(message, index) in aiChatHistory" :key="index">
+                            <div class="ai-chat-bubble" :class="message.role === 'user' ? 'ai-chat-user' : 'ai-chat-ai'">
+                                <div x-html="message.content"></div>
                             </div>
+                        </template>
+                        <div x-show="isLoading && aiQuery === ''" class="text-center py-4"><p class="text-sm text-gray-400">AI 總結中...</p></div>
+                    </div>
+                    <div class="mt-6">
+                        <form @submit.prevent="askAi" class="flex gap-4">
+                            <input type="text" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
+                            <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ===== 儀表板專屬結束 ===== -->
+<!-- ===== 交易日誌開始 ===== -->
+<div x-show="activeTab === 'journal'" x-cloak>
+    <!-- 頂部快算框架 -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
+        <h3 class="text-lg font-semibold text-blue-300 mb-3">快速注碼計算</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="text-xs text-gray-400">戶口本金 (USD)</label>
+                <p class="text-lg font-bold" x-text="formatCurrency(settings.usdPrincipal, 'USD')"></p>
+            </div>
+            <div>
+                <label for="quickRiskPercent" class="text-xs text-gray-400">風險倉位 (R%)</label>
+                <input type="number" id="quickRiskPercent" x-model.number="quickSizer.riskPercent" class="w-full bg-gray-700 rounded p-2 mt-1">
+            </div>
+            <div>
+                <label class="text-xs text-gray-400">單次交易風險 (1R)</label>
+                <p class="text-lg font-bold text-yellow-400" x-text="`$${quickSizer.riskAmount.toFixed(2)}`"></p>
+            </div>
+            <button @click="applyQuickSizer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-3 rounded-lg">套用至表單</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 左：新增/編輯主交易 -->
+        <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
+            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯主交易' : '新增主交易 (開倉)'"></h2>
+            <form @submit.prevent="saveTrade" class="space-y-4">
+                <div><label class="block text-sm">開倉日期</label><input type="date" x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div><label class="block text-sm">代號</label><input type="text" x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div><label class="block text-sm">方向</label><select x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2 mt-1"><option>Long</option><option>Short</option></select></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm">風險倉位 (R%)</label><input type="number" step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                    <div><label class="block text-sm">初始風險金額 (1R)</label><input type="number" step="any" x-model.number="journalForm.riskAmount" placeholder="350" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                </div>
+                <div><label class="block text-sm">交易策略 / Setup</label><input type="text" x-model="journalForm.setup" placeholder="趨勢突破, VCP..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div class="p-3 bg-gray-900/50 rounded-lg space-y-3">
+                    <h4 class="text-sm font-semibold text-gray-300">深度複盤 (選填)</h4>
+                    <div><label class="block text-xs text-gray-400">交易評分 (A, B, C...)</label><input type="text" x-model="journalForm.grade" placeholder="A+" class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
+                    <div><label class="block text-xs text-gray-400">錯誤標籤 (Tags)</label><input type="text" x-model="journalForm.tags" placeholder="過早止盈, 紀律問題..." class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
+                    <div><label class="block text-xs text-gray-400">當時市場狀況</label><input type="text" x-model="journalForm.marketCondition" placeholder="強勢上漲, 區間震盪..." class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
+                </div>
+                <div><label class="block text-sm">進場理由</label><textarea x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄進場的技術或基本面原因..."></textarea></div>
+                <div>
+                    <label class="block text-sm">股價圖片</label>
+                    <input type="file" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                    <template x-if="journalForm.chartImage"><div class="relative mt-2"><img :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="journalForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新主交易' : '儲存新主交易'"></button>
+                    <button type="button" @click="resetForm" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 右：主交易列表 & 子交易 -->
+        <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">主交易列表</h2>
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4 py-3">開倉日</th><th class="px-4 py-3">代號</th><th class="px-4 py-3">狀態</th><th class="px-4 py-3">現有R倍數</th><th class="px-4 py-3">操作</th></tr></thead>
+                    <tbody>
+                        <template x-for="trade in trades" :key="trade.id">
+                            <tr @click="selectTrade(trade)" class="border-b border-gray-700 hover:bg-gray-700/50 cursor-pointer" :class="{'bg-blue-900/50': selectedTradeId === trade.id}">
+                                <td class="px-4 py-3" x-text="trade.entryDate"></td>
+                                <td class="px-4 py-3" x-text="trade.ticker"></td>
+                                <td class="px-4 py-3"><span x-text="getTradeDetails(trade).status" :class="getTradeDetails(trade).status === 'Open' ? 'text-yellow-400' : 'text-gray-400'"></span></td>
+                                <td class="px-4 py-3 font-mono" x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`" :class="getTradeDetails(trade).rMultiple >= 0 ? 'text-green-400' : 'text-red-400'"></td>
+                                <td class="px-4 py-3 flex gap-2"><button @click.stop="editTrade(trade)" class="text-blue-400 hover:text-blue-300">編輯</button><button @click.stop="deleteTrade(trade.id)" class="text-red-400 hover:text-red-300">刪除</button></td>
+                            </tr>
+                        </template>
+                        <tr x-show="trades.length === 0"><td colspan="5" class="text-center py-8 text-gray-500">暫無交易記錄</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 子交易區 -->
+            <div x-show="selectedTradeId" x-cloak>
+                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex justify-between">
+                    <span>子交易記錄 (<span x-text="selectedTrade ? selectedTrade.ticker : ''"></span>)</span>
+                    <button @click="showTxnForm = !showTxnForm" class="text-sm bg-green-600 hover:bg-green-500 px-3 py-1 rounded-lg" x-text="showTxnForm ? '關閉表單' : '新增記錄'"></button>
+                </h2>
+
+                <div x-show="showTxnForm" class="bg-gray-700/50 p-4 rounded-lg mb-4">
+                    <h3 class="font-semibold mb-2" x-text="editingTxnId ? '編輯子交易' : '新增子交易'"></h3>
+                    <form @submit.prevent="saveSubTransaction" class="space-y-3">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div><label class="text-xs">動作</label><select x-model="txnForm.type" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"><option>Buy</option><option>Sell</option></select></div>
+                            <div><label class="text-xs">日期</label><input type="date" x-model="txnForm.date" required class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
+                            <div><label class="text-xs">股數</label><input type="number" step="any" x-model.number="txnForm.quantity" required placeholder="100" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
                         </div>
-                        <div><label class="block text-sm">交易策略 / Setup</label><input type="text" x-model="journalForm.setup" placeholder="趨勢突破, VCP..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div class="p-3 bg-gray-900/50 rounded-lg space-y-3">
-                            <h4 class="text-sm font-semibold text-gray-300">深度複盤 (選填)</h4>
-                            <div><label class="block text-xs text-gray-400">交易評分 (A, B, C...)</label><input type="text" x-model="journalForm.grade" placeholder="A+" class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
-                            <div><label class="block text-xs text-gray-400">錯誤標籤 (Tags)</label><input type="text" x-model="journalForm.tags" placeholder="過早止盈, 紀律問題..." class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
-                            <div><label class="block text-xs text-gray-400">當時市場狀況</label><input type="text" x-model="journalForm.marketCondition" placeholder="強勢上漲, 區間震盪..." class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
-                        </div>
-                        <div><label class="block text-sm">進場理由</label><textarea x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄進場的技術或基本面原因..."></textarea></div>
-                        <div>
-                            <label class="block text-sm">股價圖片</label>
-                            <input type="file" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                            <template x-if="journalForm.chartImage"><div class="relative mt-2"><img :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="journalForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
-                        </div>
-                        <div class="flex justify-between items-center pt-2">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新主交易' : '儲存新主交易'"></button>
-                            <button type="button" @click="resetForm" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                        <div><label class="text-xs">價格</label><input type="number" step="any" x-model.number="txnForm.price" required placeholder="150.25" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
+                        <div><label class="text-xs">備註</label><input type="text" x-model="txnForm.notes" placeholder="跌穿5天線, 賣出1/3" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button type="button" @click="resetTxnForm" class="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded-lg">取消</button>
+                            <button type="submit" class="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg" x-text="editingTxnId ? '更新記錄' : '儲存記錄'"></button>
                         </div>
                     </form>
                 </div>
 
-                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">主交易列表</h2>
-                        <table class="w-full text-sm text-left whitespace-nowrap">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4 py-3">開倉日</th><th class="px-4 py-3">代號</th><th class="px-4 py-3">狀態</th><th class="px-4 py-3">現有R倍數</th><th class="px-4 py-3">操作</th></tr></thead>
-                            <tbody>
-                                <template x-for="trade in trades" :key="trade.id">
-                                    <tr @click="selectTrade(trade)" class="border-b border-gray-700 hover:bg-gray-700/50 cursor-pointer" :class="{'bg-blue-900/50': selectedTradeId === trade.id}">
-                                        <td class="px-4 py-3" x-text="trade.entryDate"></td>
-                                        <td class="px-4 py-3" x-text="trade.ticker"></td>
-                                        <td class="px-4 py-3"><span x-text="getTradeDetails(trade).status" :class="getTradeDetails(trade).status === 'Open' ? 'text-yellow-400' : 'text-gray-400'"></span></td>
-                                        <td class="px-4 py-3 font-mono" x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`" :class="getTradeDetails(trade).rMultiple >= 0 ? 'text-green-400' : 'text-red-400'"></td>
-                                        <td class="px-4 py-3 flex gap-2"><button @click.stop="editTrade(trade)" class="text-blue-400 hover:text-blue-300">編輯</button><button @click.stop="deleteTrade(trade.id)" class="text-red-400 hover:text-red-300">刪除</button></td>
-                                    </tr>
-                                </template>
-                                <tr x-show="trades.length === 0"><td colspan="5" class="text-center py-8 text-gray-500">暫無交易記錄</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div x-show="selectedTradeId" x-cloak>
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex justify-between">
-                            <span>子交易記錄 (<span x-text="selectedTrade ? selectedTrade.ticker : ''"></span>)</span>
-                            <button @click="showTxnForm = !showTxnForm" class="text-sm bg-green-600 hover:bg-green-500 px-3 py-1 rounded-lg" x-text="showTxnForm ? '關閉表單' : '新增記錄'"></button>
-                        </h2>
-
-                        <div x-show="showTxnForm" class="bg-gray-700/50 p-4 rounded-lg mb-4">
-                            <h3 class="font-semibold mb-2" x-text="editingTxnId ? '編輯子交易' : '新增子交易'"></h3>
-                            <form @submit.prevent="saveSubTransaction" class="space-y-3">
-                                <div class="grid grid-cols-3 gap-3">
-                                    <div><label class="text-xs">動作</label><select x-model="txnForm.type" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"><option>Buy</option><option>Sell</option></select></div>
-                                    <div><label class="text-xs">日期</label><input type="date" x-model="txnForm.date" required class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
-                                    <div><label class="text-xs">股數</label><input type="number" step="any" x-model.number="txnForm.quantity" required placeholder="100" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
-                                </div>
-                                <div><label class="text-xs">價格</label><input type="number" step="any" x-model.number="txnForm.price" required placeholder="150.25" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
-                                <div><label class="text-xs">備註</label><input type="text" x-model="txnForm.notes" placeholder="跌穿5天線, 賣出1/3" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
-                                <div class="flex justify-end gap-3 pt-2">
-                                    <button type="button" @click="resetTxnForm" class="text-xs bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded-lg">取消</button>
-                                    <button type="submit" class="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg" x-text="editingTxnId ? '更新記錄' : '儲存記錄'"></button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <table class="w-full text-sm text-left whitespace-nowrap">
-                            <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4 py-2">日期</th><th class="px-4 py-2">動作</th><th class="px-4 py-2">股數</th><th class="px-4 py-2">價格</th><th class="px-4 py-2">備註</th><th class="px-4 py-2">操作</th></tr></thead>
-                            <tbody>
-                                <template x-for="txn in (selectedTrade ? selectedTrade.transactions.sort((a, b) => new Date(a.date) - new Date(b.date)) : [])" :key="txn.id">
-                                    <tr class="border-b border-gray-700">
-                                        <td class="px-4 py-2" x-text="txn.date"></td>
-                                        <td class="px-4 py-2" x-text="txn.type" :class="txn.type === 'Buy' ? 'text-green-400' : 'text-red-400'"></td>
-                                        <td class="px-4 py-2" x-text="txn.quantity"></td>
-                                        <td class="px-4 py-2" x-text="txn.price"></td>
-                                        <td class="px-4 py-2 text-gray-400" x-text="txn.notes"></td>
-                                        <td class="px-4 py-2 flex gap-2">
-                                            <button @click="editSubTransaction(txn)" class="text-blue-400 hover:text-blue-300 text-xs">編輯</button>
-                                            <button @click="deleteSubTransaction(txn.id)" class="text-red-400 hover:text-red-300 text-xs">刪除</button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4 py-2">日期</th><th class="px-4 py-2">動作</th><th class="px-4 py-2">股數</th><th class="px-4 py-2">價格</th><th class="px-4 py-2">備註</th><th class="px-4 py-2">操作</th></tr></thead>
+                    <tbody>
+                        <template x-for="txn in (selectedTrade ? selectedTrade.transactions.sort((a, b) => new Date(a.date) - new Date(b.date)) : [])" :key="txn.id">
+                            <tr class="border-b border-gray-700">
+                                <td class="px-4 py-2" x-text="txn.date"></td>
+                                <td class="px-4 py-2" x-text="txn.type" :class="txn.type === 'Buy' ? 'text-green-400' : 'text-red-400'"></td>
+                                <td class="px-4 py-2" x-text="txn.quantity"></td>
+                                <td class="px-4 py-2" x-text="txn.price"></td>
+                                <td class="px-4 py-2 text-gray-400" x-text="txn.notes"></td>
+                                <td class="px-4 py-2 flex gap-2">
+                                    <button @click="editSubTransaction(txn)" class="text-blue-400 hover:text-blue-300 text-xs">編輯</button>
+                                    <button @click="deleteSubTransaction(txn.id)" class="text-red-400 hover:text-red-300 text-xs">刪除</button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
-            <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
-                <div class="tradingview-widget-container" style="height:100%;width:100%">
-                    <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-                    { "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false, "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true, "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1", "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "rgba(17, 24, 39, 1)", "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true, "range": "YTD", "studies": [], "autosize": true }
-                    </script>
-                </div>
-            </div>
-            <div>
-                <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場熱圖 (Market Heatmap)</h2>
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
-                    { "dataSource": "SPX500", "blockSize": "market_cap_basic", "blockColor": "change", "grouping": "sector", "locale": "zh_TW", "symbolUrl": "", "colorTheme": "dark", "exchanges": [], "hasTopBar": true, "isDataSetEnabled": true, "isZoomEnabled": true, "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 700 }
-                    </script>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
-                    <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                    { "displayMode": "regular", "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": false, "locale": "zh_TW", "width": "100%", "height": "100%" }
-                    </script></div>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場新聞 (Market News)</h2>
-                    <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                    { "feedMode": "market", "market": "us", "isTransparent": false, "displayMode": "regular", "width": "100%", "height": "100%", "colorTheme": "dark", "locale": "zh_TW" }
-                    </script></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 其他頁面與模態框省略，與原檔一致 -->
-
-        <footer class="text-center mt-12 text-gray-500 text-xs space-y-1">
-            <p>此工具僅供參考，不構成任何投資建議。AI 分析由大型語言模型生成，可能存在錯誤，請謹慎管理您的風險。</p>
-            <p>版本: <span x-text="appVersion"></span> | 最後更新: <span x-text="lastUpdated"></span></p>
-        </footer>
-
-        <!-- 模態框與其餘互動元件省略，與原檔一致 -->
-
     </div>
+</div>
+<!-- ===== 交易日誌結束 ===== -->
+<!-- ===== 模型庫開始 ===== -->
+<div x-show="activeTab === 'modelBook'" x-cloak>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
+            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingModelBookId ? '編輯模型' : '新增模型'"></h2>
+            <form @submit.prevent="saveModelBook" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm">名稱</label><input type="text" x-model="modelBookForm.name" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                    <div><label class="block text-sm">代號</label><input type="text" x-model="modelBookForm.ticker" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm">市場</label><input type="text" x-model="modelBookForm.market" placeholder="US, HK" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                    <div><label class="block text-sm">年份</label><input type="number" x-model.number="modelBookForm.year" placeholder="2023" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                </div>
+                <div><label class="block text-sm">行業</label><input type="text" x-model="modelBookForm.sector" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div><label class="block text-sm">型態</label><input type="text" x-model="modelBookForm.pattern" placeholder="Cup with Handle, VCP..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div><label class="block text-sm">突破後表現</label><input type="text" x-model="modelBookForm.performance" placeholder="+150% in 3 months" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                <div><label class="block text-sm">關鍵買入點</label><textarea x-model="modelBookForm.pivot" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                <div><label class="block text-sm">心得</label><textarea x-model="modelBookForm.takeaways" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                <div>
+                    <label class="block text-sm">圖表快照</label>
+                    <input type="file" @change="handleImageUpload($event, modelBookForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                    <template x-if="modelBookForm.chartImage">
+                        <div class="relative mt-2"><img :src="modelBookForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="modelBookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div>
+                    </template>
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingModelBookId ? '更新' : '儲存'"></button>
+                    <button type="button" @click="resetModelBookForm" x-show="editingModelBookId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                </div>
+            </form>
+        </div>
+        <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                <h2 class="text-xl font-semibold">模型庫</h2>
+                <button @click="getAiModelBookAnalysis()" :disabled="isLoading || modelBooks.length < 2" class="w-full mt-2 sm:mt-0 sm:w-auto bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">✨ AI 總結共通特徵</button>
+            </div>
+            <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-teal-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+            <div x-html="aiModelBookAnalysis" x-show="aiModelBookAnalysis" class="prose prose-sm prose-invert max-w-none text-gray-300 mb-4 p-4 bg-gray-700/50 rounded-lg"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
+                <template x-for="model in modelBooks" :key="model.id">
+                    <div class="bg-gray-700 rounded-xl overflow-hidden border border-gray-600">
+                        <img :src="model.chartImage || 'https://placehold.co/600x400/1f2937/9ca3af?text=No+Image'" class="w-full h-64 object-cover cursor-pointer" @click="openChartModal(model.chartImage || '')">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg" x-text="`${model.name} (${model.ticker})`"></h3>
+                            <span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300" x-text="model.pattern"></span>
+                            <p class="text-sm text-gray-300 mt-2"><strong class="text-gray-400">表現:</strong> <span x-text="model.performance"></span></p>
+                            <p class="text-sm text-gray-300 mt-2 h-12 overflow-y-auto"><strong class="text-gray-400">心得:</strong> <span x-text="model.takeaways"></span></p>
+                            <div class="mt-4 flex justify-end gap-2"><button @click="editModelBook(model)" class="text-blue-400 hover:text-blue-300">編輯</button><button @click="deleteModelBook(model.id)" class="text-red-400 hover:text-red-300">刪除</button></div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="modelBooks.length === 0" class="md:col-span-2 text-center py-16 text-gray-500"><p>您的模型庫是空的，請在左方新增您的第一個成功案例模型。</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 績效回顧開始 ===== -->
+<div x-show="activeTab === 'performance'" x-cloak>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率 (Win Rate)</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧 (Total P&L)</h3><p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3><p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"><h2 class="text-xl font-semibold mb-4">資金曲線圖</h2><canvas id="plChart"></canvas></div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+            <h2 class="text-xl font-semibold mb-4">最大回撤 (Max Drawdown)</h2>
+            <button @click="getAiDrawdownAnalysis()" :disabled="isLoading || trades.length < 2" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">由 AI 分析</button>
+            <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-6 w-6 text-indigo-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+            <div x-html="maxDrawdownAnalysis" class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
+        </div>
+    </div>
+    <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"><h2 class="text-xl font-semibold">✨ AI 情緒模式分析</h2><button @click="getAiEmotionAnalysis()" :disabled="isLoading || trades.length < 1" class="w-full mt-2 sm:mt-0 sm:w-auto bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">分析情緒與績效關聯</button></div>
+        <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+        <div x-html="aiEmotionAnalysisResult" class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
+    </div>
+    <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"><h2 class="text-xl font-semibold">月度 / 季度回顧</h2><button @click="getAiPerformanceReview()" :disabled="isLoading || trades.length < 1" class="w-full mt-2 sm:mt-0 sm:w-auto bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">✨ 產生 AI 回顧報告</button></div>
+        <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-green-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+        <div class="space-y-4">
+            <div><label class="block text-sm font-medium text-gray-300">每月表現</label><textarea x-model="reviewNotes.monthly" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+            <div><label class="block text-sm font-medium text-gray-300">需要改善的地方</label><textarea x-model="reviewNotes.improve" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+            <div><label class="block text-sm font-medium text-gray-300">下月目標</label><textarea x-model="reviewNotes.goals" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 市場圖表開始 ===== -->
+<div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
+    <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+            { "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false, "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true, "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1", "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "rgba(17, 24, 39, 1)", "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true, "range": "YTD", "studies": [], "autosize": true }
+            </script>
+        </div>
+    </div>
+    <div>
+        <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場熱圖 (Market Heatmap)</h2>
+        <div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js" async>
+        { "dataSource": "SPX500", "blockSize": "market_cap_basic", "blockColor": "change", "grouping": "sector", "locale": "zh_TW", "symbolUrl": "", "colorTheme": "dark", "exchanges": [], "hasTopBar": true, "isDataSetEnabled": true, "isZoomEnabled": true, "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 700 }
+        </script></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
+            <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            { "displayMode": "regular", "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": false, "locale": "zh_TW", "width": "100%", "height": "100%" }
+            </script></div>
+        </div>
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場新聞 (Market News)</h2>
+            <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            { "feedMode": "market", "market": "us", "isTransparent": false, "displayMode": "regular", "width": "100%", "height": "100%", "colorTheme": "dark", "locale": "zh_TW" }
+            </script></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 設定頁開始 ===== -->
+<div x-show="activeTab === 'settings'" x-cloak>
+    <div class="max-w-2xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+        <h2 class="text-2xl font-semibold mb-4 text-blue-300 border-b border-gray-600 pb-2">常規設定</h2>
+        <div class="space-y-6">
+            <div>
+                <label for="usdPrincipalSettings" class="block text-sm font-medium text-gray-300">股票戶口本金 (USD)</label>
+                <div class="input-group mt-1"><span>$</span><input type="number" id="usdPrincipalSettings" x-model.number="settings.usdPrincipal" class="text-lg"></div>
+            </div>
+            <h3 class="text-xl font-semibold text-blue-300 border-b border-gray-600 pb-2 pt-4">AI 分析設定</h3>
+            <div>
+                <label for="aiProvider" class="block text-sm font-medium text-gray-300">AI 服務供應商</label>
+                <select id="aiProvider" x-model="settings.aiProvider" @change="saveSettings()" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="gemini">預設 (內建 AI)</option>
+                    <option value="custom">自訂 API Key (OpenAI 相容)</option>
+                </select>
+                <p class="mt-2 text-xs text-gray-400">選擇 "預設" 將使用內建的 Gemini 連接。選擇 "自訂" 以使用您自己的 API Key。</p>
+            </div>
+            <div x-show="settings.aiProvider === 'custom'" class="space-y-4 p-4 bg-gray-700/50 rounded-lg">
+                <div>
+                    <label for="customApiUrl" class="block text-sm font-medium text-gray-300">API 端點 (Endpoint URL)</label>
+                    <input type="text" id="customApiUrl" x-model="settings.customApiUrl" placeholder="https://api.openai.com/v1/chat/completions" class="w-full bg-gray-900 rounded p-2 mt-1">
+                </div>
+                <div>
+                    <label for="customApiKey" class="block text-sm font-medium text-gray-300">您的 API Key</label>
+                    <input type="password" id="customApiKey" x-model="settings.customApiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full bg-gray-900 rounded p-2 mt-1">
+                </div>
+            </div>
+            <div class="flex justify-end pt-4">
+                <button @click="saveSettings(true)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">儲存設定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 其餘頁面（反思、市場日誌、買入計劃、計算機）請沿用原代碼結構 ===== -->
+<div x-show="activeTab === 'reflection'" x-cloak>
+    <!-- 自我反思內容（原結構） -->
+</div>
+<div x-show="activeTab === 'marketJournal'" x-cloak>
+    <!-- 市場日誌內容（原結構） -->
+</div>
+<div x-show="activeTab === 'buyPlan'" x-cloak>
+    <!-- 買入計劃內容（原結構） -->
+</div>
+<div x-show="activeTab === 'calculator'" x-cloak>
+    <!-- 注碼計算機內容（原結構） -->
+</div>
+<footer class="text-center mt-12 text-gray-500 text-xs space-y-1">
+    <p>此工具僅供參考，不構成任何投資建議。AI 分析由大型語言模型生成，可能存在錯誤，請謹慎管理您的風險。</p>
+    <p>版本: <span x-text="appVersion"></span> | 最後更新: <span x-text="lastUpdated"></span></p>
+</footer>
+
+<!-- ===== 各種 Modal 開始 ===== -->
+<div x-show="isModalOpen" x-cloak class="modal-backdrop" @click="closeChartModal">
+    <div class="modal-content" @click.stop><img :src="modalImageUrl" class="max-w-full max-h-full"></div>
+</div>
+
+<div x-show="showDateTradesModal" x-cloak class="modal-backdrop" @click="showDateTradesModal = false">
+    <div @click.stop class="modal-content w-full max-w-2xl bg-gray-800 border border-gray-600">
+        <h2 class="text-xl font-bold text-blue-300 mb-4" x-text="`日期 ${selectedDateForTrades} 的交易`"></h2>
+        <div class="space-y-3 max-h-[60vh] overflow-y-auto">
+            <template x-if="tradesForSelectedDate.length > 0">
+                <template x-for="trade in tradesForSelectedDate" :key="trade.id">
+                    <div class="p-3 bg-gray-700/50 rounded-lg">
+                        <p class="font-bold" x-text="trade.ticker"></p>
+                        <p class="text-sm text-gray-400" x-text="`策略: ${trade.setup}`"></p>
+                        <p class="text-sm font-mono" :class="getTradeDetails(trade).rMultiple >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`結果: ${getTradeDetails(trade).rMultiple.toFixed(2)} R`"></p>
+                    </div>
+                </template>
+            </template>
+            <template x-if="tradesForSelectedDate.length === 0">
+                <p class="text-gray-500">該日期沒有相關交易記錄。</p>
+            </template>
+        </div>
+        <div class="mt-6 text-right">
+            <button @click="showDateTradesModal = false" class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-lg">關閉</button>
+        </div>
+    </div>
+</div>
+
+<div x-show="showChecklistModal" x-cloak class="modal-backdrop">
+    <div @click.stop class="modal-content w-full max-w-lg bg-gray-800 border border-gray-600">
+        <h2 class="text-xl font-bold text-yellow-300 mb-4">交易前檢查清單</h2>
+        <div class="space-y-3 mb-6">
+            <template x-for="(item, index) in checklistItems" :key="index">
+                <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <input type500", "blockSize": "market_cap_basic", "blockColor": "change", "grouping": "sector", "locale": "zh_TW", "symbolUrl": "", "colorTheme": "dark", "exchanges": [], "hasTopBar": true, "isDataSetEnabled": true, "isZoomEnabled": true, "hasSymbolTooltip": true, "isMonoSize": false, "width": "100%", "height": 700 }
+        </script></div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">頭條新聞 (Top Stories)</h2>
+            <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            { "displayMode": "regular", "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": false, "locale": "zh_TW", "width": "100%", "height": "100%" }
+            </script></div>
+        </div>
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場新聞 (Market News)</h2>
+            <div class="tradingview-widget-container" style="height: 700px;"><div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            { "feedMode": "market", "market": "us", "isTransparent": false, "displayMode": "regular", "width": "100%", "height": "100%", "colorTheme": "dark", "locale": "zh_TW" }
+            </script></div>
+        </div>
+    </div>
+</div>
+<!-- ===== 交易前檢查清單 Modal ===== -->
+<div x-show="showChecklistModal" x-cloak class="modal-backdrop">
+    <div @click.stop class="modal-content w-full max-w-lg bg-gray-800 border border-gray-600">
+        <h2 class="text-xl font-bold text-yellow-300 mb-4">交易前檢查清單</h2>
+        <div class="space-y-3 mb-6">
+            <template x-for="(item, index) in checklistItems" :key="index">
+                <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <input type="checkbox" x-model="item.checked" class="h-5 w-5 rounded bg-gray-900 border-gray-600 text-blue-600 focus:ring-blue-500">
+                    <span class="ml-3 text-white" x-text="item.text"></span>
+                </label>
+            </template>
+        </div>
+        <div class="flex justify-end gap-4">
+            <button @click="showChecklistModal = false" class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-lg">取消</button>
+            <button @click="executeTradeFromPlan()" :disabled="!allChecklistItemsChecked" class="py-2 px-4 bg-blue-600 hover:bg-blue-500 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">確認開倉</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 頁尾 ===== -->
+<footer class="text-center mt-12 text-gray-500 text-xs space-y-1">
+    <p>此工具僅供參考，不構成任何投資建議。AI 分析由大型語言模型生成，可能存在錯誤，請謹慎管理您的風險。</p>
+    <p>版本: <span x-text="appVersion"></span> | 最後更新: <span x-text="lastUpdated"></span></p>
+</footer>
+
+<!-- ===== JavaScript 模組開始 ===== -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
 
-    function stdDev(arr) {
-        if (arr.length < 2) return 0;
-        const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-        const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
-        return Math.sqrt(variance);
-    }
+function stdDev(arr) {
+    if (arr.length < 2) return 0;
+    const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+    const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
+    return Math.sqrt(variance);
+}
 
-    function tradingApp() {
-        return {
-            isInitialized: false,
-            isLoggedIn: false,
-            activeTab: 'dashboard',
-            isLoading: false,
-            isUploadingImage: false,
-            isModalOpen: false,
-            modalImageUrl: '',
-            authView: 'login',
-            authForm: { email: '', password: '' },
-            authError: '',
-            appVersion: '6.2.2-fixed',
-            lastUpdated: '2025-10-27',
+function tradingApp() {
+    return {
+        // 系統狀態
+        isInitialized: false, isLoggedIn: false, activeTab: 'dashboard',
+        isLoading: false, isUploadingImage: false, isModalOpen: false, modalImageUrl: '',
+        authView: 'login', authForm: { email: '', password: '' }, authError: '',
+        appVersion: '6.2.3-fixed', lastUpdated: '2025-10-27',
 
-            db: null,
-            auth: null,
-            userId: null,
-            unsubscribers: [],
+        // Firebase
+        db: null, auth: null, userId: null, unsubscribers: [],
 
-            settings: { aiProvider: 'gemini', customApiKey: '', customApiUrl: '', usdPrincipal: 35000 },
+        // 設定
+        settings: { aiProvider: 'gemini', customApiKey: '', customApiUrl: '', usdPrincipal: 35000 },
 
-            trades: [],
-            marketJournals: [],
-            buyPlans: [],
-            modelBooks: [],
-            reflections: [],
+        // 資料陣列
+        trades: [], marketJournals: [], buyPlans: [], modelBooks: [], reflections: [],
 
-            selectedTradeId: null,
-            showTxnForm: false,
-            editingTxnId: null,
+        // 交易日誌狀態
+        selectedTradeId: null, showTxnForm: false, editingTxnId: null,
+        quickSizer: { riskPercent: 1.0, riskAmount: 0 },
+        txnForm: { type: 'Buy', date: new Date().toISOString().slice(0, 10), quantity: null, price: null, notes: '' },
 
-            quickSizer: { riskPercent: 1.0, riskAmount: 0 },
-txnForm: { type: 'Buy', date: new Date().toISOString().slice(0, 10), quantity: null, price: null, notes: '' },
-quickSizer: { riskPercent: 1.0, riskAmount: 0 },
+        // 日曆
+        calendar: { year: new Date().getFullYear(), month: new Date().getMonth(), days: [] },
+        showDateTradesModal: false, selectedDateForTrades: '', tradesForSelectedDate: [],
 
-            calendar: { year: new Date().getFullYear(), month: new Date().getMonth(), days: [] },
-            showDateTradesModal: false,
-            selectedDateForTrades: '',
-            tradesForSelectedDate: [],
+        // 表單
+        editingTradeId: null, journalForm: {},
+        editingMarketJournalId: null, marketJournalForm: {},
+        editingBuyPlanId: null, buyPlanForm: {},
+        editingModelBookId: null, modelBookForm: {},
+        editingReflectionId: null, reflectionForm: {},
 
-            editingTradeId: null,
-            journalForm: {},
-            txnForm: {},
+        // 搜尋
+        searchTerm: '', searchResults: [],
 
-            searchTerm: '',
-            searchResults: [],
+        // 計算機
+        stopLossPercent: 4.6, currentRiskPercent: 1, customRiskPercent: null,
 
-            stopLossPercent: 4.6,
-            currentRiskPercent: 1,
-            customRiskPercent: null,
+        // 圖表
+        plChart: null, dashboardPlChart: null,
 
-            plChart: null,
-            dashboardPlChart: null,
+        // AI
+        aiAnalysisResult: '', maxDrawdownAnalysis: '', aiEmotionAnalysisResult: '', aiModelBookAnalysis: '',
+        reviewNotes: { monthly: '', improve: '', goals: '' },
+        aiChatHistory: [], aiQuery: '',
 
-            aiAnalysisResult: '',
-            maxDrawdownAnalysis: '',
-            aiEmotionAnalysisResult: '',
-            aiModelBookAnalysis: '',
+        // 流程
+        showChecklistModal: false, currentPlanToExecute: null, checklistItems: [],
 
-            reviewNotes: { monthly: '', improve: '', goals: '' },
+        // 計算屬性
+        get selectedTrade() { return this.trades.find(t => t.id === this.selectedTradeId) || null; },
+        get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100); },
+        get positionSizeUsd() { if (!this.stopLossPercent) return 0; return this.rValueUsd / (this.stopLossPercent / 100); },
+        get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
-            aiChatHistory: [],
-            aiQuery: '',
+        get performance() {
+            const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed');
+            const totalTrades = closedTrades.length;
+            if (totalTrades === 0) return { winRate: 0, totalPl: 0, avgR: 0, totalTrades: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, avgWinLossRatio: 0, maxDrawdown: 0, rStdDev: 0, sharpeRatio: 0 };
+            const winningTrades = closedTrades.filter(t => t.totalPl > 0);
+            const losingTrades = closedTrades.filter(t => t.totalPl < 0);
+            const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
+            const totalR = closedTrades.reduce((sum, t) => sum + t.rMultiple, 0);
+            const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
+            const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.totalPl, 0));
+            const avgWin = winningTrades.length > 0 ? grossProfit / winningTrades.length : 0;
+            const avgLoss = losingTrades.length > 0 ? grossLoss / losingTrades.length : 0;
+            let peak = 0, maxDrawdown = 0, cumulativePl = 0;
+            const plHistory = closedTrades.sort((a,b) => new Date(a.parent.entryDate) - new Date(b.parent.entryDate)).map(t => t.totalPl);
+            plHistory.forEach(pl => { cumulativePl += pl; peak = Math.max(peak, cumulativePl); maxDrawdown = Math.max(maxDrawdown, peak - cumulativePl); });
+            const rValues = closedTrades.map(t => t.rMultiple);
+            const rStdDev = rValues.length > 1 ? stdDev(rValues) : 0;
+            const avgR = totalTrades > 0 ? totalR / totalTrades : 0;
+            const sharpeRatio = rStdDev > 0 ? avgR / rStdDev : 0;
+            return { winRate: (winningTrades.length / totalTrades) * 100, totalPl, avgR, totalTrades, profitFactor: grossLoss > 0 ? grossProfit / grossLoss : 0, avgWin, avgLoss, avgWinLossRatio: avgLoss > 0 ? avgWin / avgLoss : 0, maxDrawdown, rStdDev, sharpeRatio };
+        },
 
-            showChecklistModal: false,
-            currentPlanToExecute: null,
-            checklistItems: [],
+        get traderScore() {
+            const p = this.performance;
+            if (p.totalTrades < 5) {
+                const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
+                return { score: 0, metrics: {}, gridPoints: Array(5).fill(defaultPoints), axisPoints: [], labelPoints: [], dataPoints: defaultPoints };
+            }
+            const metrics = { winRate: Math.min(p.winRate * 1.5, 100), profitFactor: Math.min((p.profitFactor / 3) * 100, 100), avgR: Math.min((p.avgR / 0.8) * 100, 100), consistency: Math.max(100 - (p.rStdDev * 20), 0), recoveryFactor: Math.min((p.profitFactor / p.avgWinLossRatio) * 25, 100), maxDrawdown: Math.max(100 - ((p.maxDrawdown / this.settings.usdPrincipal) * 500), 0) };
+            const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15, recoveryFactor: 0.1, maxDrawdown: 0.15 };
+            let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
+            score = Math.max(0, Math.min(score, 100));
+            const center = 100, radius = 90;
+            const labels = ["勝率", "利潤因子", "平均R值", "一致性", "回報因子", "最大回撤"];
+            const angleSlice = (Math.PI * 2) / labels.length;
+            const toPoint = (value, i) => {
+                const r = radius * (value / 100);
+                const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
+                const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
+                return `${x},${y}`;
+            };
+            const gridPoints = Array.from({ length: 5 }, (_, i) => Array.from({ length: labels.length }, (_, j) => toPoint(100 * (i + 1) / 5, j)).join(' '));
+            const axisPoints = labels.map((_, i) => ({ x: center + radius * Math.cos(angleSlice * i - Math.PI / 2), y: center + radius * Math.sin(angleSlice * i - Math.PI / 2) }));
+            const labelPoints = labels.map((label, i) => ({ label, x: center + (radius + 15) * Math.cos(angleSlice * i - Math.PI / 2), y: center + (radius + 15) * Math.sin(angleSlice * i - Math.PI / 2) }));
+            const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
+            return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
+        },
 
-            showContextualPromptModal: false,
-            contextualPrompt: { tradeId: null, question: '', answer: '' },
-
-            get selectedTrade() {
-                return this.trades.find(t => t.id === this.selectedTradeId) || null;
-            },
-
-            get rValueUsd() {
-                return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100);
-            },
-
-            get positionSizeUsd() {
-                if (!this.stopLossPercent) return 0;
-                return this.rValueUsd / (this.stopLossPercent / 100);
-            },
-
-            get allChecklistItemsChecked() {
-                return this.checklistItems.every(item => item.checked);
-            },
-
-            get performance() {
-                const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed');
-                const totalTrades = closedTrades.length;
-                if (totalTrades === 0) return {
-                    winRate: 0, totalPl: 0, avgR: 0, totalTrades: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, avgWinLossRatio: 0, maxDrawdown: 0, rStdDev: 0, sharpeRatio: 0
-                };
-                const winningTrades = closedTrades.filter(t => t.totalPl > 0);
-                const losingTrades = closedTrades.filter(t => t.totalPl < 0);
-                const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
-                const totalR = closedTrades.reduce((sum, t) => sum + t.rMultiple, 0);
-                const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
-                const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.totalPl, 0));
-                const avgWin = winningTrades.length > 0 ? grossProfit / winningTrades.length : 0;
-                const avgLoss = losingTrades.length > 0 ? grossLoss / losingTrades.length : 0;
-                let peak = 0, maxDrawdown = 0, cumulativePl = 0;
-                const plHistory = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed').sort((a, b) => new Date(a.parent.entryDate) - new Date(b.parent.entryDate)).map(t => t.totalPl);
-                plHistory.forEach(pl => {
-                    cumulativePl += pl;
-                    peak = Math.max(peak, cumulativePl);
-                    maxDrawdown = Math.max(maxDrawdown, peak - cumulativePl);
-                });
-                const rValues = closedTrades.map(t => t.rMultiple);
-                const rStdDev = rValues.length > 1 ? stdDev(rValues) : 0;
-                const avgR = totalTrades > 0 ? totalR / totalTrades : 0;
-                const sharpeRatio = rStdDev > 0 ? avgR / rStdDev : 0;
-                return {
-                    winRate: (winningTrades.length / totalTrades) * 100,
-                    totalPl,
-                    avgR,
-                    totalTrades,
-                    profitFactor: grossLoss > 0 ? grossProfit / grossLoss : 0,
-                    avgWin,
-                    avgLoss,
-                    avgWinLossRatio: avgLoss > 0 ? avgWin / avgLoss : 0,
-                    maxDrawdown,
-                    rStdDev,
-                    sharpeRatio
-                };
-            },
-
-            get traderScore() {
-                const p = this.performance;
-                if (p.totalTrades < 5) {
-                    const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
-                    return {
-                        score: 0,
-                        metrics: {},
-                        gridPoints: Array(5).fill(defaultPoints),
-                        axisPoints: [],
-                        labelPoints: [],
-                        dataPoints: defaultPoints
-                    };
-                }
-                const metrics = {
-                    winRate: Math.min(p.winRate * 1.5, 100),
-                    profitFactor: Math.min((p.profitFactor / 3) * 100, 100),
-                    avgR: Math.min((p.avgR / 0.8) * 100, 100),
-                    consistency: Math.max(100 - (p.rStdDev * 20), 0),
-                    recoveryFactor: Math.min((p.profitFactor / p.avgWinLossRatio) * 25, 100),
-                    maxDrawdown: Math.max(100 - ((p.maxDrawdown / this.settings.usdPrincipal) * 500), 0)
-                };
-                const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15, recoveryFactor: 0.1, maxDrawdown: 0.15 };
-                let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
-                score = Math.max(0, Math.min(score, 100));
-                const center = 100, radius = 90;
-                const labels = ["勝率", "利潤因子", "平均R值", "一致性", "回報因子", "最大回撤"];
-                const angleSlice = (Math.PI * 2) / labels.length;
-                const toPoint = (value, i) => {
-                    const r = radius * (value / 100);
-                    const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
-                    const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
-                    return `${x},${y}`;
-                };
-                const gridPoints = Array.from({ length: 5 }, (_, i) => Array.from({ length: labels.length }, (_, j) => toPoint(100 * (i + 1) / 5, j)).join(' '));
-                const axisPoints = labels.map((_, i) => ({ x: center + radius * Math.cos(angleSlice * i - Math.PI / 2), y: center + radius * Math.sin(angleSlice * i - Math.PI / 2) }));
-                const labelPoints = labels.map((label, i) => ({
-                    label, x: center + (radius + 15) * Math.cos(angleSlice * i - Math.PI / 2), y: center + (radius + 15) * Math.sin(angleSlice * i - Math.PI / 2)
-                }));
-                const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
-                return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
-            },
-
-            init() {
-                const initializationTimeout = setTimeout(() => {
-                    if (!this.isInitialized) {
-                        console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
-                        this.isInitialized = true;
-                    }
-                }, 5000);
-                this.$watch('isInitialized', (value) => {
-                    if (value) clearTimeout(initializationTimeout);
-                });
-                this.loadSettings();
-                this.resetAllForms();
-                this.initFirebase();
-                this.generateCalendar();
-                this.$watch('calendar.month', () => this.generateCalendar());
-                this.$watch('calendar.year', () => this.generateCalendar());
-                this.$watch('trades', () => this.generateCalendar());
-                this.$watch('quickSizer.riskPercent', (val) => this.quickSizer.riskAmount = (this.settings.usdPrincipal * (val / 100)));
-                this.$watch('settings.usdPrincipal', (val) => this.quickSizer.riskAmount = (val * (this.quickSizer.riskPercent / 100)));
-                this.$watch('activeTab', (newTab) => {
-                    if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
-                        this.$nextTick(() => {
-                            this.renderChart('plChart');
-                            this.renderChart('dashboardPlChart');
-                        });
-                    }
-                });
-            },
-
-            loadSettings() {
-                const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
-                if (savedSettings) {
-                    this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
-                }
-            },
-
-            saveSettings(showAlert = false) {
-                localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
-                if (showAlert) alert('設定已儲存！');
-            },
-
-            async initFirebase() {
-                try {
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
-                        authDomain: "my-trading-workbench.firebaseapp.com",
-                        projectId: "my-trading-workbench",
-                        storageBucket: "my-trading-workbench.appspot.com",
-                        messagingSenderId: "386958713208",
-                        appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
-                        measurementId: "G-2WEVVMRHV7"
-                    };
-                    const app = initializeApp(firebaseConfig);
-                    this.db = getFirestore(app);
-                    this.auth = getAuth(app);
-                    onAuthStateChanged(this.auth, (user) => {
-                        this.isInitialized = true;
-                        if (user) {
-                            this.isLoggedIn = true;
-                            this.userId = user.uid;
-                            this.initializeDataListeners();
-                        } else {
-                            this.isLoggedIn = false;
-                            this.userId = null;
-                            this.clearAllData();
-                        }
-                    });
-                } catch (e) {
-                    console.error("Firebase initialization failed:", e);
-                    this.authError = "Firebase 初始化失敗。";
+        // ===== 生命週期 =====
+        init() {
+            const initializationTimeout = setTimeout(() => {
+                if (!this.isInitialized) {
+                    console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
                     this.isInitialized = true;
                 }
-            },
-
-            initializeDataListeners() {
-                if (!this.userId) return;
-                this.loadCollection('trades', 'trades', 'entryDate');
-                this.loadCollection('marketJournals', 'marketJournals', 'date');
-                this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc');
-                this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
-                this.loadCollection('reflections', 'reflections', 'date');
-            },
-
-            loadCollection(path, targetProperty, orderByField, orderDirection = "desc") {
-                const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField, orderDirection));
-                const unsub = onSnapshot(q, (snapshot) => {
-                    this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                }, (error) => console.error(`Error loading ${path}:`, error));
-                this.unsubscribers.push(unsub);
-            },
-
-            async register() {
-                try {
-                    await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
-                    this.authError = '';
-                } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
+            }, 5000);
+            this.$watch('isInitialized', (value) => {
+                if (value) clearTimeout(initializationTimeout);
+            });
+            this.loadSettings();
+            this.resetAllForms();
+            this.initFirebase();
+            this.generateCalendar();
+            this.$watch('calendar.month', () => this.generateCalendar());
+            this.$watch('calendar.year', () => this.generateCalendar());
+            this.$watch('trades', () => this.generateCalendar());
+            this.$watch('quickSizer.riskPercent', (val) => this.quickSizer.riskAmount = (this.settings.usdPrincipal * (val / 100)));
+            this.$watch('settings.usdPrincipal', (val) => this.quickSizer.riskAmount = (val * (this.quickSizer.riskPercent / 100)));
+            this.$watch('activeTab', (newTab) => {
+                if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
+                    this.$nextTick(() => {
+                        this.renderChart('plChart');
+                        this.renderChart('dashboardPlChart');
+                    });
                 }
-            },
+            });
+        },
 
-            async login() {
-                try {
-                    await signInWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
-                    this.authError = '';
-                } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
-                }
-            },
+        loadSettings() {
+            const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
+            if (savedSettings) {
+                this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+            }
+        },
 
-            async loginWithGoogle() {
-                try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(this.auth, provider);
-                    this.authError = '';
-                } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
-                }
-            },
+        saveSettings(showAlert = false) {
+            localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
+            if (showAlert) alert('設定已儲存！');
+        },
 
-            async logout() {
-                await signOut(this.auth);
-            },
-
-            getFirebaseAuthErrorMessage(errorCode) {
-                switch (errorCode) {
-                    case 'auth/invalid-email': return '電子郵件格式不正確。';
-                    case 'auth/user-not-found': return '找不到該用戶。';
-                    case 'auth/wrong-password': return '密碼錯誤。';
-                    case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
-                    default: return '登入或註冊時發生錯誤。';
-                }
-            },
-
-            async saveEntity(collectionName, entityId, formData) {
-                try {
-                    const path = `users/${this.userId}/${collectionName}`;
-                    const dataToSave = { ...formData };
-                    if (entityId) {
-                        await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
+        async initFirebase() {
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
+                    authDomain: "my-trading-workbench.firebaseapp.com",
+                    projectId: "my-trading-workbench",
+                    storageBucket: "my-trading-workbench.appspot.com",
+                    messagingSenderId: "386958713208",
+                    appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
+                    measurementId: "G-2WEVVMRHV7"
+                };
+                const app = initializeApp(firebaseConfig);
+                this.db = getFirestore(app);
+                this.auth = getAuth(app);
+                onAuthStateChanged(this.auth, (user) => {
+                    this.isInitialized = true;
+                    if (user) {
+                        this.isLoggedIn = true;
+                        this.userId = user.uid;
+                        this.initializeDataListeners();
                     } else {
-                        dataToSave.createdAt = serverTimestamp();
-                        await addDoc(collection(this.db, path), dataToSave);
+                        this.isLoggedIn = false;
+                        this.userId = null;
+                        this.clearAllData();
                     }
-                } catch (e) {
-                    console.error(`Error saving to ${collectionName}:`, e);
+                });
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                this.authError = "Firebase 初始化失敗。";
+                this.isInitialized = true;
+            }
+        },
+
+        initializeDataListeners() {
+            if (!this.userId) return;
+            this.loadCollection('trades', 'trades', 'entryDate');
+            this.loadCollection('marketJournals', 'marketJournals', 'date');
+            this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc');
+            this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
+            this.loadCollection('reflections', 'reflections', 'date');
+        },
+
+        loadCollection(path, targetProperty, orderByField, orderDirection = "desc") {
+            const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField, orderDirection));
+            const unsub = onSnapshot(q, (snapshot) => {
+                this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            }, (error) => console.error(`Error loading ${path}:`, error));
+            this.unsubscribers.push(unsub);
+        },
+
+        // ===== Auth =====
+        async register() {
+            try {
+                await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
+                this.authError = '';
+            } catch (e) {
+                this.authError = this.getFirebaseAuthErrorMessage(e.code);
+            }
+        },
+
+        async login() {
+            try {
+                await signInWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
+                this.authError = '';
+            } catch (e) {
+                this.authError = this.getFirebaseAuthErrorMessage(e.code);
+            }
+        },
+
+        async loginWithGoogle() {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(this.auth, provider);
+                this.authError = '';
+            } catch (e) {
+                this.authError = this.getFirebaseAuthErrorMessage(e.code);
+            }
+        },
+
+        async logout() {
+            await signOut(this.auth);
+        },
+
+        getFirebaseAuthErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/invalid-email': return '電子郵件格式不正確。';
+                case 'auth/user-not-found': return '找不到該用戶。';
+                case 'auth/wrong-password': return '密碼錯誤。';
+                case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
+                default: return '登入或註冊時發生錯誤。';
+            }
+        },
+
+        // ===== Core =====
+        async saveEntity(collectionName, entityId, formData) {
+            try {
+                const path = `users/${this.userId}/${collectionName}`;
+                const dataToSave = { ...formData };
+                if (entityId) {
+                    await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
+                } else {
+                    dataToSave.createdAt = serverTimestamp();
+                    await addDoc(collection(this.db, path), dataToSave);
                 }
-            },
+            } catch (e) {
+                console.error(`Error saving to ${collectionName}:`, e);
+            }
+        },
 
-            async deleteEntity(collectionName, entityId) {
-                if (confirm('確定要刪除嗎？')) {
-                    await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
-                }
-            },
+        async deleteEntity(collectionName, entityId) {
+            if (confirm('確定要刪除嗎？')) {
+                await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
+            }
+        },
 
-            handleImageUpload(event, targetForm) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => { targetForm.chartImage = e.target.result; };
-                    reader.readAsDataURL(file);
-                }
-            },
+        handleImageUpload(event, targetForm) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { targetForm.chartImage = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        },
 
-            formatCurrency(value, currency = 'USD') {
-                if (typeof value !== 'number') return value;
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, minimumFractionDigits: 2 }).format(value);
-            },
+        formatCurrency(value, currency = 'USD') {
+            if (typeof value !== 'number') return value;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, minimumFractionDigits: 2 }).format(value);
+        },
 
-            clearAllData() {
-                this.unsubscribers.forEach(unsub => unsub());
-                this.unsubscribers = [];
-                this.trades = [];
-                this.marketJournals = [];
-                this.buyPlans = [];
-                            this.modelBooks = [];
+        clearAllData() {
+            this.unsubscribers.forEach(unsub => unsub());
+            this.unsubscribers = [];
+            this.trades = [];
+            this.marketJournals = [];
+            this.buyPlans = [];
+            this.modelBooks = [];
             this.reflections = [];
         },
 
@@ -918,6 +1041,7 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
         resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm = this.getBlankForm('reflection'); },
         resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
 
+        // ===== 儲存與編輯 =====
         saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId, this.marketJournalForm); this.resetMarketJournalForm(); },
         editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm = { ...entry }; this.activeTab = 'marketJournal'; },
         deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
@@ -931,6 +1055,168 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
         editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry }; this.activeTab = 'reflection'; },
         deleteReflection(id) { this.deleteEntity('reflections', id); },
 
+        applyQuickSizer() {
+            this.journalForm.riskPercent = this.quickSizer.riskPercent;
+            this.journalForm.riskAmount = this.quickSizer.riskAmount;
+        },
+
+        selectTrade(trade) {
+            this.selectedTradeId = (this.selectedTradeId === trade.id) ? null : trade.id;
+            if (this.selectedTradeId) this.resetTxnForm();
+        },
+
+        async saveSubTransaction() {
+            if (!this.selectedTradeId) return;
+            const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+            if (this.editingTxnId) {
+                const existingTxns = this.selectedTrade.transactions.filter(t => t.id !== this.editingTxnId);
+                await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id: this.editingTxnId }] });
+            } else {
+                await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id: Date.now().toString() }) });
+            }
+            this.resetTxnForm();
+        },
+
+        editSubTransaction(txn) {
+            this.editingTxnId = txn.id;
+            this.txnForm = { ...txn };
+            this.showTxnForm = true;
+        },
+
+        async deleteSubTransaction(txnId) {
+            if (!this.selectedTradeId) return;
+            const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+            const txnToRemove = this.selectedTrade.transactions.find(t => t.id === txnId);
+            if (txnToRemove) await updateDoc(tradeRef, { transactions: arrayRemove(txnToRemove) });
+        },
+
+        async saveTrade() {
+            await this.saveEntity('trades', this.editingTradeId, this.journalForm);
+            this.resetForm();
+        },
+
+        editTrade(trade) {
+            this.editingTradeId = trade.id;
+            this.journalForm = { ...trade, transactions: trade.transactions || [] };
+            this.activeTab = 'journal';
+            this.selectTrade(trade);
+        },
+
+        async deleteTrade(id) {
+            await this.deleteEntity('trades', id);
+            this.selectedTradeId = null;
+        },
+
+        // ===== 工作流程 =====
+        openPreTradeChecklist(plan) {
+            this.currentPlanToExecute = plan;
+            this.checklistItems = [
+                { text: `市場狀況適合此策略 (${plan.pattern}) 嗎？`, checked: false },
+                { text: '風險是否在我的承受範圍內？', checked: false },
+                { text: '我已確認關鍵價位 (買點、止損)？', checked: false },
+                { text: '我是否因 FOMO 或其他情緒而交易？', checked: false },
+                { text: '這筆交易符合我的交易計劃嗎？', checked: false }
+            ];
+            this.showChecklistModal = true;
+        },
+
+        executeTradeFromPlan() {
+            if (!this.allChecklistItemsChecked) return;
+            const plan = this.currentPlanToExecute;
+            this.resetForm();
+            this.journalForm.ticker = plan.ticker;
+            this.journalForm.setup = plan.pattern;
+            this.journalForm.rationale = plan.rationale;
+            this.journalForm.chartImage = plan.chartImage;
+            this.activeTab = 'journal';
+            this.showChecklistModal = false;
+            this.currentPlanToExecute = null;
+        },
+
+        // ===== 日曆 =====
+        generateCalendar() {
+            const date = new Date(this.calendar.year, this.calendar.month, 1);
+            const days = [];
+            const startDay = date.getDay();
+            const daysInMonth = new Date(this.calendar.year, this.calendar.month + 1, 0).getDate();
+            const todayStr = new Date().toISOString().slice(0, 10);
+            for (let i = 0; i < startDay; i++) days.push({ date: null, isCurrentMonth: false });
+            for (let i = 1; i <= daysInMonth; i++) {
+                const d = new Date(this.calendar.year, this.calendar.month, i);
+                const dateStr = d.toISOString().slice(0, 10);
+                days.push({ date: dateStr, dayOfMonth: i, isCurrentMonth: true, isToday: dateStr === todayStr, pl: 0, tradeCount: 0, relatedTrades: new Set() });
+            }
+            this.trades.forEach(trade => {
+                (trade.transactions || []).forEach(txn => {
+                    const day = days.find(d => d.date === txn.date);
+                    if (day) {
+                                       reader.onload = (e) => { targetForm.chartImage = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        },
+
+        formatCurrency(value, currency = 'USD') {
+            if (typeof value !== 'number') return value;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency, minimumFractionDigits: 2 }).format(value);
+        },
+
+        clearAllData() {
+            this.unsubscribers.forEach(unsub => unsub());
+            this.unsubscribers = [];
+            this.trades = [];
+            this.marketJournals = [];
+            this.buyPlans = [];
+            this.modelBooks = [];
+            this.reflections = [];
+        },
+
+        openChartModal(url) {
+            if (url) {
+                this.modalImageUrl = url;
+                this.isModalOpen = true;
+            }
+        },
+
+        closeChartModal() {
+            this.isModalOpen = false;
+            this.modalImageUrl = '';
+        },
+
+        resetAllForms() {
+            this.resetForm();
+            this.resetMarketJournalForm();
+            this.resetBuyPlanForm();
+            this.resetModelBookForm();
+            this.resetReflectionForm();
+        },
+
+        getBlankForm(type) {
+            const today = new Date().toISOString().slice(0, 10);
+            switch (type) {
+                case 'journal': return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: 350, setup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] };
+                case 'txn': return { type: 'Buy', date: today, quantity: null, price: null, notes: '' };
+                default: return {};
+            }
+        },
+
+        resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
+        resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
+
+        // ===== Entity =====
+        saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId, this.marketJournalForm); this.resetMarketJournalForm(); },
+        editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm = { ...entry }; this.activeTab = 'marketJournal'; },
+        deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
+        saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm); this.resetBuyPlanForm(); },
+        editBuyPlan(plan) { this.editingBuyPlanId = plan.id; this.buyPlanForm = { ...plan }; this.activeTab = 'buyPlan'; },
+        deleteBuyPlan(id) { this.deleteEntity('buyPlans', id); },
+        saveModelBook() { this.saveEntity('modelBooks', this.editingModelBookId, this.modelBookForm); this.resetModelBookForm(); },
+        editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = { ...model }; this.activeTab = 'modelBook'; },
+        deleteModelBook(id) { this.deleteEntity('modelBooks', id); },
+        saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm); this.resetReflectionForm(); },
+        editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry }; this.activeTab = 'reflection'; },
+        deleteReflection(id) { this.deleteEntity('reflections', id); },
+
+        // ===== Journal =====
         applyQuickSizer() {
             this.journalForm.riskPercent = this.quickSizer.riskPercent;
             this.journalForm.riskAmount = this.quickSizer.riskAmount;
@@ -1003,6 +1289,7 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
             this.selectedTradeId = null;
         },
 
+        // ===== Workflow =====
         openPreTradeChecklist(plan) {
             this.currentPlanToExecute = plan;
             this.checklistItems = [
@@ -1028,10 +1315,12 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
             this.currentPlanToExecute = null;
         },
 
+        // ===== Search & Chart =====
         search() { /* placeholder */ },
         goToSearchResult(item) { /* placeholder */ },
         renderChart(canvasId) { /* placeholder */ },
 
+        // ===== Calendar =====
         generateCalendar() {
             const date = new Date(this.calendar.year, this.calendar.month, 1);
             const days = [];
@@ -1087,8 +1376,9 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
             this.calendar.year = newYear;
         },
 
+        // ===== AI =====
         async callAiApi(prompt) {
-            return new Promise(resolve => setTimeout(() => resolve("<p>這是AI的回應。</p>"), 1000));
+            return new Promise(resolve => setTimeout(() => resolve(`<p>AI 回應：${prompt}</p>`), 1000));
         },
 
         async getAiDashboardSummary() {
@@ -1128,11 +1418,8 @@ quickSizer: { riskPercent: 1.0, riskAmount: 0 },
         async getAiPerformanceReview() { const review = await this.callAiApi("Generate performance review..."); this.reviewNotes.monthly = review; }
     };
 }
-
 Alpine.data('tradingApp', tradingApp);
 Alpine.start();
 </script>
 </body>
 </html>
-
-    
