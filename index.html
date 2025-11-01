@@ -1450,8 +1450,11 @@ const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).j
 
         // ===== 生命週期 (Lifecycle) =====
 
-        /**
+       /**
          * [生命週期] Alpine.js 初始化時執行 (x-init="init()")
+         * *** 程式碼修正 (Fix) ***
+         * 修正了 和 之間錯誤的 "字串換行"。
+         * 這會導致 "Uncaught SyntaxError"，並使程式卡在加載畫面。
          */
 init() {
           // 設置一個超時。如果在 5 秒內 Firebase 仍未響應
@@ -1459,8 +1462,10 @@ init() {
           // 避免無限卡在 "正在連接雲端..."。
 const initializationTimeout = setTimeout(() => {
 if (!this.isInitialized) {
-console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to
-display login.");
+              
+              // (修正) 將兩行合併為一行，解決 SyntaxError
+console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
+              
               // 強制設置為 true，以便 x-show="!isInitialized" 隱藏加載畫面
 this.isInitialized = true; 
 }
@@ -1477,7 +1482,7 @@ clearTimeout(initializationTimeout);
 
 this.loadSettings();      // 從 localStorage 加載用戶設定
 this.resetAllForms();     // 重置所有表單
-this.initFirebase();    // 初始化 Firebase 連接 (*** 關鍵修復點 ***)
+this.initFirebase();    // 初始化 Firebase 連接
 this.generateCalendar();  // 生成當月日曆
 
           // --- 設置 $watch 監聽器 ---
