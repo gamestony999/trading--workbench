@@ -1905,31 +1905,34 @@ if (this.selectedTradeld) {
 
         /**
          * [Journal] 保存一筆 "子交易" (Buy/Sell)
-         * 這會更新 'selectedTrade' (主交易) 中的 'transactions' 陣列。
+         * *** 程式碼修正 (Fix) ***
+         * 修正了原始碼中 和 之間的錯誤換行。
+         * 修正了原始碼中 和 之間的錯誤換行。
          */
 async saveSubTransaction() {
 if (!this.selectedTradeld) return; // 安全檢查：必須先選中一個主交易
-
+        
           // 獲取主交易的 Firebase 文檔引用
 const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeld);
-
+        
 if (this.editingTxnld) {
             // --- 更新子交易 (Update) ---
-            // 1. 獲取 *不包含* 正在編輯的 txn 的新陣列
-const existingTxns = this.selectedTrade.transactions.filter(t => t.id !==
-this.editingTxnld);
-            // 2. 使用 updateDoc 更新 transactions 陣列
-await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id:
- this.editingTxnld }] });
+            
+            // (修正) 獲取 *不包含* 正在編輯的 txn 的新陣列 (修正了錯誤的換行)
+const existingTxns = this.selectedTrade.transactions.filter(t => t.id !== this.editingTxnld);
+            
+            // (修正) 使用 updateDoc 更新 transactions 陣列 (修正了錯誤的換行)
+await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id: this.editingTxnld }] });
+            
 } else {
             // --- 新增子交易 (Add) ---
-            // 使用 arrayUnion 原子性地
-await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id:
-Date.now().toString() }) }); // 使用時間戳作為唯一 ID
+            
+            // (修正) 使用 arrayUnion (修正了錯誤的換行)
+await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id: Date.now().toString() }) });
 }
+          
 this.resetTxnForm(); // 重置表單
 },
-
         /**
          * [Journal] 編輯一筆 "子交易"
          * @param {object} txn - 要編輯的子交易物件
