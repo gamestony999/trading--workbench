@@ -15,19 +15,14 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-  /* 設置 body 的默認字體。
-    優先使用 'Inter'，然後是 'Noto Sans TC'，最後是通用的 'sans-serif'（無襯線）字體。
-    -webkit-font-smoothing 和 -moz-osx-font-smoothing 是為了讓字體在 Mac/iOS 設備上渲染得更清晰。
-  */
+  /* 設置 body 的默認字體。*/
   body { 
     font-family: 'Inter', 'Noto Sans TC', sans-serif; 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale; 
   }
 
-  /* .input-group: 用於組合輸入框和圖標/文字（例如帳戶狀況的 $ 符號）的樣式。
-    display: flex 和 align-items: center 讓內部的元素水平對齊。
-  */
+  /* .input-group: 用於組合輸入框和圖標/文字的樣式。*/
   .input-group { 
     display: flex; 
     align-items: center; 
@@ -36,7 +31,7 @@
     border: 1px solid #4b5563; /* 邊框 (gray-600) */
   }
 
-  /* .input-group 內部 <span> 的樣式（用於放 $ 符號）。 */
+  /* .input-group 內部 <span> 的樣式。 */
   .input-group span { 
     padding-left: 0.75rem; /* 左內邊距 */
     color: #9ca3af; /* 顏色 (gray-400) */
@@ -52,79 +47,62 @@
     color: white; /* 文字顏色 */
   }
 
-  /* .risk-btn (風險按鈕) 和 .tab-btn (頁籤按鈕) 的共享樣式。
-    transition: all 0.2s ease-in-out; 讓所有變動（如 hover）都有 0.2 秒的過渡動畫。
-  */
+  /* .risk-btn (風險按鈕) 和 .tab-btn (頁籤按鈕) 的共享樣式。*/
   .risk-btn, .tab-btn { 
     transition: all 0.2s ease-in-out;
-padding: 0.75rem 1rem; /* 內邊距 */
+    padding: 0.75rem 1rem; /* 內邊距 */
     border-bottom: 2px solid transparent; /* 默認的透明底線 */
     white-space: nowrap; /* 強制不換行 */
     font-size: 0.875rem; /* 字體大小 (text-sm) */
     font-weight: 500; /* 字重 (font-medium) */
-color: #9ca3af; /* 默認顏色 (gray-400) */
+    color: #9ca3af; /* 默認顏色 (gray-400) */
   }
 
   /* .tab-btn 在鼠標懸停 (hover) 時的樣式。 */
   .tab-btn:hover { 
     color: white; /* 文字變白 */
-border-color: #4b5563; /* 底線變色 (gray-600) */
+    border-color: #4b5563; /* 底線變色 (gray-600) */
   }
 
-  /* .tab-btn.active: 當頁籤被選中時（即擁有 .active class）的樣式。
-  */
+  /* .tab-btn.active: 當頁籤被選中時的樣式。*/
   .tab-btn.active { 
     background-color: #3b82f6; /* 背景色 (blue-600) */
     color: white; /* 文字變白 */
     font-weight: 600; /* 字重加粗 (font-semibold) */
     border-color: #3b82f6; /* 底線變色 (blue-600) */
-}
+  }
 
-  /* [x-cloak] 是一個 Alpine.js 的屬性。
-    帶有這個屬性的元素在 Alpine.js 初始化完成前會被隱藏（display: none）。
-    這可以防止頁面加載時出現 "閃爍"（即先顯示模板內容，再顯示真實數據）。
-  */
+  /* [x-cloak] 屬性在 Alpine.js 初始化完成前隱藏元素。*/
   [x-cloak] { 
     display: none !important;
-}
+  }
 
-  /* .modal-backdrop: 彈出視窗（Modal）的背景遮罩。
-    position: fixed; 讓它覆蓋整個視窗。
-    display: flex; align-items: center; justify-content: center; 讓彈窗內容垂直水平居中。
-    z-index: 50; 確保它在最上層。
-  */
+  /* .modal-backdrop: 彈出視窗（Modal）的背景遮罩。*/
   .modal-backdrop { 
     position: fixed; 
     top: 0; left: 0; right: 0; bottom: 0; 
     background-color: rgba(0, 0, 0, 0.75); /* 75% 透明度的黑色背景 */
     display: flex;
-align-items: center; 
+    align-items: center; 
     justify-content: center; 
     z-index: 50; 
   }
   
-  /* .modal-content: 彈出視窗的內容框。
-  */
+  /* .modal-content: 彈出視窗的內容框。*/
   .modal-content { 
     background-color: #1f2937; /* 背景色 (gray-800) */
     padding: 1rem; /* 內邊距 */
     border-radius: 0.5rem; /* 圓角 */
     max-width: 90vw; /* 最大寬度為視窗寬度的 90% */
     max-height: 90vh; /* 最大高度為視窗高度的 90% */
-overflow: auto; /* 當內容超出時，顯示滾動條 */
+    overflow: auto; /* 當內容超出時，顯示滾動條 */
   }
 
-  /* .search-input: 頂部搜尋框的樣式。
-    background: url(...) no-repeat 12px center; 
-      這行程式碼是關鍵：它使用 SVG 數據（一個放大鏡圖標）作為背景圖像，
-      並定位在左側 12px、垂直居中的位置。
-    padding-left: 40px; 
-      為圖標留出空間，讓文字從 40px 的位置開始。
-  */
+  /* .search-input: 頂部搜尋框的樣式 (帶有放大鏡圖標)。*/
   .search-input { 
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 12px center; 
     padding-left: 40px; 
-}
+  }
 
   /* --- 交易日曆 (Calendar) 樣式 --- */
 
@@ -132,13 +110,13 @@ overflow: auto; /* 當內容超出時，顯示滾動條 */
   .calendar-grid { 
     display: grid; 
     grid-template-columns: repeat(7, minmax(0, 1fr)); /* 創建 7 個等寬的列 */
-}
+  }
 
   /* .calendar-day: 每一天的格子。 */
   .calendar-day { 
     min-height: 120px; /* 最小高度 */
     transition: background-color 0.2s ease-in-out; /* 背景色變動動畫 */
-}
+  }
 
   /* .calendar-day.other-month: 不在本月的日期（灰色顯示）。 */
   .calendar-day.other-month { 
@@ -148,7 +126,7 @@ overflow: auto; /* 當內容超出時，顯示滾動條 */
   /* .calendar-day:hover:not(.other-month): 鼠標懸停在本月日期上時。 */
   .calendar-day:hover:not(.other-month) { 
     background-color: #374151; /* (gray-700) */
-}
+  }
 
   /* .day-pl.profit: 日曆中顯示 "盈利" 的格子樣式。 */
   .day-pl.profit { 
@@ -159,21 +137,21 @@ overflow: auto; /* 當內容超出時，顯示滾動條 */
   /* .day-pl.loss: 日曆中顯示 "虧損" 的格子樣式。 */
   .day-pl.loss { 
     background-color: rgba(239, 68, 68, 0.2); /* 20% 透明度的 red-500 */
-border-left: 3px solid #EF4444; /* 左側的紅色粗邊框 (red-500) */
+    border-left: 3px solid #EF4444; /* 左側的紅色粗邊框 (red-500) */
   }
   
   /* .day-pl.breakeven: 日曆中顯示 "持平" 的格子樣式。 */
   .day-pl.breakeven { 
     background-color: rgba(107, 114, 128, 0.2); /* 20% 透明度的 gray-500 */
     border-left: 3px solid #6b7280; /* 左側的灰色粗邊框 (gray-500) */
-}
+  }
 
   /* --- 交易者評分雷達圖 (Radar Chart) 樣式 --- */
 
   /* .radar-chart-container: 雷達圖的容器。 */
   .radar-chart-container { 
     position: relative; /* 相對定位，作為內部 SVG 的基準 */
-width: 100%; /* 寬度 100% */
+    width: 100%; /* 寬度 100% */
     aspect-ratio: 1/1; /* 保持 1:1 的寬高比（正方形） */
   }
 
@@ -181,20 +159,20 @@ width: 100%; /* 寬度 100% */
   .radar-chart-svg { 
     width: 100%; 
     height: 100%; 
-}
+  }
 
   /* .radar-grid-line: 雷達圖的背景網格線（五邊形）。 */
   .radar-grid-line { 
     stroke: #4b5563; /* 線條顏色 (gray-600) */
     stroke-width: 1; /* 線寬 */
     fill: none; /* 不填充 */
-}
+  }
 
   /* .radar-axis-line: 雷達圖的軸線（從中心到頂點）。 */
   .radar-axis-line { 
     stroke: #4b5563; /* (gray-600) */
     stroke-width: 1; 
-}
+  }
 
   /* .radar-label: 雷達圖的標籤文字（如 "勝率", "利潤因子"）。 */
   .radar-label { 
@@ -202,20 +180,20 @@ width: 100%; /* 寬度 100% */
     font-size: 12px; /* 字體大小 */
     text-anchor: middle; /* 文字水平居中 */
     dominant-baseline: middle; /* 文字垂直居中 */
-}
+  }
 
   /* .radar-data-polygon: 雷達圖中表示數據的"區域"（多邊形）。 */
   .radar-data-polygon { 
     fill: rgba(99, 102, 241, 0.4); /* 40% 透明度的 indigo-500 填充色 */
     stroke: #6366f1; /* 邊框色 (indigo-500) */
     stroke-width: 2; /* 邊框寬度 */
-transition: all 0.3s ease-in-out; /* 動畫效果 */
-}
+    transition: all 0.3s ease-in-out; /* 動畫效果 */
+  }
 
   /* .radar-data-point: 雷達圖數據區域的 "頂點"（小圓點）。 */
   .radar-data-point { 
     fill: #818cf8; /* 填充色 (indigo-300) */
-stroke: #e0e7ff; /* 邊框色 (indigo-100) */
+    stroke: #e0e7ff; /* 邊框色 (indigo-100) */
     stroke-width: 2; 
   }
 
@@ -227,7 +205,7 @@ stroke: #e0e7ff; /* 邊框色 (indigo-100) */
     border-radius: 1rem; /* 圓角 */
     max-width: 85%; /* 最大寬度 */
     word-wrap: break-word; /* 自動換行 */
-}
+  }
 
   /* .ai-chat-user: 用戶發送的訊息氣泡（藍色，靠右）。 */
   .ai-chat-user { 
@@ -235,7 +213,7 @@ stroke: #e0e7ff; /* 邊框色 (indigo-100) */
     color: white; /* 白色文字 */
     border-bottom-right-radius: 0.25rem; /* 右下角改為小圓角，營造 "氣泡" 感 */
     align-self: flex-end; /* 靠右對齊 */
-}
+  }
 
   /* .ai-chat-ai: AI 回覆的訊息氣泡（灰色，靠左）。 */
   .ai-chat-ai { 
@@ -243,7 +221,7 @@ stroke: #e0e7ff; /* 邊框色 (indigo-100) */
     color: #d1d5db; /* (gray-300) */
     border-bottom-left-radius: 0.25rem; /* 左下角改為小圓角 */
     align-self: flex-start; /* 靠左對齊 */
-}
+  }
 
  </style>
 </head>
@@ -252,14 +230,12 @@ stroke: #e0e7ff; /* 邊框色 (indigo-100) */
  
  <div x-show="!isInitialized" class="min-h-screen flex items-center justify-center text-center">
   <div>
-    <svg class="animate-spin h-8 w-8 text-blue-400 mx-auto"
-xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25"
- cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path
-class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <svg class="animate-spin h-8 w-8 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path
+ class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
     
     <p class="mt-4 text-gray-400">正在連接雲端...</p>
-</div>
-</div>
+  </div>
+ </div>
 
  <div x-show="isInitialized && !isLoggedIn" x-cloak class="min-h-screen flex items-center
  justify-center">
@@ -267,13 +243,15 @@ class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 
   <div class="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
     
     <h2 class="text-2xl font-bold text-center text-blue-400 mb-6" x-text="authView === 'login'?
- '登入工作台':'註冊新帳號""></h2>
+ '登入工作台':'註冊新帳號'"></h2>
 
     <form @submit.prevent="authView === 'login'? login(): register()">
-      <div class="space-y-4"> <div><label for="email" class="block text-sm font-medium text-gray-300">電子郵件
-</label>
+      <div class="space-y-4"> 
+
+        <div><label for="email" class="block text-sm font-medium text-gray-300">電子郵件
+ </label>
           <input id="email" name="email" type="email" x-model="authForm.email" required autocomplete="email" class="w-full
-bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500
+ bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500
  focus:border-blue-500"></div>
 
         <div><label for="password" class="block text-sm font-medium text-gray-300">密碼
@@ -281,14 +259,14 @@ bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500
           <input id="password" name="password" type="password" x-model="authForm.password" required autocomplete="current-password"
  class="w-full bg-gray-700 rounded p-2 mt-1 border border-gray-600 focus:ring-blue-500
  focus:border-blue-500"></div>
-</div>
+ </div>
 
       <p x-show="authError" class="text-red-400 text-sm mt-4" x-text="authError"></p>
       
       <div class="mt-6"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-500
-text-white font-bold py-2 px-4 rounded-lg" x-text="authView === 'login'?'登入':'註冊
+ text-white font-bold py-2 px-4 rounded-lg" x-text="authView === 'login'?'登入':'註冊
    '"></button></div>
-</form>
+ </form>
 
     <div class="relative my-6"><div class="absolute inset-0 flex items-center"><div
  class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center
@@ -301,25 +279,25 @@ text-white font-bold py-2 px-4 rounded-lg" x-text="authView === 'login'?'登入'
  24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21
  3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0
  5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86
-0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84
+ 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84
  14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45
  1.18 4.93l3.66-2.84z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.2 1.68l-2.77 2.77c-.87-2.6-3.3-4.53-6.16-4.53H2.18V7.07C3.99 3.96 7.7 1.38 12 1.38z"
-clip-rule="evenodd" fill="#EA4335"></path></svg><span>使用 Google 登入</span></button></div>
+ clip-rule="evenodd" fill="#EA4335"></path></svg><span>使用 Google 登入</span></button></div>
 
     <div class="mt-4 text-center"><button @click="authView = (authView === 'login'? 'register'
  : 'login')" class="text-sm text-gray-400 hover:text-white" x-text="authView === 'login'?'還沒有帳
  號?註冊一個':'已經有帳號?前往登入'"></button></div>
-</div>
-</div>
+ </div>
+ </div>
 
  <div x-show="isInitialized && isLoggedIn" x-cloak class="max-w-7xl mx-auto"> <header class="mb-8">
 
     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
       
       <div>
-<h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 </h1>
+ <h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 </h1>
  <p class="text-gray-400 mt-2">由AI 驅動的整合式交易分析系統</p>
-</div>
+ </div>
 
       <div class="relative w-full md:w-1/3">
         <input type="text" id="mainSearch" name="mainSearch" autocomplete="off" x-model="searchTerm" @input.debounce.300ms="search"
@@ -329,140 +307,138 @@ clip-rule="evenodd" fill="#EA4335"></path></svg><span>使用 Google 登入</span
         <div x-show="searchTerm && searchResults.length > 0" class="absolute z-10 w-full
  mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
  <ul><template x-for="item in searchResults" :key="item.id"><li
-@click="goToSearchResult(item)" class="px-4 py-3 hover:bg-gray-700 cursor-pointer"><p
+ @click="goToSearchResult(item)" class="px-4 py-3 hover:bg-gray-700 cursor-pointer"><p
  class="font-semibold text-white" x-text="item.ticker || item.name"></p><p class="text-sm
  text-gray-400" x-text="`${item.type} - ${item.date || item.pattern}`"></p></li></template></ul>
-</div> </div> </div> </header> <div class="mb-6">
-<div class="border-b border-gray-700"> <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
+ </div> </div> </div> </header> <div class="mb-6">
+ <div class="border-b border-gray-700"> <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
 
         <button @click="activeTab = 'dashboard'" :class="{ 'active': activeTab === 'dashboard'
-}" class="tab-btn">儀表板</button>
+ }" class="tab-btn">儀表板</button>
         
         <button @click="activeTab = 'reflection'" :class="{ 'active': activeTab === 'reflection' }"
-class="tab-btn">自我反思</button>
-<button @click="activeTab = 'marketJournal'" :class="{ 'active': activeTab ===
-'marketJournal' }" class="tab-btn">市場日誌</button>
-<button @click="activeTab = 'buyPlan'" :class="{ 'active': activeTab === 'buyPlan'}"
-class="tab-btn">買入計劃</button>
-<button @click="activeTab = 'calculator'" :class="{ 'active': activeTab === 'calculator' }"
-class="tab-btn">注碼計算機</button>
-<button @click="activeTab = 'journal'" :class="{ 'active': activeTab === 'journal' }"
-class="tab-btn">交易日誌</button>
-<button @click="activeTab = 'modelBook'" :class="{ 'active': activeTab ===
-'modelBook' }" class="tab-btn">模型庫</button>
-<button @click="activeTab = 'performance'" :class="{ 'active': activeTab ===
-'performance' }" class="tab-btn">績效回顧</button>
-<button @click="activeTab = 'settings'" :class="{'active': activeTab === 'settings' }"
-class="tab-btn">設定</button>
+ class="tab-btn">自我反思</button>
+ <button @click="activeTab = 'marketJournal'" :class="{ 'active': activeTab ===
+ 'marketJournal' }" class="tab-btn">市場日誌</button>
+ <button @click="activeTab = 'buyPlan'" :class="{ 'active': activeTab === 'buyPlan'}"
+ class="tab-btn">買入計劃</button>
+ <button @click="activeTab = 'calculator'" :class="{ 'active': activeTab === 'calculator' }"
+ class="tab-btn">注碼計算機</button>
+ <button @click="activeTab = 'journal'" :class="{ 'active': activeTab === 'journal' }"
+ class="tab-btn">交易日誌</button>
+ <button @click="activeTab = 'modelBook'" :class="{ 'active': activeTab ===
+ 'modelBook' }" class="tab-btn">模型庫</button>
+ <button @click="activeTab = 'performance'" :class="{ 'active': activeTab ===
+ 'performance' }" class="tab-btn">績效回顧</button>
+ <button @click="activeTab = 'settings'" :class="{'active': activeTab === 'settings' }"
+ class="tab-btn">設定</button>
 
-</nav>
-</div>
-</div> <div class="flex justify-between items-center text-center mb-4 text-xs text-gray-500">
+ </nav>
+ </div>
+  </div> <div class="flex justify-between items-center text-center mb-4 text-xs text-gray-500">
     <p>User ID: <span x-text="userId || 'N/A'"></span></p> <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1
-px-3 rounded-lg text-xs">登出</button>
-</div>
-
+ px-3 rounded-lg text-xs">登出</button>
+  </div>
   <div x-show="activeTab === 'dashboard'" x-cloak>
-<div class="space-y-8"> <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+ <div class="space-y-8"> <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
 
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-<h3 class="text-sm font-medium text-gray-400">總盈虧(Net P&L)</h3>
+ <h3 class="text-sm font-medium text-gray-400">總盈虧(Net P&L)</h3>
           <p class="mt-2 text-2xl font-bold" :class="performance.totalPl >= 0? 'text-green-400':
-'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
-</div>
+ 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
+ </div>
 
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-<h3 class="text-sm font-medium text-gray-400">勝率(Win%)</h3>
-<p class="mt-2 text-2xl font-bold"
-x-text="`${performance.winRate.toFixed(2)}%`"></p>
-</div>
+ <h3 class="text-sm font-medium text-gray-400">勝率(Win%)</h3>
+ <p class="mt-2 text-2xl font-bold"
+ x-text="`${performance.winRate.toFixed(2)}%`"></p>
+ </div>
 
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
  <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
           <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ?
-'text-green-400': 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
+ 'text-green-400': 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
  </div>
  
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
  <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
           <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ?
-'text-green-400': 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)}: 1`"></p>
-</div>
+ 'text-green-400': 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)}: 1`"></p>
+ </div>
 
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center
-col-span-2 md:col-span-1 lg:col-span-1">
-<h3 class="text-sm font-medium text-gray-400">總交易數</h3>
-<p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
-</div>
-</div> <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+ col-span-2 md:col-span-1 lg:col-span-1">
+ <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
+ <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
+ </div>
+ </div> <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700
  flex flex-col">
-<h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
+ <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
           
           <div class="flex-grow flex items-center justify-center">
-<div class="radar-chart-container"> <svg viewBox="0 0 200 200" class="radar-chart-svg">
+ <div class="radar-chart-container"> <svg viewBox="0 0 200 200" class="radar-chart-svg">
                 <polygon x-for="i in 5" :key="i" class="radar-grid-line"
-:points="traderScore.gridPoints[5-i]"></polygon>
+ :points="traderScore.gridPoints[5-i]"></polygon>
                 
                 <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100"
-y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+ y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
                 
                 <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x"
-:y="point.y" class="radar-label" x-text="point.label"></text>
+ :y="point.y" class="radar-label" x-text="point.label"></text>
                 
                 <polygon class="radar-data-polygon"
-:points="traderScore.dataPoints"></polygon>
-</svg>
-</div>
-</div>
+ :points="traderScore.dataPoints"></polygon>
+ </svg>
+ </div>
+ </div>
           
           <div class="text-center mt-4">
-<h3 class="text-sm font-medium text-gray-400">你的綜合分數</h3>
-<p class="text-4xl font-bold text-indigo-400 mt-1"
-x-text="traderScore.score.toFixed(2)"></p> <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
+ <h3 class="text-sm font-medium text-gray-400">你的綜合分數</h3>
+ <p class="text-4xl font-bold text-indigo-400 mt-1"
+ x-text="traderScore.score.toFixed(2)"></p> <div class="w-full bg-gray-700 rounded-full h-2.5 mt-3">
               <div class="bg-indigo-500 h-2.5 rounded-full" :style="`width: ${traderScore.score}%`"></div>
-</div>
-</div>
-</div>
-</div> <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-<h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+ </div>
+ </div>
+ </div> <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+ <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
           <div class="h-80"><canvas id="dashboardPIChart"></canvas></div>
-</div>
+ </div>
 
         <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col
-justify-between">
-<div>
-<h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
-<h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金(USD)</h3>
+ justify-between">
+ <div>
+ <h2 class="text-2xl font-semibold mb-4 text-blue-300">帳戶狀況</h2>
+ <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金(USD)</h3>
             
             <div class="input-group">
-<span class="text-lg font-bold text-blue-400">$</span>
+ <span class="text-lg font-bold text-blue-400">$</span>
               <input type="number" id="usdPrincipalDashboard" name="usdPrincipalDashboard" x-model.number="settings.usdPrincipal"
-@blur="saveSettings()" class="text-3xl font-bold text-blue-400">
-</div>
-</div>
+ @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
+ </div>
+ </div>
           
           <div class="mt-6 space-y-4">
-<div>
-<h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
-<p class="text-xl font-bold text-green-400"
-x-text="formatCurrency(performance.avgWin, 'USD')"></p>
-</div>
-<div>
-<h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
+ <div>
+ <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
+ <p class="text-xl font-bold text-green-400"
+ x-text="formatCurrency(performance.avgWin, 'USD')"></p>
+ </div>
+ <div>
+ <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
  <p class="text-xl font-bold text-red-400"
-x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
-</div>
-</div>
-</div> </div> <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+ x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
+ </div>
+ </div>
+ </div> </div> <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border
  border-gray-700">
           
-          <div class="flex justify-between items-center mb-4">
-<h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
-            <div class="flex items-center gap-2">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+ <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
+            <div class="flex items-center gap-2 flex-wrap">
               <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700
  transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
  viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -471,12 +447,12 @@ x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
               <select id="calendarYearSelect" name="calendarYearSelect" x-model.number="calendar.year" @change="generateCalendar()"
  class="bg-gray-700 text-white rounded px-2 py-1 text-sm"><template x-for="y in Array.from({length: 11},
  (_, i) => new Date().getFullYear() - 5 + i)"><option :value="y" x-text="y + '年
-'"></option></template></select>
+ '"></option></template></select>
               
               <select id="calendarMonthSelect" name="calendarMonthSelect" x-model.number="calendar.month" @change="generateCalendar()"
  class="bg-gray-700 text-white rounded px-2 py-1 text-sm"><template x-for="(m, i) in ['1月','2月','3月','4月
  ','5月','6月','7月','8月','9月','10月','11月','12月']"><option :value="i"
-x-text="m"></option></template></select>
+ x-text="m"></option></template></select>
               
               <button @click="calendar.year = new Date().getFullYear(); calendar.month =
  new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500
@@ -485,9 +461,8 @@ x-text="m"></option></template></select>
               <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700
  transition-colors duration-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
  viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg></button>
-</div>
-</div>
-</div>
+ </div>
+ </div>
 
           <div class="calendar-grid border-t border-l border-gray-700">
             
@@ -496,7 +471,7 @@ x-text="m"></option></template></select>
  x-text="day"></div></template>
             
             <template x-for="(day, idx) in calendar.days" :key="day.date || idx">
-<div class="calendar-day p-2 border-r border-b border-gray-700 relative flex
+ <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex
  flex-col"
                   
                   :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}"
@@ -518,107 +493,106 @@ x-text="m"></option></template></select>
                   
                   <p class="font-bold text-lg" 
                      :class="{ 'text-green-400': day.pl > 0,
-'text-red-400': day.pl <
-0, 'text-gray-300': day.pl === 0 }" 
+ 'text-red-400': day.pl <
+ 0, 'text-gray-300': day.pl === 0 }" 
                      x-text="formatCurrency(day.pl)"></p>
                   
                   <p class="text-gray-400 text-[10px]" x-text="`${day.tradeCount} 筆交易
-`"></p>
-</div>
-</div>
-</template> </div> </div> <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-<h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
+ `"></p>
+ </div>
+ </div>
+ </template> </div> </div> <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
+ <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
  <div class="h-full flex flex-col"> <button @click="getAiDashboardSummary()" :disabled="isLoading" class="w-full
-sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg
+ sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg
  disabled:opacity-50">
               產生總結
             </button> <div x-ref="aiSummaryContainer" class="mt-4 flex-grow h-80 overflow-y-auto
  space-y-4 p-4 bg-gray-700/50 rounded-lg flex flex-col">
 
               <template x-for="(message, index) in aiChatHistory" :key="index">
-                <div class="ai-chat-bubble" :class="message.role === 'user'? 'ai-chat-user' :
-'ai-chat-ai'">
+ <div class="ai-chat-bubble" :class="message.role === 'user'? 'ai-chat-user' :
+ 'ai-chat-ai'">
                   <div x-html="message.content"></div>
-</div>
-</template>
+ </div>
+ </template>
 
               <div x-show="isLoading && aiQuery === ''" class="text-center py-4">
-<p class="text-sm text-gray-400">AI 總結中...</p></div>
-</div> <div class="mt-6">
+ <p class="text-sm text-gray-400">AI 總結中...</p></div>
+ </div> <div class="mt-6">
               <form @submit.prevent="askAi" class="flex gap-4">
                 <input type="text" id="aiQueryInput" name="aiQueryInput" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數
-據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus: border-blue-500">
+ 據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus: border-blue-500">
                 
                 <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600
-hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
+ hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
                   <svg
  xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169
-1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
-</form>
-</div>
-</div>
-</div> </div> </div>
-</div>
-  <div x-show="activeTab === 'journal'" x-cloak>
+ fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169
+ 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg></button>
+ </form>
+ </div>
+ </div>
+ </div> </div> </div>
+ </div>
+ <div x-show="activeTab === 'journal'" x-cloak>
 
     <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
-<h3 class="text-lg font-semibold text-blue-300 mb-3">快速注碼計算</h3>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end"> <div>
-<label class="text-xs text-gray-400">戶口本金(USD)</label>
-<p class="text-lg font-bold" x-text="formatCurrency(settings.usdPrincipal,
-'USD')"></p>
-</div>
+      <h3 class="text-lg font-semibold text-blue-300 mb-3">快速注碼計算</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end"> <div>
+          <label class="text-xs text-gray-400">戶口本金(USD)</label>
+          <p class="text-lg font-bold" x-text="formatCurrency(settings.usdPrincipal, 'USD')"></p>
+        </div>
 
         <div>
-<label for="quickRiskPercent" class="text-xs text-gray-400">風險倉位(R%)</label>
+          <label for="quickRiskPercent" class="text-xs text-gray-400">風險倉位(R%)</label>
           <input type="number" id="quickRiskPercent" name="quickRiskPercent"
-x-model.number="quickSizer.riskPercent" class="w-full bg-gray-700 rounded p-2 mt-1">
-</div>
+ x-model.number="quickSizer.riskPercent" class="w-full bg-gray-700 rounded p-2 mt-1">
+        </div>
 
         <div>
-<label class="text-xs text-gray-400">單次交易風險(1R)</label>
-<p class="text-lg font-bold text-yellow-400"
-x-text="`$${quickSizer.riskAmount.toFixed(2)}`"></p>
-</div>
+          <label class="text-xs text-gray-400">單次交易風險(1R)</label>
+          <p class="text-lg font-bold text-yellow-400"
+ x-text="`$${quickSizer.riskAmount.toFixed(2)}`"></p>
+        </div>
 
         <button @click="applyQuickSizer()" class="w-full bg-blue-600 hover:bg-blue-500
-text-white font-bold py-2 px-3 rounded-lg">套用至表單</button>
-</div>
-</div>
+ text-white font-bold py-2 px-3 rounded-lg">套用至表單</button>
+      </div>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700
-h-fit self-start">
+ h-fit self-start">
         
         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2"
-x-text="editingTradeId?'編輯主交易':'新增主交易(開倉)'"></h2>
+ x-text="editingTradeId?'編輯主交易':'新增主交易(開倉)'"></h2>
         
         <form @submit.prevent="saveTrade" class="space-y-4"> <div><label for="journalEntryDate" class="block text-sm">開倉日期</label>
             <input type="date" id="journalEntryDate" name="journalEntryDate"
-x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+ x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
  
           <div><label for="journalTicker" class="block text-sm">代號</label>
             <input type="text" id="journalTicker" name="journalTicker"
-x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded
+ x-model="journalForm.ticker" placeholder="AAPL" required class="w-full bg-gray-700 rounded
  p-2 mt-1"></div>
           
           <div><label for="journalDirection" class="block text-sm">方向</label>
             <select id="journalDirection" name="journalDirection"
-x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2
-mt-1"><option>Long</option><option>Short</option></select></div>
+ x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2
+ mt-1"><option>Long</option><option>Short</option></select></div>
           
           <div class="grid grid-cols-2 gap-4">
-<div><label for="journalRiskPercent" class="block text-sm">風險倉位(R%)</label>
+ <div><label for="journalRiskPercent" class="block text-sm">風險倉位(R%)</label>
               <input type="number" id="journalRiskPercent" name="journalRiskPercent"
-step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-full
+ step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-full
  bg-gray-700 rounded p-2 mt-1"></div>
-<div><label for="journalRiskAmount" class="block text-sm">初始風險金額(1R)</label>
+ <div><label for="journalRiskAmount" class="block text-sm">初始風險金額(1R)</label>
               <input type="number" id="journalRiskAmount" name="journalRiskAmount"
  step="any" x-model.number="journalForm.riskAmount" placeholder="350" required class="w-full
  bg-gray-700 rounded p-2 mt-1"></div>
-</div>
+ </div>
           
           <div><label for="journalSetup" class="block text-sm">交易策略/Setup</label>
             <input type="text" id="journalSetup" name="journalSetup"
@@ -626,7 +600,7 @@ step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-
  p-2 mt-1"></div>
           
           <div class="p-3 bg-gray-900/50 rounded-lg space-y-3">
-<h4 class="text-sm font-semibold text-gray-300">深度複盤(選填)</h4>
+ <h4 class="text-sm font-semibold text-gray-300">深度複盤(選填)</h4>
             <div><label for="journalGrade" class="block text-xs text-gray-400">交易評分 (A, B, C...)</label>
               <input
  type="text" id="journalGrade" name="journalGrade" x-model="journalForm.grade" placeholder="A+" class="w-full bg-gray-700 rounded
@@ -639,18 +613,18 @@ step="0.01" x-model.number="journalForm.riskPercent" placeholder="1.0" class="w-
               <input
  type="text" id="journalMarketCondition" name="journalMarketCondition" x-model="journalForm.marketCondition" placeholder="強勢上漲,區間震盪..."
  class="w-full bg-gray-700 rounded p-2 mt-1 text-sm"></div>
-</div>
+ </div>
           
           <div><label for="journalRationale" class="block text-sm">進場理由</label>
             <textarea
  id="journalRationale" name="journalRationale"
-x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"
+ x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"
  placeholder="記錄進場的技術或基本面原因..."></textarea></div>
-<div>
+ <div>
             
             <label for="journalChartImage" class="block text-sm">股價圖片</label>
             <input type="file" id="journalChartImage" name="journalChartImage" @change="handleImageUpload($event, journalForm)"
-accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full
+ accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full
  file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
  cursor-pointer">
             
@@ -658,69 +632,69 @@ accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px
  :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto
  mx-auto">
                 <button type="button" @click="journalForm.chartImage = ''" class="absolute top-1
-right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center
+ right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center
  text-xs">&times;</button></div></template>
-</div>
+ </div>
           
           <div class="flex justify-between items-center pt-2">
             <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold
-py-2 px-4 rounded-lg" x-text="editingTradeId?'更新主交易':'儲存新主交易'"></button>
+ py-2 px-4 rounded-lg" x-text="editingTradeId?'更新主交易':'儲存新主交易'"></button>
             
             <button type="button" @click="resetForm" x-show="editingTradeId"
-class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-</div>
-</form>
-</div> <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700
+ class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+ </div>
+ </form>
+ </div> <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700
  overflow-x-auto"> <div class="mb-6">
-<h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">主交易列表
-</h2>
+ <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">主交易列表
+ </h2>
           
-<table class="w-full text-sm text-left whitespace-nowrap"> <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4
-py-3">開倉日</th><th class="px-4 py-3">代號</th><th class="px-4 py-3">狀態</th><th
-class="px-4 py-3">現有R倍數</th><th class="px-4 py-3">操作</th></tr></thead>
-<tbody>
+ <table class="w-full text-sm text-left whitespace-nowrap"> <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4
+ py-3">開倉日</th><th class="px-4 py-3">代號</th><th class="px-4 py-3">狀態</th><th
+ class="px-4 py-3">現有R倍數</th><th class="px-4 py-3">操作</th></tr></thead>
+ <tbody>
               <template x-for="trade in trades" :key="trade.id">
                 <tr @click="selectTrade(trade)" class="border-b border-gray-700
-hover:bg-gray-700/50 cursor-pointer" :class="{'bg-blue-900/50': selectedTradeId === trade.id}">
+ hover:bg-gray-700/50 cursor-pointer" :class="{'bg-blue-900/50': selectedTradeId === trade.id}">
                   
-<td class="px-4
-py-3" x-text="trade.entryDate"></td>
-<td class="px-4
-py-3" x-text="trade.ticker"></td>
+ <td class="px-4
+ py-3" x-text="trade.entryDate"></td>
+ <td class="px-4
+ py-3" x-text="trade.ticker"></td>
                   
                   <td class="px-4
-py-3"><span x-text="getTradeDetails(trade).status"
-:class="getTradeDetails(trade).status === 'Open'? 'text-yellow-400':
-'text-gray-400'"></span></td>
+ py-3"><span x-text="getTradeDetails(trade).status"
+ :class="getTradeDetails(trade).status === 'Open'? 'text-yellow-400':
+ 'text-gray-400'"></span></td>
                   
                   <td class="px-4 py-3 font-mono" x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`"
-:class="getTradeDetails(trade).rMultiple >= 0? 'text-green-400': 'text-red-400'"></td>
+ :class="getTradeDetails(trade).rMultiple >= 0? 'text-green-400': 'text-red-400'"></td>
                   
                   <td class="px-4 py-3 flex gap-2"><button @click.stop="editTrade(trade)"
-class="text-blue-400 hover:text-blue-300">編輯</button><button
-@click.stop="deleteTrade(trade.id)" class="text-red-400 hover:text-red-300">刪除</button></td>
-</tr>
-</template>
+ class="text-blue-400 hover:text-blue-300">編輯</button><button
+ @click.stop="deleteTrade(trade.id)" class="text-red-400 hover:text-red-300">刪除</button></td>
+ </tr>
+ </template>
               
               <tr x-show="trades.length === 0"><td colspan="5" class="text-center py-8
-text-gray-500">暫無交易記錄</td></tr>
-</tbody>
-</table>
-</div>
+ text-gray-500">暫無交易記錄</td></tr>
+ </tbody>
+ </table>
+ </div>
 
         <div x-show="selectedTradeId" x-cloak>
           
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex
-justify-between">
-<span>子交易記錄(<span x-text="selectedTrade? selectedTrade.ticker:
-''"></span>)</span>
+ justify-between">
+ <span>子交易記錄(<span x-text="selectedTrade? selectedTrade.ticker:
+ ''"></span>)</span>
             <button @click="showTxnForm = !showTxnForm" class="text-sm bg-green-600
  hover:bg-green-500 px-3 py-1 rounded-lg" x-text="showTxnForm?'關閉表單':'新增記錄
   '"></button>
-</h2>
+ </h2>
           
           <div x-show="showTxnForm" class="bg-gray-700/50 p-4 rounded-lg mb-4">
-<h3 class="font-semibold mb-2" x-text="editingTxnId?'編輯子交易':'新增子交易
+ <h3 class="font-semibold mb-2" x-text="editingTxnId?'編輯子交易':'新增子交易
 '"></h3>
             
             <form @submit.prevent="saveSubTransaction" class="space-y-3">
@@ -728,18 +702,18 @@ justify-between">
                 
                 <div><label for="txnType" class="text-xs">動作</label>
                   <select id="txnType" name="txnType" x-model="txnForm.type"
-class="w-full bg-gray-800 rounded p-2 mt-1
-text-sm"><option>Buy</option><option>Sell</option></select></div>
+ class="w-full bg-gray-800 rounded p-2 mt-1
+ text-sm"><option>Buy</option><option>Sell</option></select></div>
                 
                 <div><label for="txnDate" class="text-xs">日期</label>
                   <input type="date" id="txnDate" name="txnDate"
-x-model="txnForm.date" required class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
+ x-model="txnForm.date" required class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
  
                 <div><label for="txnQuantity" class="text-xs">股數</label>
                   <input type="number" id="txnQuantity" name="txnQuantity" step="any"
-x-model.number="txnForm.quantity" required placeholder="100" class="w-full bg-gray-800
+ x-model.number="txnForm.quantity" required placeholder="100" class="w-full bg-gray-800
  rounded p-2 mt-1 text-sm"></div>
-</div>
+ </div>
               
                 <div><label for="txnPrice" class="text-xs">價格</label>
                   <input type="number" id="txnPrice" name="txnPrice" step="any"
@@ -748,113 +722,101 @@ x-model.number="txnForm.quantity" required placeholder="100" class="w-full bg-gr
                 
                 <div><label for="txnNotes" class="text-xs">備註</label>
                   <input type="text" id="txnNotes" name="txnNotes"
-x-model="txnForm.notes" placeholder="跌穿5天線,賣出1/3" class="w-full bg-gray-800 rounded
+ x-model="txnForm.notes" placeholder="跌穿5天線,賣出1/3" class="w-full bg-gray-800 rounded
  p-2 mt-1 text-sm"></div>
               
                 <div class="flex justify-end gap-3 pt-2">
-<button type="button" @click="resetTxnForm" class="text-xs bg-gray-600
-hover:bg-gray-500 px-3 py-1.5 rounded-lg">取消</button>
-<button type="submit" class="text-xs bg-blue-600 hover:bg-blue-500 px-3
-py-1.5 rounded-lg" x-text="editingTxnId?'更新記錄':'儲存記錄'"></button>
-</div>
-</form>
-</div> <table class="w-full text-sm text-left whitespace-nowrap">
-<thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4
-py-2">日期</th><th class="px-4 py-2">動作</th><th class="px-4 py-2">股數</th><th
+ <button type="button" @click="resetTxnForm" class="text-xs bg-gray-600
+ hover:bg-gray-500 px-3 py-1.5 rounded-lg">取消</button>
+ <button type="submit" class="text-xs bg-blue-600 hover:bg-blue-500 px-3
+ py-1.5 rounded-lg" x-text="editingTxnId?'更新記錄':'儲存記錄'"></button>
+ </div>
+ </form>
+ </div> <table class="w-full text-sm text-left whitespace-nowrap">
+ <thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th class="px-4
+ py-2">日期</th><th class="px-4 py-2">動作</th><th class="px-4 py-2">股數</th><th
  class="px-4 py-2">價格</th><th class="px-4 py-2">備註</th><th class="px-4 py-2">操作
  </th></tr></thead>
-<tbody>
+ <tbody>
               <template x-for="txn in (selectedTrade? selectedTrade.transactions.sort((a, b)
  => new Date(a.date) - new Date(b.date)): [])" :key="txn.id">
-<tr class="border-b border-gray-700">
-<td class="px-4
-py-2"
-x
--text="txn.date"></td>
-                  <td class="px-4
-py-2
-"
-x
--text="txn.type" :class="txn.type === 'Buy'?
-'text-green-400': 'text-red-400' "></td>
-<td class="px-4
-py-2
-"
-x-text="txn.quantity"></td>
-<td class="px-4
-py-2" x-text="txn.price"></td>
-<td class="px-4
-py-2 text-gray-400" x-text="txn.notes"></td>
+ <tr class="border-b border-gray-700">
+ <td class="px-4 py-2" x-text="txn.date"></td>
+                  <td class="px-4 py-2" x-text="txn.type" :class="txn.type === 'Buy'?
+ 'text-green-400': 'text-red-400' "></td>
+ <td class="px-4 py-2" x-text="txn.quantity"></td>
+ <td class="px-4 py-2" x-text="txn.price"></td>
+ <td class="px-4 py-2 text-gray-400" x-text="txn.notes"></td>
                   <td class="px-4 py-2 flex gap-2">
-<button @click="editSubTransaction(txn)" class="text-blue-400
-hover:text-blue-300 text-xs">編輯</button>
-<button @click="deleteSubTransaction(txn.id)" class="text-red-400
-hover:text-red-300 text-xs">刪除</button>
-</td>
-</tr>
-</template>
-</tbody>
-</table>
-</div> </div> </div>
-</div>
-<div x-show="activeTab === 'modelBook'" x-cloak>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+ <button @click="editSubTransaction(txn)" class="text-blue-400
+ hover:text-blue-300 text-xs">編輯</button>
+ <button @click="deleteSubTransaction(txn.id)" class="text-red-400
+ hover:text-red-300 text-xs">刪除</button>
+ </td>
+ </tr>
+ </template>
+ </tbody>
+ </table>
+ </div> </div> </div>
+ </div>
+  <div x-show="activeTab === 'modelBook'" x-cloak>
+ <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700
  h-fit self-start">
         
         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2"
-x-text="editingModelBookId?'編輯模型':'新增模型'"></h2>
+ x-text="editingModelBookId?'編輯模型':'新增模型'"></h2>
         
         <form @submit.prevent="saveModelBook" class="space-y-4">
  <div class="grid grid-cols-2 gap-4">
             
             <div><label for="modelName" class="block text-sm">名稱</label>
               <input type="text" id="modelName" name="modelName"
-x-model="modelBookForm.name" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+ x-model="modelBookForm.name" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
  
             <div><label for="modelTicker" class="block text-sm">代號</label>
               <input type="text" id="modelTicker" name="modelTicker"
-x-model="modelBookForm.ticker" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-</div>
+ x-model="modelBookForm.ticker" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+ </div>
 
-<div class="grid grid-cols-2 gap-4">
+ <div class="grid grid-cols-2 gap-4">
             
             <div><label for="modelMarket" class="block text-sm">市場</label>
               <input type="text" id="modelMarket" name="modelMarket"
-x-model="modelBookForm.market" placeholder="US, HK" class="w-full bg-gray-700 rounded
+ x-model="modelBookForm.market" placeholder="US, HK" class="w-full bg-gray-700 rounded
  p-2 mt-1"></div>
             
             <div><label for="modelYear" class="block text-sm">年份</label>
               <input type="number" id="modelYear" name="modelYear"
-x-model.number="modelBookForm.year" placeholder="2023" class="w-full bg-gray-700 rounded
+ x-model.number="modelBookForm.year" placeholder="2023" class="w-full bg-gray-700 rounded
  p-2 mt-1"></div>
-</div>
+ </div>
           
           <div><label for="modelSector" class="block text-sm">行業</label>
             <input type="text" id="modelSector" name="modelSector"
-x-model="modelBookForm.sector" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+ x-model="modelBookForm.sector" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
           
           <div><label for="modelPattern" class="block text-sm">型態</label>
             <input type="text" id="modelPattern" name="modelPattern"
-x-model="modelBookForm.pattern" placeholder="Cup with Handle, VCP..." class="w-full
+ x-model="modelBookForm.pattern" placeholder="Cup with Handle, VCP..." class="w-full
  bg-gray-700 rounded p-2 mt-1"></div>
           
           <div><label for="modelPerformance" class="block text-sm">突破後表現</label>
             <input type="text" id="modelPerformance" name="modelPerformance"
-x-model="modelBookForm.performance" placeholder="+150% in 3 months" class="w-full
-bg-gray-700 rounded p-2 mt-1"></div>
+ x-model="modelBookForm.performance" placeholder="+150% in 3 months" class="w-full
+ bg-gray-700 rounded p-2 mt-1"></div>
           
           <div><label for="modelPivot" class="block text-sm">關鍵買入點</label>
             <textarea id="modelPivot" name="modelPivot"
-x-model="modelBookForm.pivot" rows="2" class="w-full bg-gray-700 rounded p-2
-mt-1"></textarea></div>
+ x-model="modelBookForm.pivot" rows="2" class="w-full bg-gray-700 rounded p-2
+ mt-1"></textarea></div>
           
           <div><label for="modelTakeaways" class="block text-sm">心得</label>
             <textarea id="modelTakeaways" name="modelTakeaways"
-x-model="modelBookForm.takeaways" rows="3" class="w-full bg-gray-700 rounded p-2
+ x-model="modelBookForm.takeaways" rows="3" class="w-full bg-gray-700 rounded p-2
  mt-1"></textarea></div>
-<div>
+ <div>
             
             <label for="modelChartImage" class="block text-sm">圖表快照</label>
             <input type="file" id="modelChartImage" name="modelChartImage" @change="handleImageUpload($event, modelBookForm)"
@@ -863,23 +825,23 @@ x-model="modelBookForm.takeaways" rows="3" class="w-full bg-gray-700 rounded p-2
  cursor-pointer">
             
             <template x-if="modelBookForm.chartImage">
-<div class="relative mt-2">
+ <div class="relative mt-2">
                 <img :src="modelBookForm.chartImage" alt="Chart
-Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button"
-@click="modelBookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white
+ Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button"
+ @click="modelBookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white
  rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div>
-</template>
-</div>
+ </template>
+ </div>
           
           <div class="flex justify-between items-center pt-2">
-<button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold
-py-2 px-4 rounded-lg" x-text="editingModelBookId?'更新':'儲存'"></button>
-<button type="button" @click="resetModelBookForm"
-x-show="editingModelBookId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2
+ <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold
+ py-2 px-4 rounded-lg" x-text="editingModelBookId?'更新':'儲存'"></button>
+ <button type="button" @click="resetModelBookForm"
+ x-show="editingModelBookId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2
  px-4 rounded-lg">取消</button>
-</div>
-</form>
-</div> <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+ </div>
+ </form>
+ </div> <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
  <h2 class="text-xl font-semibold">模型庫</h2>
           
@@ -901,36 +863,36 @@ x-show="editingModelBookId" class="bg-gray-600 hover:bg-gray-500 text-white font
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto">
  
           <template x-for="model in modelBooks" :key="model.id">
-<div class="bg-gray-700 rounded-xl overflow-hidden border border-gray-600">
+ <div class="bg-gray-700 rounded-xl overflow-hidden border border-gray-600">
               
               <img :src="model.chartImage ||
-'https://placehold.co/600x400/1f2937/9ca3af?text=No+Image'" class="w-full h-64 object-cover
+ 'https://placehold.co/600x400/1f2937/9ca3af?text=No+Image'" class="w-full h-64 object-cover
  cursor-pointer" @click="openChartModal(model.chartImage || '')">
 
               <div class="p-4">
                 <h3 class="font-bold text-lg" x-text="`${model.name} (${model.ticker})`"></h3>
  
                 <span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-green-900
-text-green-300" x-text="model.pattern"></span>
+ text-green-300" x-text="model.pattern"></span>
                 
                 <p class="text-sm text-gray-300 mt-2"><strong class="text-gray-400">表現:
-</strong> <span x-text="model.performance"></span></p>
+ </strong> <span x-text="model.performance"></span></p>
                 
                 <p class="text-sm text-gray-300 mt-2 h-12 overflow-y-auto"><strong
-class="text-gray-400">心得:</strong> <span x-text="model.takeaways"></span></p>
+ class="text-gray-400">心得:</strong> <span x-text="model.takeaways"></span></p>
                 
                 <div class="mt-4 flex justify-end gap-2"><button
-@click="editModelBook(model)" class="text-blue-400 hover:text-blue-300">編輯
-</button><button @click="deleteModelBook(model.id)" class="text-red-400 hover:text-red-300">
+ @click="editModelBook(model)" class="text-blue-400 hover:text-blue-300">編輯
+ </button><button @click="deleteModelBook(model.id)" class="text-red-400 hover:text-red-300">
  刪除</button></div>
-</div>
-</div>
-</template> <div x-show="modelBooks.length === 0" class="md:col-span-2 text-center py-16
-text-gray-500"><p>您的模型庫是空的,請在左方新增您的第一個成功案例模型。</p></div>
-</div>
-</div> </div>
-</div>
-<div x-show="activeTab === 'performance'" x-cloak>
+ </div>
+ </div>
+ </template> <div x-show="modelBooks.length === 0" class="md:col-span-2 text-center py-16
+ text-gray-500"><p>您的模型庫是空的,請在左方新增您的第一個成功案例模型。</p></div>
+ </div>
+ </div> </div>
+ </div>
+ <div x-show="activeTab === 'performance'" x-cloak>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -1166,18 +1128,18 @@ class="py-2 px-4 bg-blue-600 hover:bg-blue-500 rounded-lg disabled:opacity-50
 </div>
 </div>
 </div>
-  <script type="module">
+<script type="module">
     // --- 引入 Firebase 模組 ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
-signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from
-"https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc,
- serverTimestamp, query, orderBy, updateDoc, arrayUnion, arrayRemove } from
- "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+     signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from
+     "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc,
+     serverTimestamp, query, orderBy, updateDoc, arrayUnion, arrayRemove } from
+     "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     // --- 引入 Alpine.js 模組 ---
-import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
+    import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
 
     /**
      * 計算標準差 (Standard Deviation)
@@ -1185,107 +1147,107 @@ import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.
      * @param {number[]} arr - 一個數字陣列 (例如 R 倍數陣列)。
      * @returns {number} - 陣列的標準差。
      */
-function stdDev(arr) {
-if (arr.length < 2) return 0;
-const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
-return Math.sqrt(variance);
+    function stdDev(arr) {
+      if (arr.length < 2) return 0;
+      const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+      const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
+      return Math.sqrt(variance);
     }
     
     /**
      * Alpine.js 主應用程式數據和邏輯
      * 這是整個應用的核心，管理所有狀態和方法。
      */
-function tradingApp() {
-return {
+    function tradingApp() {
+      return {
 
         // --- 系統狀態 (System State) ---
-isInitialized: false,    // 是否初始化完成 (用於隱藏加載畫面)
-isLoggedIn: false,       // 用戶是否已登入
+        isInitialized: false,    // 是否初始化完成 (用於隱藏加載畫面)
+        isLoggedIn: false,       // 用戶是否已登入
         activeTab: 'dashboard',  // 當前選中的頁籤 (默認為儀表板)
-isLoading: false,        // 是否正在加載 AI 數據
+        isLoading: false,        // 是否正在加載 AI 數據
         isUploadingImage: false, // (此變數在原始碼中已定義但未使用)
         isModalOpen: false,      // "顯示大圖" 彈窗是否開啟
         modalImageUrl: '',       // "顯示大圖" 彈窗中的圖片 URL
-authView: 'login',       // 認證視圖 ('login' 或 'register')
+        authView: 'login',       // 認證視圖 ('login' 或 'register')
         authForm: { email: '', password: '' }, // 登入/註冊表單的綁定數據
         authError: '',           // 登入/註冊時的錯誤訊息
-appVersion: '6.2.3-fixed', // 應用程式版本
+        appVersion: '6.2.3-fixed', // 應用程式版本
         lastUpdated: '2025-10-27', // 最後更新日期
 
         // --- Firebase 實例 ---
-db: null,     // Firestore 數據庫實例
-auth: null,   // Firebase 認證實例
+        db: null,     // Firestore 數據庫實例
+        auth: null,   // Firebase 認證實例
         userId: null, // 當前登入用戶的 UID
         unsubscribers: [], // 用於儲存 Firebase 監聽器，以便在登出時取消訂閱
 
         // --- 設定 (Settings) ---
-settings: {
-aiProvider: 'gemini',    // AI 供應商 (gemini 或 custom)
+        settings: {
+          aiProvider: 'gemini',    // AI 供應商 (gemini 或 custom)
           customApiKey: '',      // 自訂 API Key
           customApiUrl: '',      // 自訂 API 端點
           usdPrincipal: 35000    // 戶口本金 (默認為 35000)
         },
 
         // --- 核心數據陣列 (Data Arrays) ---
-trades: [],          // 交易日誌 (主交易) 列表
-marketJournals: [],  // 市場日誌列表
+        trades: [],          // 交易日誌 (主交易) 列表
+        marketJournals: [],  // 市場日誌列表
         buyPlans: [],        // 買入計劃列表
         modelBooks: [],      // 模型庫列表
         reflections: [],     // 自我反思列表
 
         // --- 交易日誌頁面狀態 (Journal State) ---
-selectedTradeId: null, // 當前在右側列表中選中的主交易 ID
-showTxnForm: false,    // 是否顯示 "新增子交易" 表單
+        selectedTradeId: null, // 當前在右側列表中選中的主交易 ID
+        showTxnForm: false,    // 是否顯示 "新增子交易" 表單
         editingTxnId: null,  // 正在編輯的子交易 ID (null 表示新增)
-quickSizer: { riskPercent: 1.0, riskAmount: 0 }, // 頂部快速注碼計算器數據
+        quickSizer: { riskPercent: 1.0, riskAmount: 0 }, // 頂部快速注碼計算器數據
         // 子交易表單 (txnForm) 的默認值
-txnForm: { type: 'Buy', date: new Date().toISOString().slice(0, 10), quantity: null, price: null,
+        txnForm: { type: 'Buy', date: new Date().toISOString().slice(0, 10), quantity: null, price: null,
  notes: ''},
 
         // --- 日曆 (Calendar) 狀態 ---
-calendar: { year: new Date().getFullYear(), month: new Date().getMonth(), days: [] }, // 日曆狀態
-showDateTradesModal: false,   // 是否顯示 "當日交易" 彈窗
+        calendar: { year: new Date().getFullYear(), month: new Date().getMonth(), days: [] }, // 日曆狀態
+        showDateTradesModal: false,   // 是否顯示 "當日交易" 彈窗
         selectedDateForTrades: '',    // 在 "當日交易" 彈窗中顯示的日期
         tradesForSelectedDate: [],    // "當日交易" 彈窗中顯示的交易列表
 
         // --- 各種表單 (Forms) 狀態 ---
-editingTradeId: null,     // 正在編輯的主交易 ID (null 表示新增)
-journalForm: {},          // 交易日誌表單數據
-editingMarketJournalId: null, // 正在編輯的市場日誌 ID
+        editingTradeId: null,     // 正在編輯的主交易 ID (null 表示新增)
+        journalForm: {},          // 交易日誌表單數據
+        editingMarketJournalId: null, // 正在編輯的市場日誌 ID
         marketJournalForm: {},    // 市場日誌表單數據
-editingBuyPlanId: null,   // 正在編輯的買入計劃 ID
+        editingBuyPlanId: null,   // 正在編輯的買入計劃 ID
         buyPlanForm: {},          // 買入計劃表單數據
-editingModelBookId: null, // 正在編輯的模型庫 ID
+        editingModelBookId: null, // 正在編輯的模型庫 ID
         modelBookForm: {},        // 模型庫表單數據
-editingReflectionId: null, // 正在編輯的自我反思 ID
+        editingReflectionId: null, // 正在編輯的自我反思 ID
         reflectionForm: {},       // 自我反思表單數據
 
         // --- 搜尋 (Search) 狀態 ---
-searchTerm: '',      // 搜尋框輸入的文字
-searchResults: [],   // 搜尋結果列表
+        searchTerm: '',      // 搜尋框輸入的文字
+        searchResults: [],   // 搜尋結果列表
 
         // --- 注碼計算機 (Calculator) 狀態 ---
-stopLossPercent: 4.6,
-currentRiskPercent: 1,
+        stopLossPercent: 4.6,
+        currentRiskPercent: 1,
         customRiskPercent: null,
 
         // --- 圖表 (Charts) 實例 ---
-plChart: null,           // 績效回顧頁 (Performance) 的資金曲線圖實例
-dashboardPIChart: null,  // 儀表板頁 (Dashboard) 的資金曲線圖實例
+        plChart: null,           // 績效回顧頁 (Performance) 的資金曲線圖實例
+        dashboardPIChart: null,  // 儀表板頁 (Dashboard) 的資金曲線圖實例
 
         // --- AI 狀態 ---
-aiAnalysisResult: '',        // (原始碼中已定義但未使用)
-maxDrawdownAnalysis: '',     // "最大回撤" AI 分析結果 (HTML)
+        aiAnalysisResult: '',        // (原始碼中已定義但未使用)
+        maxDrawdownAnalysis: '',     // "最大回撤" AI 分析結果 (HTML)
         aiEmotionAnalysisResult: '', // "情緒分析" AI 分析結果 (HTML)
-aiModelBookAnalysis: '',     // "模型庫" AI 分析結果 (HTML)
-reviewNotes: { monthly: '', improve: '', goals: '' }, // "績效回顧" 頁的筆記
-aiChatHistory: [],           // 儀表板 AI 對話歷史記錄
+        aiModelBookAnalysis: '',     // "模型庫" AI 分析結果 (HTML)
+        reviewNotes: { monthly: '', improve: '', goals: '' }, // "績效回顧" 頁的筆記
+        aiChatHistory: [],           // 儀表板 AI 對話歷史記錄
         aiQuery: '',                 // 儀表板 AI 提問輸入框的綁定數據
 
         // --- 工作流程 (Workflow) 狀態 ---
-showChecklistModal: false,     // 是否顯示 "交易前檢查清單" 彈窗
-currentPlanToExecute: null,  // "檢查清單" 彈窗中正在操作的 "買入計劃"
+        showChecklistModal: false,     // 是否顯示 "交易前檢查清單" 彈窗
+        currentPlanToExecute: null,  // "檢查清單" 彈窗中正在操作的 "買入計劃"
         checklistItems: [],          // "檢查清單" 彈窗中的檢查項列表
 
         // --- 計算屬性 (Computed Properties) ---
@@ -1294,84 +1256,84 @@ currentPlanToExecute: null,  // "檢查清單" 彈窗中正在操作的 "買入�
          * [計算屬性] 獲取當前選中的主交易物件
          * @returns {object | null} 完整的主交易物件，或 null。
          */
-get selectedTrade() { return this.trades.find(t => t.id === this.selectedTradeld) || null; },
+        get selectedTrade() { return this.trades.find(t => t.id === this.selectedTradeId) || null; },
 
         /**
          * [計算屬性] (用於 'calculator' 頁) 計算 1R 對應的美元金額
          */
-get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100);
-},
+        get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100);
+        },
         
         /**
          * [計算屬性] (用於 'calculator' 頁) 計算頭寸規模 (美元)
          */
         get positionSizeUsd() { if (!this.stopLossPercent) return 0; return this.rValueUsd /
-(this.stopLossPercent / 100); },
+ (this.stopLossPercent / 100); },
         
         /**
          * [計算屬性] 檢查 "交易前檢查清單" 是否已全部勾選
          * @returns {boolean}
          */
-get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
+        get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
         /**
          * [計算屬性] 核心績效計算
          * 遍歷所有 'Closed' 交易，計算所有關鍵指標。
          * @returns {object} 包含 winRate, totalPl, avgR 等指標的物件。
          */
-get performance() {
+        get performance() {
           // 1. 獲取所有已平倉 (Closed) 的交易詳情
-const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status ===
-'Closed');
-const totalTrades = closedTrades.length; // 已平倉交易總數
+          const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status ===
+ 'Closed');
+          const totalTrades = closedTrades.length; // 已平倉交易總數
 
           // 2. 如果沒有已平倉交易，返回默認的 0 值
-if (totalTrades === 0) return { winRate: 0, totalPl: 0, avgR: 0, totalTrades: 0, profitFactor:
+          if (totalTrades === 0) return { winRate: 0, totalPl: 0, avgR: 0, totalTrades: 0, profitFactor:
  0, avgWin: 0, avgLoss: 0, avgWinLossRatio: 0, maxDrawdown: 0, rStdDev: 0, sharpeRatio: 0 };
           
           // 3. 篩選盈利和虧損交易
-const winningTrades = closedTrades.filter(t => t.totalPl > 0);
-const losingTrades = closedTrades.filter(t => t.totalPl < 0);
+          const winningTrades = closedTrades.filter(t => t.totalPl > 0);
+          const losingTrades = closedTrades.filter(t => t.totalPl < 0);
           
           // 4. 計算總盈虧 (P&L) 和總 R 倍數
-const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
-const totalR = closedTrades.reduce((sum, t) => sum + t.rMultiple, 0);
+          const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
+          const totalR = closedTrades.reduce((sum, t) => sum + t.rMultiple, 0);
           
           // 5. 計算毛利 (Gross Profit) 和毛虧 (Gross Loss)
-const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
-const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.totalPl, 0));
+          const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
+          const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.totalPl, 0));
  
           // 6. 計算平均盈利 (Avg Win) 和平均虧損 (Avg Loss)
           const avgWin = winningTrades.length > 0 ?
-grossProfit / winningTrades.length: 0;
+ grossProfit / winningTrades.length: 0;
           const avgLoss = losingTrades.length > 0 ? grossLoss / losingTrades.length: 0;
           
           // 7. 計算最大回撤 (Max Drawdown)
-let peak = 0, maxDrawdown = 0, cumulativePl = 0;
+          let peak = 0, maxDrawdown = 0, cumulativePl = 0;
           // 按日期排序交易
-const plHistory = closedTrades.sort((a,b) => new Date(a.parent.entryDate) - new
-Date(b.parent.entryDate)).map(t => t.totalPl);
+          const plHistory = closedTrades.sort((a,b) => new Date(a.parent.entryDate) - new
+ Date(b.parent.entryDate)).map(t => t.totalPl);
           // 遍歷 P&L 歷史
-plHistory.forEach(pl => { 
+          plHistory.forEach(pl => { 
             cumulativePl += pl; // 累計 P&L
             peak = Math.max(peak, cumulativePl); // 更新最高點 (High Water Mark)
             maxDrawdown = Math.max(maxDrawdown, peak - cumulativePl); // 計算當前回撤，並更新最大回撤
           });
           
           // 8. 計算 R 倍數的標準差 (用於評分和夏普比率)
-const rValues = closedTrades.map(t => t.rMultiple);
-const rStdDev = rValues.length > 1? stdDev(rValues): 0;
+          const rValues = closedTrades.map(t => t.rMultiple);
+          const rStdDev = rValues.length > 1? stdDev(rValues): 0;
           const avgR = totalTrades > 0 ? totalR / totalTrades: 0; // 平均 R 倍數
-const sharpeRatio = rStdDev > 0 ? avgR/rStdDev: 0; // 夏普比率 (簡化版)
+          const sharpeRatio = rStdDev > 0 ? avgR/rStdDev: 0; // 夏普比率 (簡化版)
           
           // 9. 返回所有計算結果
-return { 
+          return { 
             winRate: (winningTrades.length / totalTrades) * 100, // 勝率
             totalPl, // 總盈虧
             avgR, // 平均 R
             totalTrades, // 總交易數
             profitFactor: grossLoss > 0 ?
-grossProfit/grossLoss: 0, // 利潤因子
+ grossProfit/grossLoss: 0, // 利潤因子
             avgWin, // 平均盈利
             avgLoss, // 平均虧損
             avgWinLossRatio:
@@ -1380,25 +1342,25 @@ grossProfit/grossLoss: 0, // 利潤因子
             rStdDev, // R 標準差
             sharpeRatio // 夏普比率
           };
-},
+        },
 
         /**
          * [計算屬性] 交易者評分 (雷達圖)
          * 根據 'performance' 的各項指標計算綜合分數和雷達圖座標。
          * @returns {object} 包含 score 和雷達圖點 (points) 的物件。
          */
-get traderScore() {
-const p = this.performance; // 獲取績效數據
+        get traderScore() {
+          const p = this.performance; // 獲取績效數據
 
           // 1. 如果交易次數太少，返回 0 分和空數據
-if (p.totalTrades < 5) {
-const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
+          if (p.totalTrades < 5) {
+            const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
           return { score: 0, metrics: {}, gridPoints: Array(5).fill(defaultPoints), axisPoints: [],
-labelPoints: [], dataPoints: defaultPoints };
-}
+ labelPoints: [], dataPoints: defaultPoints };
+          }
 
           // 2. 將各項績效指標 "歸一化" (Normalize) 到 0-100 分
-const metrics = {
+          const metrics = {
             winRate: Math.min(p.winRate * 1.5, 100),                         // 勝率 (乘以 1.5, 66% 以上為滿分)
             profitFactor: Math.min((p.profitFactor / 3) * 100, 100),        // 利潤因子 (3 以上為滿分)
             avgR: Math.min((p.avgR / 0.8) * 100, 100),                       // 平均 R (0.8R 以上為滿分)
@@ -1408,144 +1370,144 @@ const metrics = {
           };
           
           // 3. 各項指標的權重
-const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15,
+          const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15,
  recoveryFactor: 0.1, maxDrawdown: 0.15};
           
           // 4. 計算加權總分
-let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0)*
-weights[key], 0);
-score = Math.max(0, Math.min(score, 100)); // 確保分數在 0-100 之間
+          let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0)*
+ weights[key], 0);
+          score = Math.max(0, Math.min(score, 100)); // 確保分數在 0-100 之間
           
           // 5. 計算雷達圖座標 (SVG 繪圖)
-const center = 100, radius = 90; // SVG 畫布中心和半徑
-const labels = ["勝率","利潤因子","平均R值","一致性","回報因子","最大回撤"];
+          const center = 100, radius = 90; // SVG 畫布中心和半徑
+          const labels = ["勝率","利潤因子","平均R值","一致性","回報因子","最大回撤"];
           const angleSlice = (Math.PI* 2) / labels.length; // 每個維度之間的夾角 (弧度)
 
           // 輔助函數：將 (分數, 索引) 轉換為 SVG 座標點 (e.g., "150,50")
-const toPoint = (value, i) => {
-const r = radius* (value / 100); // 根據分數計算該點到中心的距離
+          const toPoint = (value, i) => {
+            const r = radius* (value / 100); // 根據分數計算該點到中心的距離
             // (angleSlice * i - Math.PI / 2) 是為了讓第一個點 (勝率) 在正上方 (i=0)
-const x = center + r * Math.cos(angleSlice * i - Math.PI/ 2);
-const y = center + r * Math.sin(angleSlice *i - Math.PI/ 2);
-return `${x},${y}`;
-};
+            const x = center + r * Math.cos(angleSlice * i - Math.PI/ 2);
+            const y = center + r * Math.sin(angleSlice *i - Math.PI/ 2);
+            return `${x},${y}`;
+          };
           
           // 6. 生成雷達圖所需的各種 "點" 數據
           // 背景網格 (5 個同心多邊形)
-const gridPoints = Array.from({ length: 5 }, (_, i) => Array.from({ length: labels.length},
+          const gridPoints = Array.from({ length: 5 }, (_, i) => Array.from({ length: labels.length},
  (_, j) => toPoint(100* (i + 1)/5, j)).join(' '));
           // 軸線終點 (用於畫 6 條從中心出發的線)
-const axisPoints = labels.map((_, i) => ({ x: center + radius * Math.cos(angleSlice * i -
+          const axisPoints = labels.map((_, i) => ({ x: center + radius * Math.cos(angleSlice * i -
  Math.PI/2), y: center + radius * Math.sin(angleSlice * i - Math.PI/2) }));
           // 標籤文字位置 (在軸線終點外側 15 個單位)
-const labelPoints = labels.map((label, i) => ({ label, x: center + (radius + 15)*
+          const labelPoints = labels.map((label, i) => ({ label, x: center + (radius + 15)*
  Math.cos(angleSlice * i - Math.PI/2), y: center + (radius + 15)* Math.sin(angleSlice *i - Math.PI
  / 2) }));
           // 數據多邊形的頂點 (用戶的實際分數)
-const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
+          const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
           
           // 7. 返回所有數據
           return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
-},
+        },
 
         // ===== 生命週期 (Lifecycle) =====
 
-       /**
+        /**
          * [生命週期] Alpine.js 初始化時執行 (x-init="init()")
          * *** 程式碼修正 (Fix) ***
          * 修正了 和 之間錯誤的 "字串換行"。
          * 這會導致 "Uncaught SyntaxError"，並使程式卡在加載畫面。
          */
-init() {
+        init() {
           // 設置一個超時。如果在 5 秒內 Firebase 仍未響應
           // (isInitialized 仍為 false)，則強制顯示登入畫面，
           // 避免無限卡在 "正在連接雲端..."。
-const initializationTimeout = setTimeout(() => {
-if (!this.isInitialized) {
+          const initializationTimeout = setTimeout(() => {
+            if (!this.isInitialized) {
               
               // (修正) 將兩行合併為一行，解決 SyntaxError
-console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
+              console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
               
               // 強制設置為 true，以便 x-show="!isInitialized" 隱藏加載畫面
-this.isInitialized = true; 
-}
-}, 5000);
+              this.isInitialized = true; 
+            }
+          }, 5000);
           
           // 監聽 'isInitialized' 變數
-this.$watch('isInitialized', (value) => {
+          this.$watch('isInitialized', (value) => {
             if (value) {
               // 如果 'isInitialized' 變為 true (無論是 Firebase 響應還是超時)，
               // 都清除這個 5 秒的超時計時器。
-clearTimeout(initializationTimeout);
-}
+              clearTimeout(initializationTimeout);
+            }
           });
 
-this.loadSettings();      // 從 localStorage 加載用戶設定
-this.resetAllForms();     // 重置所有表單
-this.initFirebase();    // 初始化 Firebase 連接
-this.generateCalendar();  // 生成當月日曆
+          this.loadSettings();      // 從 localStorage 加載用戶設定
+          this.resetAllForms();     // 重置所有表單
+          this.initFirebase();    // 初始化 Firebase 連接 (*** 關鍵修復點 ***)
+          this.generateCalendar();  // 生成當月日曆
 
           // --- 設置 $watch 監聽器 ---
           // 監聽月份或年份變化，自動重新生成日曆
-this.$watch('calendar.month', () => this.generateCalendar());
-this.$watch('calendar.year', () => this.generateCalendar());
+          this.$watch('calendar.month', () => this.generateCalendar());
+          this.$watch('calendar.year', () => this.generateCalendar());
           // 監聽 'trades' 數據變化 (例如新增/刪除交易)，自動重新生成日曆 (以更新 P&L)
-this.$watch('trades', () => this.generateCalendar());
+          this.$watch('trades', () => this.generateCalendar());
           
           // 監聽 "快速注碼計算器" 的 R% 變化，自動更新 1R 金額
-this.$watch('quickSizer.riskPercent', (val) => this.quickSizer.riskAmount =
-(this.settings.usdPrincipal * (val / 100)));
+          this.$watch('quickSizer.riskPercent', (val) => this.quickSizer.riskAmount =
+ (this.settings.usdPrincipal * (val / 100)));
           // 監聽 "戶口本金" 變化，自動更新 1R 金額
-this.$watch('settings.usdPrincipal', (val) => this.quickSizer.riskAmount = (val *
-(this.quickSizer.riskPercent / 100)));
+          this.$watch('settings.usdPrincipal', (val) => this.quickSizer.riskAmount = (val *
+ (this.quickSizer.riskPercent / 100)));
 
           // 監聽 'activeTab' 變化
-this.$watch('activeTab', (newTab) => {
+          this.$watch('activeTab', (newTab) => {
             // 如果切換到 'performance' 或 'dashboard' 頁面
-if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
+            if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
               // 使用 this.$nextTick 確保 DOM 元素 (canvas) 已經顯示出來
               this.$nextTick(() => {
                 // 然後才渲染圖表
-this.renderChart('plChart');
-this.renderChart('dashboardPIChart');
-});
-}
-});
-},
+                this.renderChart('plChart');
+                this.renderChart('dashboardPIChart');
+              });
+            }
+          });
+        },
 
         /**
          * [輔助] 從 localStorage 加載設定
          */
-loadSettings() {
-const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
+        loadSettings() {
+          const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
           if (savedSettings) {
             // 合併加載的設定和默認設定
-this.settings = {...this.settings, ...JSON.parse(savedSettings) };
-}
-},
+            this.settings = {...this.settings, ...JSON.parse(savedSettings) };
+          }
+        },
 
         /**
          * [輔助] 保存設定到 localStorage
          * @param {boolean} showAlert - 是否顯示 "儲存成功" 提示框
          */
-saveSettings(showAlert = false) {
-localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
-if (showAlert) {
+        saveSettings(showAlert = false) {
+          localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
+          if (showAlert) {
             alert('設定已儲存!');
           }
-},
+        },
 
         /**
          * [核心] 初始化 Firebase
          */
-async initFirebase() {
-try {
+        async initFirebase() {
+          try {
             // 
             // *** ！！！！！！！！！！！！！！！！！！！！ ***
-            // *** 核 心 BUG 修 復          ***
+            // *** 核 心 BUG 修 復 (卡在加載畫面) ***
             // *** ！！！！！！！！！！！！！！！！！！！！ ***
             // 
-            // 原始碼 中，firebaseConfig 的所有鍵值對
+            // 原始碼中，firebaseConfig 的所有鍵值對
             // 都錯誤地寫在了 const firebaseConfig = {} 的 *外部*。
             //
             // 我已將所有鍵值對 *移入* {} 內部，並修正了
@@ -1554,68 +1516,67 @@ try {
             //
             // 這將解決「卡在正在連接雲端...」的根本問題。
             //
-const firebaseConfig = {
-apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
-authDomain: "my-trading-workbench.firebaseapp.com",
-projectId: "my-trading-workbench", // (修正: projectid -> projectId)
-storageBucket: "my-trading-workbench.appspot.com",
-messagingSenderId: "386958713208",
-appId: "1:386958713208:web:028035e1ac4b47bd55e88d", // (修正: appld -> appId)
-measurementId: "G-2WEVVMRHV7"
-};
+            const firebaseConfig = {
+              apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
+              authDomain: "my-trading-workbench.firebaseapp.com",
+              projectId: "my-trading-workbench", // (修正: projectid -> projectId)
+              storageBucket: "my-trading-workbench.appspot.com",
+              messagingSenderId: "386958713208",
+              appId: "1:386958713208:web:028035e1ac4b47bd55e88d", // (修正: appld -> appId)
+              measurementId: "G-2WEVVMRHV7"
+            };
 
             // 初始化 Firebase App
-const app = initializeApp(firebaseConfig);
+            const app = initializeApp(firebaseConfig);
             // 獲取 Firestore 和 Auth 服務的實例
-this.db = getFirestore(app);
-this.auth = getAuth(app);
+            this.db = getFirestore(app);
+            this.auth = getAuth(app);
 
             // 設置一個持續的認證狀態監聽器
-onAuthStateChanged(this.auth, (user) => {
+            onAuthStateChanged(this.auth, (user) => {
               // 收到 Firebase 響應，設置為 true (清除 5 秒超時)
-this.isInitialized = true;
+              this.isInitialized = true;
               
-if (user) {
+              if (user) {
                 // --- 用戶已登入 ---
-this.isLoggedIn = true;
-this.userId = user.uid; // 保存用戶 ID
-this.initializeDataListeners(); // 初始化所有數據庫監聽器
-} else {
+                this.isLoggedIn = true;
+                this.userId = user.uid; // 保存用戶 ID
+                this.initializeDataListeners(); // 初始化所有數據庫監聽器
+              } else {
                 // --- 用戶未登入 / 已登出 ---
-this.isLoggedIn = false;
-this.userId = null;
-this.clearAllData(); // 清除所有本地數據並取消監聽
-}
-});
+                this.isLoggedIn = false;
+                this.userId = null;
+                this.clearAllData(); // 清除所有本地數據並取消監聽
+              }
+            });
 
-} catch (e) {
+          } catch (e) {
             // 如果 Firebase 初始化 (initializeApp) 失敗
-console.error("Firebase initialization failed:", e);
-this.authError = "Firebase 初始化失敗。";
+            console.error("Firebase initialization failed:", e);
+            this.authError = "Firebase 初始化失敗。";
             // 同樣設置為 true，以顯示登入頁面 (而不是卡在加載)
-this.isInitialized = true;
-}
-},
+            this.isInitialized = true;
+          }
+        },
   
         /**
          * [核心] 初始化所有 Firebase 數據監聽器
          * 登入成功後調用此函數。
          */
-initializeDataListeners() {
-if (!this.userId) return; // 如果沒有 userId (理論上不會發生)，則返回
+        initializeDataListeners() {
+          if (!this.userId) return; // 如果沒有 userId (理論上不會發生)，則返回
 
           // 監聽 'trades' 集合，按 'entryDate' 降序排序
-this.loadCollection('trades', 'trades', 'entryDate');
+          this.loadCollection('trades', 'trades', 'entryDate');
           // 監聽 'marketJournals' 集合，按 'date' 降序排序
-this.loadCollection('marketJournals', 'marketJournals', 'date');
+          this.loadCollection('marketJournals', 'marketJournals', 'date');
           // 監聽 'buyPlans' 集合，按 'name' 升序排序
-this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc')
-;
+          this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc');
           // 監聽 'modelBooks' 集合，按 'name' 升序排序
-this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
+          this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
           // 監聽 'reflections' 集合，按 'date' 降序排序
-this.loadCollection('reflections', 'reflections', 'date');
-},
+          this.loadCollection('reflections', 'reflections', 'date');
+        },
 
         /**
          * [輔助] 通用的集合加載函數
@@ -1624,84 +1585,84 @@ this.loadCollection('reflections', 'reflections', 'date');
          * @param {string} orderByField - 排序字段
          * @param {string} orderDirection - 排序方向 ('asc' 或 'desc')
          */
-loadCollection(path, targetProperty, orderByField, orderDirection = "desc") {
+        loadCollection(path, targetProperty, orderByField, orderDirection = "desc") {
           // 創建一個查詢 (Query)
-const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField,
-orderDirection));
+          const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField,
+ orderDirection));
           
           // onSnapshot 創建一個實時監聽器
-const unsub = onSnapshot(q, (snapshot) => {
+          const unsub = onSnapshot(q, (snapshot) => {
             // 當數據庫有任何變動時，此回調函數會觸發
-this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-}, (error) => console.error(`Error loading ${path}:`, error));
+            this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          }, (error) => console.error(`Error loading ${path}:`, error));
           
           // 將 "取消監聽" 函數保存起來，以便登出時調用
-this.unsubscribers.push(unsub);
-},
+          this.unsubscribers.push(unsub);
+        },
 
         // ===== 認證 (Auth) =====
 
         /**
          * [Auth] 註冊新帳號
          */
-async register() {
-try {
-await createUserWithEmailAndPassword(this.auth, this.authForm.email,
-this.authForm.password);
-this.authError = ''; // 註冊成功，清空錯誤
-} catch (e) {
-this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
-}
-},
+        async register() {
+          try {
+            await createUserWithEmailAndPassword(this.auth, this.authForm.email,
+ this.authForm.password);
+            this.authError = ''; // 註冊成功，清空錯誤
+          } catch (e) {
+            this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
+          }
+        },
 
         /**
          * [Auth] 電子郵件/密碼登入
          */
-async login() {
-try {
-await signInWithEmailAndPassword(this.auth, this.authForm.email,
-this.authForm.password);
-this.authError = ''; // 登入成功，清空錯誤
-} catch (e) {
-this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
-}
-},
+        async login() {
+          try {
+            await signInWithEmailAndPassword(this.auth, this.authForm.email,
+ this.authForm.password);
+            this.authError = ''; // 登入成功，清空錯誤
+          } catch (e) {
+            this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
+          }
+        },
 
         /**
          * [Auth] Google 登入
          */
-async loginWithGoogle() {
-try {
-const provider = new GoogleAuthProvider(); // 創建 Google 供應商
-await signInWithPopup(this.auth, provider); // 彈窗登入
-this.authError = ''; // 登入成功
-} catch (e) {
-this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
-}
-},
+        async loginWithGoogle() {
+          try {
+            const provider = new GoogleAuthProvider(); // 創建 Google 供應商
+            await signInWithPopup(this.auth, provider); // 彈窗登入
+            this.authError = ''; // 登入成功
+          } catch (e) {
+            this.authError = this.getFirebaseAuthErrorMessage(e.code); // 顯示錯誤訊息
+          }
+        },
 
         /**
          * [Auth] 登出
          */
-async logout() {
-await signOut(this.auth);
+        async logout() {
+          await signOut(this.auth);
           // onAuthStateChanged 監聽器會自動觸發，並調用 clearAllData()
-},
+        },
 
         /**
          * [Auth] 根據 Firebase 錯誤碼返回繁體中文錯誤訊息
          * @param {string} errorCode - Firebase Auth 返回的錯誤碼
          * @returns {string} - 對應的中文訊息
          */
-getFirebaseAuthErrorMessage(errorCode) {
-switch (errorCode) {
-case 'auth/invalid-email': return '電子郵件格式不正確。';
-case 'auth/user-not-found': return '找不到該用戶。';
-case 'auth/wrong-password': return '密碼錯誤。';
-case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
-default: return '登入或註冊時發生錯誤。';
-}
-},
+        getFirebaseAuthErrorMessage(errorCode) {
+          switch (errorCode) {
+            case 'auth/invalid-email': return '電子郵件格式不正確。';
+            case 'auth/user-not-found': return '找不到該用戶。';
+            case 'auth/wrong-password': return '密碼錯誤。';
+            case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
+            default: return '登入或註冊時發生錯誤。';
+          }
+        },
 
         // ===== 核心 (Core) =====
 
@@ -1711,34 +1672,34 @@ default: return '登入或註冊時發生錯誤。';
          * @param {string | null} entityId - 要更新的文檔 ID (null 表示新增)
          * @param {object} formData - 要保存的表單數據
          */
-async saveEntity(collectionName, entityId, formData) {
-try {
-const path = `users/${this.userId}/${collectionName}`;
-const dataToSave = { ...formData }; // 複製表單數據
+        async saveEntity(collectionName, entityId, formData) {
+          try {
+            const path = `users/${this.userId}/${collectionName}`;
+            const dataToSave = { ...formData }; // 複製表單數據
 
-if (entityId) {
+            if (entityId) {
               // --- 更新 (Update) ---
-await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
-} else {
+              await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
+            } else {
               // --- 新增 (Add) ---
-dataToSave.createdAt = serverTimestamp(); // 添加伺服器時間戳
-await addDoc(collection(this.db, path), dataToSave);
-}
-} catch (e) {
-console.error(`Error saving to ${collectionName}:`, e);
-}
-},
+              dataToSave.createdAt = serverTimestamp(); // 添加伺服器時間戳
+              await addDoc(collection(this.db, path), dataToSave);
+            }
+          } catch (e) {
+            console.error(`Error saving to ${collectionName}:`, e);
+          }
+        },
 
         /**
          * [Core] 通用的刪除實體 (Entity) 函數
          * @param {string} collectionName - 集合名稱
          * @param {string} entityId - 要刪除的文檔 ID
          */
-async deleteEntity(collectionName, entityId) {
-if (confirm('確定要刪除嗎?')) { // 彈窗確認
-await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
-}
-},
+        async deleteEntity(collectionName, entityId) {
+          if (confirm('確定要刪除嗎?')) { // 彈窗確認
+            await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
+          }
+        },
 
         /**
          * [Core] 處理圖片上傳 (Input type=file)
@@ -1746,290 +1707,290 @@ await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId)
          * @param {Event} event - input file 的 change 事件
          * @param {object} targetForm - 要將 Base64 數據存入的表單物件 (e.g., journalForm)
          */
-handleImageUpload(event, targetForm) {
-const file = event.target.files[0]; // 獲取文件
-if (file) {
-const reader = new FileReader(); // 創建 FileReader
-reader.onload = (e) => {
+        handleImageUpload(event, targetForm) {
+          const file = event.target.files[0]; // 獲取文件
+          if (file) {
+            const reader = new FileReader(); // 創建 FileReader
+            reader.onload = (e) => {
               // 當讀取完成時，將 result (Base64 字符串) 賦值給表單的 chartImage 屬性
               targetForm.chartImage = e.target.result; 
             };
-reader.readAsDataURL(file); // 開始讀取文件
-}
-},
+            reader.readAsDataURL(file); // 開始讀取文件
+          }
+        },
 
         /**
          * [Core] 格式化貨幣
          * @param {number} value - 數值
          * @param {string} currency - 貨幣代碼 (e.g., 'USD')
-         * @returns {string} - 格式化後的貨幣字符串 (e.g., "$350.00")
+         * @returns {string} - 格式化后的貨幣字符串 (e.g., "$350.00")
          */
-formatCurrency(value, currency = 'USD') {
-if (typeof value !== 'number') return value;
-return new Intl.NumberFormat('en-US', { 
+        formatCurrency(value, currency = 'USD') {
+          if (typeof value !== 'number') return value;
+          return new Intl.NumberFormat('en-US', { 
             style: 'currency', 
             currency: currency, 
-minimumFractionDigits: 2 
+            minimumFractionDigits: 2 
           }).format(value);
-},
+        },
 
         /**
          * [Core] 清除所有本地數據 (登出時調用)
          */
-clearAllData() {
+        clearAllData() {
           // 遍歷所有 Firebase 監聽器並調用它們以 "取消訂閱"
-this.unsubscribers.forEach(unsub => unsub());
-this.unsubscribers = []; // 清空監聽器陣列
+          this.unsubscribers.forEach(unsub => unsub());
+          this.unsubscribers = []; // 清空監聽器陣列
           
           // 清空所有本地數據陣列
-this.trades = [];
-this.marketJournals = [];
-this.buyPlans = [];
-this.modelBooks = [];
-this.reflections = [];
-},
+          this.trades = [];
+          this.marketJournals = [];
+          this.buyPlans = [];
+          this.modelBooks = [];
+          this.reflections = [];
+        },
 
         /**
          * [Core] 打開 "顯示大圖" 彈窗
          * @param {string} url - 圖片的 Base64 或 URL
          */
-openChartModal(url) {
-if (url) {
-this.modalImageUrl = url;
-this.isModalOpen = true;
-}
-},
+        openChartModal(url) {
+          if (url) {
+            this.modalImageUrl = url;
+            this.isModalOpen = true;
+          }
+        },
 
         /**
          * [Core] 關閉 "顯示大圖" 彈窗
          */
-closeChartModal() {
-this.isModalOpen = false;
-this.modalImageUrl = '';
-},
+        closeChartModal() {
+          this.isModalOpen = false;
+          this.modalImageUrl = '';
+        },
 
         // ===== 表單 (Form) 管理 =====
 
         /**
          * [Form] 重置所有 "新增/編輯" 表單
          */
-resetAllForms() {
-this.resetForm();
-this.resetMarketJournalForm();
-this.resetBuyPlanForm();
-this.resetModelBookForm();
-this.resetReflectionForm();
-},
+        resetAllForms() {
+          this.resetForm();
+          this.resetMarketJournalForm();
+          this.resetBuyPlanForm();
+          this.resetModelBookForm();
+          this.resetReflectionForm();
+        },
 
         /**
          * [Form] 獲取指定類型的空白表單模板
          * @param {string} type - 表單類型 (e.g., 'journal', 'txn')
          * @returns {object} - 空白的表單物件
          */
-getBlankForm(type) {
-const today = new Date().toISOString().slice(0, 10); // 獲取 "YYYY-MM-DD" 格式的今天日期
+        getBlankForm(type) {
+          const today = new Date().toISOString().slice(0, 10); // 獲取 "YYYY-MM-DD" 格式的今天日期
           switch (type) {
-case 'journal': 
+            case 'journal': 
               return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: 350, setup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] };
-case 'marketJournal': 
+            case 'marketJournal': 
               return { date: today, marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', sentiment: 3, summary: '' };
-case 'buyPlan': 
+            case 'buyPlan': 
               return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' };
-case 'modelBook': 
+            case 'modelBook': 
               return { name: '', ticker: '', market: '', year: new Date().getFullYear(),
-sector: '', pattern: '', performance: '', pivot: '', takeaways: '', chartImage: '' };
-case 'reflection': 
+ sector: '', pattern: '', performance: '', pivot: '', takeaways: '', chartImage: '' };
+            case 'reflection': 
               return { date: today, problem: '', thoughts: '' };
-case 'txn': // 子交易
+            case 'txn': // 子交易
               return { type: 'Buy', date: today, quantity: null, price: null, notes: '' };
             default: return {};
-}
-},
+          }
+        },
 
         // --- 各個表單的重置函數 ---
-resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
+        resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
         resetMarketJournalForm() { this.editingMarketJournalId = null; this.marketJournalForm =
-this.getBlankForm('marketJournal'); },
-resetBuyPlanForm() { this.editingBuyPlanId = null; this.buyPlanForm =
-this.getBlankForm('buyPlan'); },
-resetModelBookForm() { this.editingModelBookId = null; this.modelBookForm =
+ this.getBlankForm('marketJournal'); },
+        resetBuyPlanForm() { this.editingBuyPlanId = null; this.buyPlanForm =
+ this.getBlankForm('buyPlan'); },
+        resetModelBookForm() { this.editingModelBookId = null; this.modelBookForm =
  this.getBlankForm('modelBook'); },
-resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm =
-this.getBlankForm('reflection'); },
-resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn');
+        resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm =
+ this.getBlankForm('reflection'); },
+        resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn');
  this.showTxnForm = false; },
 
         // ===== 儲存與編輯 (Save & Edit) - (非日誌) =====
         // (這些是為未來 'marketJournal', 'buyPlan', 'modelBook', 'reflection' 頁面準備的函數)
         
-saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId,
-this.marketJournalForm); this.resetMarketJournalForm(); },
-editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm =
-{...entry }; this.activeTab = 'marketJournal'; },
-deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
+        saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId,
+ this.marketJournalForm); this.resetMarketJournalForm(); },
+        editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm =
+ {...entry }; this.activeTab = 'marketJournal'; },
+        deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
 
-saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm);
-this.resetBuyPlanForm(); },
-editBuyPlan(plan) { this.editingBuyPlanId = plan.id; this.buyPlanForm = {...plan };
+        saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm);
+ this.resetBuyPlanForm(); },
+        editBuyPlan(plan) { this.editingBuyPlanId = plan.id; this.buyPlanForm = {...plan };
  this.activeTab = 'buyPlan'; },
-deleteBuyPlan(id) { this.deleteEntity('buyPlans', id); },
+        deleteBuyPlan(id) { this.deleteEntity('buyPlans', id); },
 
-saveModelBook() { this.saveEntity('modelBooks', this.editingModelBookId,
-this.modelBookForm); this.resetModelBookForm(); },
-editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = {
+        saveModelBook() { this.saveEntity('modelBooks', this.editingModelBookId,
+ this.modelBookForm); this.resetModelBookForm(); },
+        editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = {
  ...model }; this.activeTab = 'modelBook'; },
-deleteModelBook(id) { this.deleteEntity('modelBooks', id); },
+        deleteModelBook(id) { this.deleteEntity('modelBooks', id); },
 
-saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm);
-this.resetReflectionForm(); },
-editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry };
+        saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm);
+ this.resetReflectionForm(); },
+        editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry };
  this.activeTab = 'reflection'; },
-deleteReflection(id) { this.deleteEntity('reflections', id); },
+        deleteReflection(id) { this.deleteEntity('reflections', id); },
 
         // ===== 交易日誌 (Journal) 專用函數 =====
 
         /**
          * [Journal] 應用 "快速注碼計算" 的結果到 "新增交易" 表單
          */
-applyQuickSizer() {
-this.journalForm.riskPercent = this.quickSizer.riskPercent;
-this.journalForm.riskAmount = this.quickSizer.riskAmount;
-},
+        applyQuickSizer() {
+          this.journalForm.riskPercent = this.quickSizer.riskPercent;
+          this.journalForm.riskAmount = this.quickSizer.riskAmount;
+        },
 
         /**
          * [Journal] 在 "主交易列表" 中選中或取消選中一筆交易
          * @param {object} trade - 被點擊的 trade 物件
          */
-selectTrade(trade) {
+        selectTrade(trade) {
           // 如果點擊的已是選中項，則取消選中 (設為 null)；否則選中它
-this.selectedTradeId = (this.selectedTradeld === trade.id)? null: trade.id;
-if (this.selectedTradeld) {
+          this.selectedTradeId = (this.selectedTradeId === trade.id)? null: trade.id;
+          if (this.selectedTradeId) {
             this.resetTxnForm(); // 選中新的主交易時，重置子交易表單
           }
-},
+        },
 
-/**
+        /**
          * [Journal] 保存一筆 "子交易" (Buy/Sell)
          * *** 程式碼修正 (Fix) ***
          * 修正了原始碼中 和 之間的錯誤換行。
          * 修正了原始碼中 和 之間的錯誤換行。
          */
-async saveSubTransaction() {
-if (!this.selectedTradeld) return; // 安全檢查：必須先選中一個主交易
-        
+        async saveSubTransaction() {
+          if (!this.selectedTradeId) return; // 安全檢查：必須先選中一個主交易
+
           // 獲取主交易的 Firebase 文檔引用
-const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeld);
-        
-if (this.editingTxnld) {
+          const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+
+          if (this.editingTxnId) {
             // --- 更新子交易 (Update) ---
             
             // (修正) 獲取 *不包含* 正在編輯的 txn 的新陣列 (修正了錯誤的換行)
-const existingTxns = this.selectedTrade.transactions.filter(t => t.id !== this.editingTxnld);
+            const existingTxns = this.selectedTrade.transactions.filter(t => t.id !== this.editingTxnId);
             
             // (修正) 使用 updateDoc 更新 transactions 陣列 (修正了錯誤的換行)
-await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id: this.editingTxnld }] });
+            await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id: this.editingTxnId }] });
             
-} else {
+          } else {
             // --- 新增子交易 (Add) ---
             
             // (修正) 使用 arrayUnion (修正了錯誤的換行)
-await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id: Date.now().toString() }) });
-}
+            await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id: Date.now().toString() }) });
+          }
           
-this.resetTxnForm(); // 重置表單
-},
+          this.resetTxnForm(); // 重置表單
+        },
+
         /**
          * [Journal] 編輯一筆 "子交易"
          * @param {object} txn - 要編輯的子交易物件
          */
-editSubTransaction(txn) {
-this.editingTxnld = txn.id; // 設置正在編輯的 ID
-this.txnForm = { ...txn };  // 將 txn 數據加載到表單
-this.showTxnForm = true;  // 顯示表單
-},
+        editSubTransaction(txn) {
+          this.editingTxnId = txn.id; // 設置正在編輯的 ID
+          this.txnForm = { ...txn };  // 將 txn 數據加載到表單
+          this.showTxnForm = true;  // 顯示表單
+        },
 
         /**
          * [Journal] 刪除一筆 "子交易"
          * @param {string} txnId - 要刪除的子交易 ID
          */
-async deleteSubTransaction(txnId) {
-if (!this.selectedTradeld) return;
+        async deleteSubTransaction(txnId) {
+          if (!this.selectedTradeId) return;
 
-const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeld);
+          const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
           // 找到要刪除的那個子交易物件
-const txnToRemove = this.selectedTrade.transactions.find(t => t.id === txnId);
+          const txnToRemove = this.selectedTrade.transactions.find(t => t.id === txnId);
           
-if (txnToRemove) {
+          if (txnToRemove) {
             // 使用 arrayRemove 原子性地從 transactions 陣列中移除該物件
-await updateDoc(tradeRef, { transactions: arrayRemove(txnToRemove) });
+            await updateDoc(tradeRef, { transactions: arrayRemove(txnToRemove) });
           }
         },
 
         /**
          * [Journal] 保存 "主交易" (新增或更新)
          */
-async saveTrade() {
-await this.saveEntity('trades', this.editingTradeld, this.journalForm);
-this.resetForm(); // 保存後重置表單
-},
+        async saveTrade() {
+          await this.saveEntity('trades', this.editingTradeId, this.journalForm);
+          this.resetForm(); // 保存後重置表單
+        },
 
         /**
          * [Journal] 編輯 "主交易"
          * @param {object} trade - 要編輯的主交易物件
          */
-editTrade(trade) {
-this.editingTradeld = trade.id; // 設置正在編輯的 ID
+        editTrade(trade) {
+          this.editingTradeId = trade.id; // 設置正在編輯的 ID
           // 將 trade 數據加載到表單 (確保 transactions 陣列存在)
-this.journalForm = {...trade, transactions: trade.transactions || [] };
-this.activeTab = 'journal'; // 切換到 "交易日誌" 頁面
-this.selectTrade(trade);    // 在右側列表中選中它
-},
+          this.journalForm = {...trade, transactions: trade.transactions || [] };
+          this.activeTab = 'journal'; // 切換到 "交易日誌" 頁面
+          this.selectTrade(trade);    // 在右側列表中選中它
+        },
 
         /**
          * [Journal] 刪除 "主交易"
          * @param {string} id - 要刪除的主交易 ID
          */
-async deleteTrade(id) {
-await this.deleteEntity('trades', id);
-this.selectedTradeld = null; // 取消選中
-},
+        async deleteTrade(id) {
+          await this.deleteEntity('trades', id);
+          this.selectedTradeId = null; // 取消選中
+        },
 
         /**
          * *** 關鍵函數修復 ***
-         * 原始碼 (P40) 中定義了 getTradeDetails，
-         * 這是計算 P&L 的核心。我將其插入到這裡。
+         * 從 PDF 的 處合併了這個核心函數。
          * [Journal] 計算單筆主交易的詳細信息 (狀態, P&L, R倍數)
          * @param {object} trade - 主交易物件 (包含 transactions 陣列)
          * @returns {object} - { status, totalPl, rMultiple, parent }
          */
-getTradeDetails(trade) {
-const txns = trade.transactions || [];
-const buyTxns = txns.filter(t => t.type === 'Buy');
-const sellTxns = txns.filter(t => t.type === 'Sell');
+        getTradeDetails(trade) {
+          const txns = trade.transactions || [];
+          const buyTxns = txns.filter(t => t.type === 'Buy');
+          const sellTxns = txns.filter(t => t.type === 'Sell');
 
-const totalBuyQty = buyTxns.reduce((sum, t) => sum + t.quantity, 0);
-const totalSellQty = sellTxns.reduce((sum, t) => sum + t.quantity, 0);
-const totalBuyValue = buyTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
-const totalSellValue = sellTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
+          const totalBuyQty = buyTxns.reduce((sum, t) => sum + t.quantity, 0);
+          const totalSellQty = sellTxns.reduce((sum, t) => sum + t.quantity, 0);
+          const totalBuyValue = buyTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
+          const totalSellValue = sellTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
           
           // 狀態：如果買入總量 > 0 且 買入總量 == 賣出總量，則為 'Closed'
-const status = totalBuyQty > 0 && totalBuyQty === totalSellQty ? 'Closed' : 'Open';
-const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0; // 平均買入價
+          const status = totalBuyQty > 0 && totalBuyQty === totalSellQty ? 'Closed' : 'Open';
+          const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0; // 平均買入價
 
-let totalPl = 0; // (修正：原始碼為 totalPI)
-if (status === 'Closed') {
+          let totalPl = 0; 
+          if (status === 'Closed') {
             // 已平倉：總賣出金額 - 總買入金額
-totalPl = totalSellValue - totalBuyValue;
-} else {
+            totalPl = totalSellValue - totalBuyValue;
+          } else {
             // 未平倉 (或部分平倉)：只計算已賣出部分的 P&L
-totalPl = totalSellValue - (avgBuyPrice * totalSellQty);
-}
+            totalPl = totalSellValue - (avgBuyPrice * totalSellQty);
+          }
           
           // 計算 R 倍數
-const rMultiple = trade.riskAmount > 0 ? totalPl / trade.riskAmount : 0;
+          const rMultiple = trade.riskAmount > 0 ? totalPl / trade.riskAmount : 0;
 
-return { status, totalPl, rMultiple, parent: trade };
-},
+          return { status, totalPl, rMultiple, parent: trade };
+        },
 
 
         // ===== 工作流程 (Workflow) =====
@@ -2038,38 +1999,38 @@ return { status, totalPl, rMultiple, parent: trade };
          * [Workflow] 打開 "交易前檢查清單" 彈窗
          * @param {object} plan - 從 "買入計劃" 頁面傳來的 plan 物件
          */
-openPreTradeChecklist(plan) {
-this.currentPlanToExecute = plan; // 保存當前計劃
+        openPreTradeChecklist(plan) {
+          this.currentPlanToExecute = plan; // 保存當前計劃
           // 動態生成檢查項
-this.checklistItems = [
-{text:`市場狀況適合此策略(${plan.pattern})嗎?`, checked: false },
-{text:'風險是否在我的承受範圍內?', checked: false },
-{text:'我已確認關鍵價位(買點、止損)?', checked: false },
-{text:'我是否因 FOMO 或其他情緒而交易?', checked: false },
-{text:'這筆交易符合我的交易計劃嗎?',checked: false }
-];
-this.showChecklistModal = true; // 顯示彈窗
-},
+          this.checklistItems = [
+            {text:`市場狀況適合此策略(${plan.pattern})嗎?`, checked: false },
+            {text:'風險是否在我的承受範圍內?', checked: false },
+            {text:'我已確認關鍵價位(買點、止損)?', checked: false },
+            {text:'我是否因 FOMO 或其他情緒而交易?', checked: false },
+            {text:'這筆交易符合我的交易計劃嗎?',checked: false }
+          ];
+          this.showChecklistModal = true; // 顯示彈窗
+        },
 
         /**
          * [Workflow] 從 "檢查清單" 執行開倉
          * (將 'buyPlan' 數據複製到 'journalForm' 並切換頁面)
          */
-executeTradeFromPlan() {
-if (!this.allChecklistItemsChecked) return; // 必須全部勾選
+        executeTradeFromPlan() {
+          if (!this.allChecklistItemsChecked) return; // 必須全部勾選
           const plan = this.currentPlanToExecute;
 
-this.resetForm(); // 重置日誌表單
+          this.resetForm(); // 重置日誌表單
           // 從 "買入計劃" 複製數據到 "交易日誌" 表單
-this.journalForm.ticker = plan.ticker;
-this.journalForm.setup = plan.pattern;
-this.journalForm.rationale = plan.rationale;
-this.journalForm.chartImage = plan.chartImage;
+          this.journalForm.ticker = plan.ticker;
+          this.journalForm.setup = plan.pattern;
+          this.journalForm.rationale = plan.rationale;
+          this.journalForm.chartImage = plan.chartImage;
           
-this.activeTab = 'journal'; // 切換到 "交易日誌" 頁面
-this.showChecklistModal = false; // 關閉彈窗
-this.currentPlanToExecute = null;
-},
+          this.activeTab = 'journal'; // 切換到 "交易日誌" 頁面
+          this.showChecklistModal = false; // 關閉彈窗
+          this.currentPlanToExecute = null;
+        },
 
         // ===== 搜尋 & 圖表 (Search & Chart) =====
         // (*** 函數修復 ***: 從 P42 補全)
@@ -2077,23 +2038,24 @@ this.currentPlanToExecute = null;
         /**
          * [Search] 搜尋 (佔位符)
          */
-search() { 
+        search() { 
           console.log("Searching for:", this.searchTerm);
           // 實際的搜尋邏輯應在此處實現
+          // this.searchResults = ...
         },
         /**
          * [Search] 跳轉到搜尋結果 (佔位符)
          */
-goToSearchResult(item) { 
+        goToSearchResult(item) { 
           console.log("Go to:", item);
           // 實際的跳轉邏輯應在此處實現
+          // e.g., if (item.type === 'Trade') { this.activeTab = 'journal'; this.selectTrade(item); }
         },
         /**
          * [Chart] 渲染圖表 (佔位符)
          * @param {string} canvasId - <canvas> 元素的 ID
          */
         renderChart(canvasId) { 
-          console.log("Attempting to render chart on:", canvasId);
           // 
           // *** 實際的 Chart.js 渲染邏輯應在此處實現 ***
           //
@@ -2127,96 +2089,95 @@ goToSearchResult(item) {
         /**
          * [Calendar] 生成日曆網格數據
          */
-generateCalendar() {
-const date = new Date(this.calendar.year, this.calendar.month, 1);
-const days = [];
-const startDay = date.getDay(); // (0=Sun, 1=Mon, ...)
-const daysInMonth = new Date(this.calendar.year, this.calendar.month + 1, 0).getDate();
-const todayStr = new Date().toISOString().slice(0, 10);
+        generateCalendar() {
+          const date = new Date(this.calendar.year, this.calendar.month, 1);
+          const days = [];
+          const startDay = date.getDay(); // (0=Sun, 1=Mon, ...)
+          const daysInMonth = new Date(this.calendar.year, this.calendar.month + 1, 0).getDate();
+          const todayStr = new Date().toISOString().slice(0, 10);
 
           // 1. 填充上個月的空格
-for (let i = 0; i < startDay; i++) {
+          for (let i = 0; i < startDay; i++) {
             days.push({ date: null, dayOfMonth: null, isCurrentMonth: false });
           }
 
           // 2. 填充本月的日期
-for (let i = 1; i <= daysInMonth; i++) {
-const d = new Date(this.calendar.year, this.calendar.month, i);
-const dateStr = d.toISOString().slice(0, 10);
-days.push({ 
+          for (let i = 1; i <= daysInMonth; i++) {
+            const d = new Date(this.calendar.year, this.calendar.month, i);
+            const dateStr = d.toISOString().slice(0, 10);
+            days.push({ 
               date: dateStr, 
               dayOfMonth: i, 
               isCurrentMonth: true, 
-              isToday: dateStr ===
-todayStr, 
+              isToday: dateStr === todayStr, 
               pl: 0, 
               tradeCount: 0, 
               relatedTrades: new Set() // 使用 Set 
             });
-}
+          }
 
           // 3. 遍歷所有交易，計算每天的 P&L
-this.trades.forEach(trade => {
-(trade.transactions || []).forEach(txn => {
-const day = days.find(d => d.date === txn.date); // 找到日曆上對應的那一天
+          this.trades.forEach(trade => {
+            (trade.transactions || []).forEach(txn => {
+              const day = days.find(d => d.date === txn.date); // 找到日曆上對應的那一天
               
-if (day) {
-day.relatedTrades.add(trade.id); // 將主交易 ID 加入 Set
+              if (day) {
+                day.relatedTrades.add(trade.id); // 將主交易 ID 加入 Set
 
                 // 只在 "賣出 (Sell)" 時才計算 P&L
-if (txn.type === 'Sell') {
+                if (txn.type === 'Sell') {
                   // 找到此次賣出 *之前* (包含當天) 的所有買入
-const buysForThisSell = (trade.transactions || []).filter(t => t.type === 'Buy' &&
+                  const buysForThisSell = (trade.transactions || []).filter(t => t.type === 'Buy' &&
  new Date(t.date) <= new Date(txn.date));
                   
-const totalBuyQty = buysForThisSell.reduce((acc, t) => acc + t.quantity, 0);
-const totalBuyValue = buysForThisSell.reduce((acc, t) => acc + (t.price*
-t.quantity), 0);
-const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0;
+                  const totalBuyQty = buysForThisSell.reduce((acc, t) => acc + t.quantity, 0);
+                  const totalBuyValue = buysForThisSell.reduce((acc, t) => acc + (t.price*
+ t.quantity), 0);
+                  const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0;
                   
                   // 計算這筆 *子交易 (txn)* 產生的 P&L
                   const plForTxn = (txn.price - avgBuyPrice) * txn.quantity;
-day.pl += plForTxn; // 累加到當天的 P&L
-}
-}
-});
-});
+                  day.pl += plForTxn; // 累加到當天的 P&L
+                }
+              }
+            });
+          });
           
           // 4. 更新 tradeCount (Set 的 size)
-days.forEach(day => { if (day.relatedTrades) day.tradeCount = day.relatedTrades.size; });
+          days.forEach(day => { if (day.relatedTrades) day.tradeCount = day.relatedTrades.size; });
           
           this.calendar.days = days; // 更新日曆數據
-},
+        },
 
         /**
          * [Calendar] 顯示指定日期的交易 (彈窗)
          * @param {string} date - 日期 (YYYY-MM-DD)
          */
-showTradesForDate(date) {
-this.selectedDateForTrades = date;
-const day = this.calendar.days.find(d => d.date === date);
-if (day && day.relatedTrades) {
+        showTradesForDate(date) {
+          this.selectedDateForTrades = date;
+          const day = this.calendar.days.find(d => d.date === date);
+          if (day && day.relatedTrades) {
             // 從 'trades' 總列表中，篩選出 relatedTrades Set 中包含的 ID
-this.tradesForSelectedDate = this.trades.filter(t => day.relatedTrades.has(t.id));
-} else {
-this.tradesForSelectedDate = [];
-}
-this.showDateTradesModal = true; // 顯示彈窗
-},
+            this.tradesForSelectedDate = this.trades.filter(t => day.relatedTrades.has(t.id));
+          } else {
+            this.tradesForSelectedDate = [];
+          }
+          this.showDateTradesModal = true; // 顯示彈窗
+        },
 
         /**
          * [Calendar] 切換月份
          * @param {number} delta - 變化量 (-1 for Prev, +1 for Next)
          */
-changeMonth(delta) {
-let newMonth = this.calendar.month + delta;
-let newYear = this.calendar.year;
-if (newMonth > 11) { newMonth = 0; newYear++; }
-if (newMonth < 0) { newMonth = 11; newYear--; }
-this.calendar.month = newMonth;
-this.calendar.year = newYear;
+        changeMonth(delta) {
+          let newMonth = this.calendar.month + delta;
+          let newYear = this.calendar.year;
+          if (newMonth > 11) { newMonth = 0; newYear++; }
+          if (newMonth < 0) { newMonth = 11; newYear--; }
+          this.calendar.month = newMonth;
+          this.calendar.year = newYear;
           // $watch 會自動觸發 generateCalendar()
-},
+        },
 
         // ===== AI =====
         // (*** 函數修復 ***: 從 P43-44 補全)
@@ -2226,7 +2187,7 @@ this.calendar.year = newYear;
          * @param {string} prompt - 發送給 AI 的提示
          * @returns {Promise<string>} - AI 回覆的 (HTML) 字符串
          */
-async callAiApi(prompt) {
+        async callAiApi(prompt) {
           console.log("Calling AI with prompt (simulated):", prompt);
           // 
           // ！！！注意：這是一個佔位符 (Placeholder) ！！！
@@ -2235,80 +2196,87 @@ async callAiApi(prompt) {
           // 真正的 AI API (Gemini 或 Custom) 調用邏輯需要在此處實現。
           //
           // 為了 100% 保持原始碼，我將保留這個 "假" 的延遲函數。
-return new Promise(resolve => setTimeout(() => resolve(`<p>AI回應 (模擬): ${prompt}</p>`),
-1000));
-},
+          return new Promise(resolve => setTimeout(() => resolve(`<p>AI回應 (模擬): ${prompt}</p>`),
+ 1000));
+        },
 
         /**
          * [AI] 獲取 "儀表板" AI 總結
          */
-async getAiDashboardSummary() {
-this.isLoading = true;
-this.aiChatHistory.push({ role: 'ai', content: 'AI 總結中...' }); // 顯示 "總結中"
+        async getAiDashboardSummary() {
+          this.isLoading = true;
+          this.aiChatHistory.push({ role: 'ai', content: 'AI 總結中...' }); // 顯示 "總結中"
           this.scrollToBottom(this.$refs.aiSummaryContainer);
           
-const summary = await this.callAiApi("Summarize all performance data..."); // 調用 AI
+          const summary = await this.callAiApi("Summarize all performance data..."); // 調用 AI
           
-this.aiChatHistory.pop(); // 移除 "總結中"
-this.aiChatHistory.push({ role: 'ai', content: summary }); // 添加 AI 回覆
-this.isLoading = false;
-this.scrollToBottom(this.$refs.aiSummaryContainer);
-},
+          this.aiChatHistory.pop(); // 移除 "總結中"
+          this.aiChatHistory.push({ role: 'ai', content: summary }); // 添加 AI 回覆
+          this.isLoading = false;
+          this.scrollToBottom(this.$refs.aiSummaryContainer);
+        },
 
         /**
          * [AI] 在 "儀表板" 提問
          */
-async askAi() {
-if (!this.aiQuery) return; // 輸入為空則返回
+        async askAi() {
+          if (!this.aiQuery) return; // 輸入為空則返回
 
-const query = this.aiQuery; // 保存問題
-this.aiQuery = ''; // 清空輸入框
-this.isLoading = true;
+          const query = this.aiQuery; // 保存問題
+          this.aiQuery = ''; // 清空輸入框
+          this.isLoading = true;
           
-this.aiChatHistory.push({ role: 'user', content: query }); // 顯示用戶問題
-this.scrollToBottom(this.$refs.aiSummaryContainer);
+          this.aiChatHistory.push({ role: 'user', content: query }); // 顯示用戶問題
+          this.scrollToBottom(this.$refs.aiSummaryContainer);
 
-this.aiChatHistory.push({ role: 'ai', content: 'AI 正在思考中...' }); // 顯示 "思考中"
-this.scrollToBottom(this.$refs.aiSummaryContainer);
+          this.aiChatHistory.push({ role: 'ai', content: 'AI 正在思考中...' }); // 顯示 "思考中"
+          this.scrollToBottom(this.$refs.aiSummaryContainer);
           
-const answer = await this.callAiApi(`Data: ... Question: ${query}`); // 調用 AI
+          const answer = await this.callAiApi(`Data: ... Question: ${query}`); // 調用 AI
           
-this.aiChatHistory.pop(); // 移除 "思考中"
-this.aiChatHistory.push({ role: 'ai', content: answer }); // 顯示 AI 回覆
-this.isLoading = false;
-this.scrollToBottom(this.$refs.aiSummaryContainer);
-},
+          this.aiChatHistory.pop(); // 移除 "思考中"
+          this.aiChatHistory.push({ role: 'ai', content: answer }); // 顯示 AI 回覆
+          this.isLoading = false;
+          this.scrollToBottom(this.$refs.aiSummaryContainer);
+        },
 
         /**
          * [AI] (輔助) 滾動聊天框到底部
          * @param {HTMLElement} element - 聊天框的 DOM 元素 (來自 x-ref)
          */
-scrollToBottom(element) {
+        scrollToBottom(element) {
           // $nextTick 確保在 DOM 更新 (e.g., 新氣泡) 之後才執行
-this.$nextTick(() => { if (element) element.scrollTop = element.scrollHeight; });
-},
+          this.$nextTick(() => { if (element) element.scrollTop = element.scrollHeight; });
+        },
 
         // --- "績效回顧" 頁的 AI 函數 (佔位符) ---
-async getAiAnalysis() { this.aiAnalysisResult = await this.callAiApi("Analyze strategy..."); },
-async getAiDrawdownAnalysis() { this.maxDrawdownAnalysis = await
-this.callAiApi("Analyze drawdown..."); },
-async getAiEmotionAnalysis() { this.aiEmotionAnalysisResult = await
-this.callAiApi("Analyze emotions..."); },
-async getAiModelBookAnalysis() { this.aiModelBookAnalysis = await
-this.callAiApi("Analyze model book..."); },
-async getAiPerformanceReview() { 
+        async getAiAnalysis() { this.aiAnalysisResult = await this.callAiApi("Analyze strategy..."); },
+        async getAiDrawdownAnalysis() { this.maxDrawdownAnalysis = await
+ this.callAiApi("Analyze drawdown..."); },
+        async getAiEmotionAnalysis() { this.aiEmotionAnalysisResult = await
+ this.callAiApi("Analyze emotions..."); },
+        async getAiModelBookAnalysis() { this.aiModelBookAnalysis = await
+ this.callAiApi("Analyze model book..."); },
+        
+        /**
+         * [AI] 獲取 "績效回顧" AI 報告 (佔位符)
+         * *** 程式碼修正 (Fix) ***
+         * 修正了 和 之間錯誤的 "字串換行"。
+         */
+        async getAiPerformanceReview() { 
           // (修正) 將 "Generate performance review..." 合併到一行
-const review = await this.callAiApi("Generate performance review..."); 
+          const review = await this.callAiApi("Generate performance review..."); 
           this.reviewNotes.monthly = review; 
         }
-}
-}; // --- tradingApp() 函數結束 ---
+
+      }; // --- tradingApp() 函數結束 ---
+    }
 
     // 將 'tradingApp' 函數註冊到 Alpine.js
-Alpine.data('tradingApp', tradingApp);
+    Alpine.data('tradingApp', tradingApp);
 
     // 啟動 Alpine.js
-Alpine.start();
-</script>
-</body>
+    Alpine.start();
+  </script>
+ </body>
 </html>
