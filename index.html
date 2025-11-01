@@ -2296,8 +2296,11 @@ async getAiEmotionAnalysis() { this.aiEmotionAnalysisResult = await
 this.callAiApi("Analyze emotions..."); },
 async getAiModelBookAnalysis() { this.aiModelBookAnalysis = await
 this.callAiApi("Analyze model book..."); },
-async getAiPerformanceReview() { const review = await this.callAiApi("Generate
-performance review..."); this.reviewNotes.monthly = review; }
+async getAiPerformanceReview() { 
+          // (修正) 將 "Generate performance review..." 合併到一行
+const review = await this.callAiApi("Generate performance review..."); 
+          this.reviewNotes.monthly = review; 
+        }
 }
 }; // --- tradingApp() 函數結束 ---
 
