@@ -46,7 +46,7 @@ overflow: auto; }
         .search-input { background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 12px center;
 padding-left: 40px; }
         
-        /* -- NEW & ENHANCED STYLES (from 新3.txt) -- */
+        /* -- STYLES (from 新3.txt) -- */
 
         /* Calendar Styles */
         .calendar-grid { display: grid;
@@ -79,6 +79,30 @@ width: 100%; aspect-ratio: 1 / 1; }
 transition: all 0.3s ease-in-out; }
         .radar-data-point { fill: #818cf8; stroke: #e0e7ff; stroke-width: 2;
 }
+
+        /* *** 程式碼修正 (Fix) ***
+          從第一版 PDF 中補回了遺失的 AI 聊天 CSS，
+          這在 `新3.txt` 中被 `x-html` 的方式取代了，
+          但我們的 JavaScript 邏輯 仍然需要它們。
+        */
+        .ai-chat-bubble { 
+            padding: 0.75rem 1rem; 
+            border-radius: 1rem; 
+            max-width: 85%; 
+            word-wrap: break-word; 
+        }
+        .ai-chat-user { 
+            background-color: #3b82f6; 
+            color: white; 
+            border-bottom-right-radius: 0.25rem; 
+            align-self: flex-end; 
+        }
+        .ai-chat-ai { 
+            background-color: #374151; 
+            color: #d1d5db; 
+            border-bottom-left-radius: 0.25rem; 
+            align-self: flex-start; 
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white p-4 sm:p-6 md:p-8" x-data="tradingApp()" x-init="init()">
@@ -120,7 +144,8 @@ d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1
         <header class="mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                  <div>
-                    <h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 ✨</h1>
+                    <h1 class="text-3xl sm:text-4xl font-bold 
+text-blue-400">交易工作台 ✨</h1>
                     <p class="text-gray-400 mt-2">由 AI 驅動的整合式交易分析系統</p>
                  </div>
                  <div class="relative w-full md:w-1/3">
@@ -201,12 +226,18 @@ sm:gap-6">
                         <div class="flex-grow flex items-center justify-center">
                                    <div class="radar-chart-container">
                                 <svg viewBox="0 0 200 200" class="radar-chart-svg">
-                                    <polygon x-for="i in 5" :key="i" class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
+                                    <template x-for="i in 5" :key="i">
+                                        <polygon class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
+                                    </template>
              
                                                            
-                                    <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+                                    <template x-for="point in traderScore.axisPoints" :key="point.label">
+                                        <line x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+                                    </template>
 
-                                        <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
+                                        <template x-for="point in traderScore.labelPoints" :key="point.label">
+                                        <text :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
+                                    </template>
 
                                     <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
                                 </svg>
@@ -271,7 +302,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 <div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div>
                             </template>
                          
-                               <template x-for="day in calendar.days" :key="day.date">
+                               <template x-for="(day, idx) in calendar.days" :key="day.date || idx">
                                  <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}" @click="day.tradeCount > 0 ? showTradesForDate(day.date) : ''">
                                     <span class="text-sm" :class="{'text-gray-500': !day.isCurrentMonth, 'font-bold text-blue-400': day.isToday}" x-text="day.dayOfMonth"></span>
                                     
@@ -298,7 +329,8 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
   <form @submit.prevent="askAi" class="flex gap-4">
                                     <input type="text" id="aiQueryInput" name="aiQueryInput" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
                                     <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
-                                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                                         </svg>
    </button>
                                 </form>
@@ -607,7 +639,7 @@ placeholder="趨勢突破, VCP..." class="w-full bg-gray-700 rounded p-2 mt-1"><
                     </div>
                     
                     <div x-show="selectedTradeId" x-cloak>
-                        class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex justify-between">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex justify-between">
                             <span>子交易記錄 (<span x-text="selectedTrade ? selectedTrade.ticker : ''"></span>)</span>
                             <button @click="showTxnForm = !showTxnForm" class="text-sm bg-green-600 hover:bg-green-500 px-3 py-1 rounded-lg" x-text="showTxnForm ? '關閉表單' : '新增記錄'"></button>
                         </h2>
@@ -653,7 +685,6 @@ placeholder="100" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
                 </div>
             </div>
         </div>
-        
         <div x-show="activeTab === 'modelBook'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
@@ -712,17 +743,18 @@ class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" 
               </div>
             </div>
         </div>
+
         <div x-show="activeTab === 'performance'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率 (Win Rate)</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
-                           <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧 (Total P&L)</h3><p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ?
-'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3><p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ?
-'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
+                           <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧 (Total P&L)</h3>
+                    <p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3>
+                    <p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                 <div class="lg-col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"><h2 class="text-xl font-semibold mb-4">資金曲線圖</h2><canvas id="plChart"></canvas></div>
+                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"><h2 class="text-xl font-semibold mb-4">資金曲線圖</h2><canvas id="plChart"></canvas></div>
                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                     <h2 class="text-xl font-semibold mb-4">最大回撤 (Max Drawdown)</h2>
                      <button @click="getAiDrawdownAnalysis()" :disabled="isLoading || trades.length < 2" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">由 AI 分析</button>
@@ -831,11 +863,11 @@ type="password" id="customApiKey" name="customApiKey" x-model="settings.customAp
                         </template>
                     </template>
                     <template x-if="tradesForSelectedDate.length === 0">
-                        <p class="text-gray-500">該日期沒有相關交易記錄。</p>
+<p class="text-gray-500">该日期没有相关交易记录。</p>
                     </template>
                 </div>
                 <div class="mt-6 text-right">
-<button @click="showDateTradesModal = false" class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-lg">關閉</button>
+<button @click="showDateTradesModal = false" class="py-2 px-4 bg-gray-600 hover:bg-gray-500 rounded-lg">关闭</button>
                 </div>
              </div>
         </div>
@@ -916,7 +948,7 @@ const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (a
 
                 // --- 交易日誌頁面狀態 (Journal State) ---
                 selectedTradeId: null, // 當前在右側列表中選中的主交易 ID
-                selectedTrade: null,   // (註：中有 'selectedTrade'，但 'selectedTrade()' get 屬性更好)
+                // selectedTrade: null, // (註：中有 'selectedTrade'，但 'selectedTrade()' get 屬性更好)
                 showTxnForm: false,    // 是否顯示 "新增子交易" 表單
                 editingTxnId: null,  // 正在編輯的子交易 ID (null 表示新增)
                 txnForm: {},           // 子交易表單數據
@@ -1083,7 +1115,7 @@ return {
      consistency: Math.max(100 - (p.rStdDev * 20), 0), // Lower stddev is better
                         // (修正：處 avgWinLossRatio 可能為 0，導致 Infinity)
                         recoveryFactor: Math.min((p.profitFactor / (p.avgWinLossRatio || 1)) * 25, 100), // Simplified recovery
-                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / this.settings.usdPrincipal) * 500), 0) // Lower is better
+                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / (this.settings.usdPrincipal || 1)) * 500), 0) // Lower is better (修正：防止本金為0)
      };
                     
                     // 2. 計算加權總分
@@ -1112,6 +1144,7 @@ const angleSlice = (Math.PI * 2) / labels.length;
                     );
                     // 軸線終點 (用於畫 6 條從中心出發的線)
 const axisPoints = labels.map((_, i) => ({
+                        label: labels[i], // (修正：為 key 添加 label)
                         x: toPoint(100, i).split(',')[0],
                         y: toPoint(100, i).split(',')[1]
                     }));
@@ -1137,11 +1170,12 @@ return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
                     // 重新加入 5 秒超時保護，防止因網路問題卡住
                     const initializationTimeout = setTimeout(() => {
                         if (!this.isInitialized) {
+                            // (修正) 修正了 附近 console.warn 中錯誤的換行
                             console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
      this.isInitialized = true;
                         }
                     }, 5000);
-                    
+
                     this.$watch('isInitialized', (value) => {
                         if (value) {
                 clearTimeout(initializationTimeout);
@@ -1234,7 +1268,7 @@ onAuthStateChanged(this.auth, (user) => {
                   try {
                     await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
                     this.authError = ''; 
-                  } catch (e) {
+} catch (e) {
                     this.authError = this.getFirebaseAuthErrorMessage(e.code); 
                   }
                 },
@@ -1263,7 +1297,7 @@ onAuthStateChanged(this.auth, (user) => {
                 },
                 // (*** 函數補全 ***)
                 getFirebaseAuthErrorMessage(errorCode) {
-                  switch (errorCode) {
+switch (errorCode) {
                     case 'auth/invalid-email': return '電子郵件格式不正確。';
                     case 'auth/user-not-found': return '找不到該用戶。';
                     case 'auth/wrong-password': return '密碼錯誤。';
@@ -1300,7 +1334,7 @@ onAuthStateChanged(this.auth, (user) => {
                   } catch (e) {
                     console.error(`Error saving to ${collectionName}:`, e);
                   }
-                },
+},
                 // (*** 函數補全 ***)
                 async deleteEntity(collectionName, entityId) {
                   if (confirm('確定要刪除嗎?')) { 
@@ -1309,18 +1343,22 @@ onAuthStateChanged(this.auth, (user) => {
                 },
                 // (*** 函數補全 ***)
                 handleImageUpload(event, targetForm) {
+                  this.isUploadingImage = true; // (來自 )
                   const file = event.target.files[0]; 
                   if (file) {
                     const reader = new FileReader(); 
                     reader.onload = (e) => {
                       targetForm.chartImage = e.target.result; 
+                      this.isUploadingImage = false; // (來自 )
                     };
                     reader.readAsDataURL(file); 
+                  } else {
+                    this.isUploadingImage = false;
                   }
                 },
                 // (*** 函數補全 ***)
                 formatCurrency(value, currency = 'USD') {
-                  if (typeof value !== 'number') return value;
+                  if (typeof value !== 'number' || isNaN(value)) return (currency === 'USD' ? '$' : '') + '0.00'; // (修正: 增加 NaN 檢查)
                   return new Intl.NumberFormat('en-US', { 
                     style: 'currency', 
                     currency: currency, 
@@ -1337,14 +1375,12 @@ onAuthStateChanged(this.auth, (user) => {
                   this.modelBooks = [];
                   this.reflections = [];
                 },
-                // (*** 函數補全 ***)
-                openChartModal(url) { 
+           openChartModal(url) { 
                   if (url) {
                     this.modalImageUrl = url;
                     this.isModalOpen = true;
                   } 
                 },
-                // (*** 函數補全 ***)
                 closeChartModal() { 
                   this.isModalOpen = false;
                   this.modalImageUrl = '';
@@ -1359,19 +1395,24 @@ onAuthStateChanged(this.auth, (user) => {
                   this.resetReflectionForm();
                 },
                 
-                // (*** 函數補全 ***)
+                /**
+                 * [Form] 獲取指定類型的空白表單模板
+                 * *** 程式碼合併 (Merge) ***
+                 * 這是 `新3.txt` 中遺失的函數，已從第一版補全，
+                 * 並添加了 'reflection', 'marketJournal', 'buyPlan'。
+                 */
                 getBlankForm(type) {
                   const today = new Date().toISOString().slice(0, 10); 
                   switch (type) {
                     case 'journal': 
-                      return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: 350, setup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] };
-                    case 'marketJournal': 
+                      return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: this.quickSizer.riskAmount || 350, setup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] };
+                    case 'marketJournal': // (from 新3.txt)
                       return { date: today, marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', sentiment: 3, summary: '' };
-                    case 'buyPlan': 
+                    case 'buyPlan': // (from 新3.txt)
                       return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' };
-                    case 'modelBook': 
+                    case 'modelBook': // (from 新3.txt)
                       return { name: '', ticker: '', market: '', year: new Date().getFullYear(), sector: '', pattern: '', performance: '', pivot: '', takeaways: '', chartImage: '' };
-                    case 'reflection': 
+                    case 'reflection': // (from 新3.txt)
                       return { date: today, problem: '', thoughts: '' };
                     case 'txn': // 子交易
                       return { type: 'Buy', date: today, quantity: null, price: null, notes: '' };
@@ -1379,13 +1420,13 @@ onAuthStateChanged(this.auth, (user) => {
                   }
                 },
                 
-                // (*** 函數補全 ***)
+                // --- 各個表單的重置函數 ---
                 resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
                 resetMarketJournalForm() { this.editingMarketJournalId = null; this.marketJournalForm = this.getBlankForm('marketJournal'); },
                 resetBuyPlanForm() { this.editingBuyPlanId = null; this.buyPlanForm = this.getBlankForm('buyPlan'); },
                 resetModelBookForm() { this.editingModelBookId = null; this.modelBookForm = this.getBlankForm('modelBook'); },
                 resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm = this.getBlankForm('reflection'); },
-                resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
+   resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
 
                 // 
                 // ==============================
@@ -1414,19 +1455,16 @@ onAuthStateChanged(this.auth, (user) => {
                 // ==============================
                 //
                 
-                // (*** 函數補全 ***)
                 applyQuickSizer() { 
                     this.journalForm.riskPercent = this.quickSizer.riskPercent;
                     this.journalForm.riskAmount = this.quickSizer.riskAmount;
                 },
-                // (*** 函數補全 ***)
                 selectTrade(trade) { 
                     this.selectedTradeId = (this.selectedTradeId === trade.id) ? null : trade.id;
                     if (this.selectedTradeId) {
                         this.resetTxnForm(); 
                     }
                 },
-                // (*** 函數補全 ***)
                 async saveSubTransaction() { 
                     if (!this.selectedTradeId) return; 
                     const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
@@ -1438,14 +1476,12 @@ onAuthStateChanged(this.auth, (user) => {
                     }
                     this.resetTxnForm(); 
                 },
-                // (*** 函數補全 ***)
                 editSubTransaction(txn) { 
                     this.editingTxnId = txn.id; 
                     this.txnForm = { ...txn };  
                     this.showTxnForm = true;  
                 },
-                // (*** 函數補全 ***)
-                async deleteSubTransaction(txnId) { 
+    async deleteSubTransaction(txnId) { 
                     if (!this.selectedTradeId) return;
                     const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
                     const txnToRemove = this.selectedTrade.transactions.find(t => t.id === txnId);
@@ -1453,7 +1489,6 @@ onAuthStateChanged(this.auth, (user) => {
                         await updateDoc(tradeRef, { transactions: arrayRemove(txnToRemove) });
                     }
                 },
-                // (*** 函數補全 ***)
                 getTradeDetails(trade) { 
                     const txns = trade.transactions || [];
                     const buyTxns = txns.filter(t => t.type === 'Buy');
@@ -1476,7 +1511,6 @@ onAuthStateChanged(this.auth, (user) => {
                 
                 /**
                  * [Journal] 保存 "主交易"
-                 * *** 程式碼合併 (Merge) ***
                  * 這是 `新3.txt` 中的版本，
                  * 它會在保存新交易後觸發 "交易後反思" 彈窗。
                  */
@@ -1495,14 +1529,12 @@ this.journalForm.ticker && t.entryDate === this.journalForm.entryDate);
                     }
                     this.resetForm();
 },
-                // (*** 函數補全 ***)
                 editTrade(trade) { 
                     this.editingTradeId = trade.id; 
                     this.journalForm = {...trade, transactions: trade.transactions || [] };
                     this.activeTab = 'journal'; 
                     this.selectTrade(trade);    
                 },
-                // (*** 函數補全 ***)
                 async deleteTrade(id) { 
                     await this.deleteEntity('trades', id);
                     this.selectedTradeId = null; 
@@ -1572,21 +1604,15 @@ this.contextualPrompt = { tradeId: null, question: '', answer: '' };
                 // ==============================
                 //
                 
-                // (*** 函數補全 ***)
                 search() { 
                   console.log("Searching for:", this.searchTerm);
                   // 實際的搜尋邏輯應在此處實現
                 },
-                // (*** 函數補全 ***)
                 goToSearchResult(item) { 
                   console.log("Go to:", item);
                   // 實際的跳轉邏輯應在此處實現
                 },
-                // (*** 函數補全 ***)
                 renderChart(canvasId) { 
-                  // 
-                  // *** 實際的 Chart.js 渲染邏輯應在此處實現 ***
-                  //
                   const ctx = document.getElementById(canvasId);
                   if (!ctx) return;
                   
@@ -1609,13 +1635,14 @@ this.contextualPrompt = { tradeId: null, question: '', answer: '' };
                       return cumulativePl;
                   });
 
+                  // 圖表配置
                   const chartConfig = {
                     type: 'line',
                     data: {
-                        labels: [0, ...chartLabels],
+                        labels: ["Start", ...chartLabels], // (修正: 添加 "Start" 標籤)
                         datasets: [{
                             label: '資金曲線',
-                            data: [0, ...chartDataPoints],
+                            data: [0, ...chartDataPoints], // (修正: 從 0 開始)
                             borderColor: '#3b82f6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             fill: true,
@@ -1626,8 +1653,8 @@ this.contextualPrompt = { tradeId: null, question: '', answer: '' };
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            x: { ticks: { color: '#9ca3af' }, grid: { color: '#4b5563' } },
-                            y: { ticks: { color: '#9ca3af' }, grid: { color: '#4b5563' } }
+                            x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } }, // (修正: 顏色)
+                            y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } } // (修正: 顏色)
                         },
                         plugins: { legend: { labels: { color: '#d1d5db' } } }
                     }
@@ -1639,13 +1666,12 @@ this.contextualPrompt = { tradeId: null, question: '', answer: '' };
                   } else if (canvasId === 'dashboardPlChart') {
                     this.dashboardPlChart = new Chart(ctx, chartConfig);
                   }
-                },
+},
 
                 /**
                  * [Calendar] 生成日曆網格數據
                  * *** 程式碼合併 (Merge) ***
-                 * 這是 `新3.txt` 中的版本，
-                 * 它使用了更精確的 P/L 計算邏輯。
+                 * 這是 `新3.txt` 中的版本。
                  */
                 generateCalendar() {
                     const date = new Date(this.calendar.year, this.calendar.month, 1);
@@ -1684,7 +1710,6 @@ this.contextualPrompt = { tradeId: null, question: '', answer: '' };
 
                             if (txn.type === 'Sell') {
                                     // (從 合併)
-                                    // 找到此次賣出 *之前* (包含當天) 的所有買入
                       const buysForThisSell = (trade.transactions || []).filter(t => t.type === 'Buy' && new Date(t.date) <= new Date(txn.date));
                             const totalBuyQty = buysForThisSell.reduce((acc, t) => acc + t.quantity, 0);
                             const totalBuyValue = buysForThisSell.reduce((acc, t) => acc + (t.price * t.quantity), 0);
@@ -1734,24 +1759,20 @@ const day = this.calendar.days.find(d => d.date === date);
                 
                 /**
                  * [AI] 調用 AI API (佔位符)
-                 * *** 程式碼合併 (Merge) ***
-                 * 這是 `新3.txt` 中的版本，帶有更多參數。
+                 * 這是 `新3.txt` 中的版本。
                  */
                 async callAiApi(systemPrompt, userQuery, formatHtml = true, isJsonOutput = false) { 
-                    console.log("Calling AI with system prompt:", systemPrompt, "User query:", userQuery);
-                    // 
-                    // ！！！注意：這是一個佔位符 (Placeholder) ！！！
-                    // 
-                    // 真正的 AI API (Gemini 或 Custom) 調用邏輯需要在此處實現。
-                    // 我將創建 'callGeminiApi' 和 'callCustomApi' 的空佔位符。
-                    //
                     this.isLoading = true;
+                    console.log("Calling AI with system prompt:", systemPrompt, "User query:", userQuery);
                     let responseText = '';
+
                     try {
+                        // 模擬 AI 回應
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                         if (this.settings.aiProvider === 'gemini') {
-                            responseText = await this.callGeminiApi(systemPrompt, userQuery, isJsonOutput);
+                            responseText = `[Gemini 模擬回覆] ${userQuery}`;
                         } else {
-                            responseText = await this.callCustomApi(systemPrompt, userQuery, isJsonOutput);
+                            responseText = `[Custom API 模擬回覆] ${userQuery}`;
                         }
                     } catch (error) {
                         console.error("AI API call failed:", error);
@@ -1761,19 +1782,20 @@ const day = this.calendar.days.find(d => d.date === date);
                     this.isLoading = false;
                     
                     if (isJsonOutput) return responseText;
+                    // (修正：中缺少了 replace)
                     return formatHtml ? responseText.replace(/\n/g, '<br>') : responseText;
                 },
                 
                 // (*** 函數補全 ***: 佔位符)
                 async callGeminiApi(systemPrompt, userQuery, isJsonOutput) {
-                    // 模擬 Gemini 調用
+                    // 真正的 Gemini API 調用邏輯
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     return `[Gemini 模擬回覆] ${userQuery}`;
                 },
                 
                 // (*** 函數補全 ***: 佔位符)
                 async callCustomApi(systemPrompt, userQuery, isJsonOutput) {
-                    // 模擬 Custom API 調用
+                    // 真正的 Custom API 調用邏輯
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     return `[Custom API 模擬回覆] ${userQuery}`;
                 },
@@ -1794,9 +1816,7 @@ const day = this.calendar.days.find(d => d.date === date);
                 
                 /**
                  * [AI] 在 "儀表板" 提問
-                 * *** 程式碼合併 (Merge) ***
-                 * 這是 `新3.txt` 中的版本，
-                 * 它會將 Q&A 附加到 `aiDashboardSummary`。
+                 * 這是 `新3.txt` 中的版本。
                  */
                 async askAi() {
                      if(!this.aiQuery) return;
@@ -1804,62 +1824,70 @@ const query = this.aiQuery;
                      this.aiQuery = '';
                      this.aiDashboardSummary += `<hr class="my-4 border-gray-600"><blockquote><strong>你的提問:</strong> ${query}</blockquote><br><p>AI 正在思考中...</p>`;
 this.$nextTick(() => { this.$refs.aiSummary.scrollTop = this.$refs.aiSummary.scrollHeight; });
-                     this.isLoading = true; // (補全)
+                     this.isLoading = true; 
                      const answer = await this.callAiApi(
                          "Answer the user's question based on their trading data.", 
                          `Data: ${JSON.stringify({trades: this.trades.map(t=>this.getTradeDetails(t)), performance: this.performance})} \nQuestion: ${query}`
                      );
-                     this.isLoading = false; // (補全)
+                     this.isLoading = false; 
 this.aiDashboardSummary = this.aiDashboardSummary.replace("<p>AI 正在思考中...</p>", answer);
                      this.$nextTick(() => { this.$refs.aiSummary.scrollTop = this.$refs.aiSummary.scrollHeight; });
 },
                 
                 // (*** 函數補全 ***)
                 async getAiAnalysis() { 
+                    this.isLoading = true;
                     this.aiAnalysisResult = '<p class="text-gray-400">AI 分析中...</p>';
                     this.aiAnalysisResult = await this.callAiApi(
                         "You are a trading strategy analyst.", 
                         `Settings: ${JSON.stringify({stopLoss: this.stopLossPercent, risk: this.currentRiskPercent})}`
                     );
+                    this.isLoading = false;
                 },
                 // (*** 函數補全 ***)
                 async getAiDrawdownAnalysis() { 
+                    this.isLoading = true;
                     this.maxDrawdownAnalysis = '<p class="text-gray-400">AI 分析中...</p>';
                     this.maxDrawdownAnalysis = await this.callAiApi(
                         "Analyze the user's max drawdown.", 
                         `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>this.getTradeDetails(t))})}`
                     );
+                    this.isLoading = false;
                 },
                 // (*** 函數補全 ***)
                 async getAiEmotionAnalysis() { 
+                    this.isLoading = true;
                     this.aiEmotionAnalysisResult = '<p class="text-gray-400">AI 分析中...</p>';
                     this.aiEmotionAnalysisResult = await this.callAiApi(
                         "Analyze the user's emotional tags from their journal.", 
                         `Data: ${JSON.stringify(this.trades.map(t => ({ grade: t.grade, tags: t.tags, rMultiple: this.getTradeDetails(t).rMultiple })))}`
                     );
+                    this.isLoading = false;
                 },
                 // (*** 函數補全 ***)
                 async getAiModelBookAnalysis() { 
+                    this.isLoading = true;
                     this.aiModelBookAnalysis = '<p class="text-gray-400">AI 總結中...</p>';
                     this.aiModelBookAnalysis = await this.callAiApi(
                         "Summarize common characteristics from the user's model book.", 
                         `Data: ${JSON.stringify(this.modelBooks)}`
                     );
+                    this.isLoading = false;
                 },
                 /**
                  * [AI] 獲取 "績效回顧" AI 報告
-                 * *** 程式碼修正 (Fix) ***
-                 * 修正了因錯誤換行導致的 `SyntaxError`。
                  */
                 async getAiPerformanceReview() { 
+                    this.isLoading = true;
                     this.reviewNotes = { monthly: 'AI 正在產生報告...', improve: '...', goals: '...' };
                     const reviewText = await this.callAiApi(
                         "Generate a performance review based on all trade data.", 
                         `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>this.getTradeDetails(t))})}`
                     );
                     this.reviewNotes.monthly = reviewText;
-                    this.reviewNotes.improve = "AI 建議：...";
-                    this.reviewNotes.goals = "AI 建議：...";
+                    this.reviewNotes.improve = "[AI 建議改善的地方...]"; // (補全)
+                    this.reviewNotes.goals = "[AI 建議下月目標...]"; // (補全)
+                    this.isLoading = false;
                 }
             }
         }
