@@ -267,11 +267,11 @@ sm:gap-6">
                     </div>
 
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
-                        <div class="h-80">
+                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+                        <div class="h-72">
                            <canvas id="dashboardPlChart"></canvas>
                         </div>
-                 </div>
+                    </div>
 
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
                         <div>
@@ -293,7 +293,31 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
                             </div>
                         </div>
-               </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">美股 (US Market)</h3>
+                            <div class="flex space-x-2 mb-3">
+                                <button @click="settings.marketCompass.us = 'bull'; saveSettings()" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.us === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.us = 'neutral'; saveSettings()" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.us === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.us = 'bear'; saveSettings()" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.us === 'bear'}">Bear 🐻</button>
+                            </div>
+                            <textarea id="compassUsNotes" name="compassUsNotes" x-model="settings.marketCompass.usNotes" @blur="saveSettings()" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="美股市場觀察筆記..."></textarea>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">港股 (HK Market)</h3>
+                            <div class="flex space-x-2 mb-3">
+                                <button @click="settings.marketCompass.hk = 'bull'; saveSettings()" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.hk === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.hk = 'neutral'; saveSettings()" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.hk === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.hk = 'bear'; saveSettings()" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.hk === 'bear'}">Bear 🐻</button>
+                            </div>
+                            <textarea id="compassHkNotes" name="compassHkNotes" x-model="settings.marketCompass.hkNotes" @blur="saveSettings()" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="港股市場觀察筆記..."></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -369,32 +393,8 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
                         </div>
        </div>
                 </div>
-                
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="text-lg font-semibold mb-3">美股 (US Market)</h3>
-                            <div class="flex space-x-2 mb-3">
-                                <button @click="marketCompass.us = 'bull'" class="compass-btn bull flex-1" :class="{'active': marketCompass.us === 'bull'}">Bull 🐂</button>
-                                <button @click="marketCompass.us = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': marketCompass.us === 'neutral'}">Neutral 😐</button>
-                                <button @click="marketCompass.us = 'bear'" class="compass-btn bear flex-1" :class="{'active': marketCompass.us === 'bear'}">Bear 🐻</button>
-                            </div>
-                            <textarea id="compassUsNotes" name="compassUsNotes" x-model="marketCompass.usNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="美股市場觀察筆記..."></textarea>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold mb-3">港股 (HK Market)</h3>
-                            <div class="flex space-x-2 mb-3">
-                                <button @click="marketCompass.hk = 'bull'" class="compass-btn bull flex-1" :class="{'active': marketCompass.hk === 'bull'}">Bull 🐂</button>
-                                <button @click="marketCompass.hk = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': marketCompass.hk === 'neutral'}">Neutral 😐</button>
-                                <button @click="marketCompass.hk = 'bear'" class="compass-btn bear flex-1" :class="{'active': marketCompass.hk === 'bear'}">Bear 🐻</button>
-                            </div>
-                            <textarea id="compassHkNotes" name="compassHkNotes" x-model="marketCompass.hkNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="港股市場觀察筆記..."></textarea>
-                        </div>
-                    </div>
-                </div>
 
-            </div>
+                </div>
         </div>
 
         <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
@@ -1145,8 +1145,8 @@ overflow-y-auto">
                 authView: 'login',       // 認證視圖 ('login' 或 'register')
                 authForm: { email: '', password: '' }, // 登入/註冊表單的綁定數據
                 authError: '',           // 登入/註冊時的錯誤訊息
-                appVersion: '7.0.0-v3', // (V3 升級) 更新版本號
-                lastUpdated: '2025-11-01', // (V3 升級) 更新日期
+                appVersion: '7.1.0-v3-layout', // (V3 升級) 更新版本號
+                lastUpdated: '2025-11-02', // (V3 升級) 更新日期
 
                 // --- Firebase 實例 ---
                 db: null,     // Firestore 數據庫實例
@@ -1326,7 +1326,7 @@ overflow-y-auto">
                  */
                 get traderScore() {
                     const p = this.performance;
-                    if (p.totalTrades < 5) {
+                    if (p.totalTrades < 3) { // 至少需要 3 筆交易才計算分數
                         const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
                         return { 
                             score: 0, 
@@ -1481,7 +1481,7 @@ overflow-y-auto">
                         // (V3 升級) 合併時確保 marketCompass 也有默認值
                         const parsed = JSON.parse(savedSettings);
                         this.settings = { ...this.settings, ...parsed };
-                        this.settings.marketCompass = { ...{ us: 'neutral', usNotes: '', hk: 'neutral', hkNotes: '' }, ...parsed.marketCompass };
+                        this.settings.marketCompass = { ...{ us: 'neutral', usNotes: '', hk: 'neutral', hkNotes: '' }, ...(parsed.marketCompass || {}) };
                     } 
                 },
                 saveSettings(showAlert = false) { 
@@ -1784,7 +1784,10 @@ overflow-y-auto">
 
                     // 如果這筆交易剛好導致狀態從 "Open" 變為 "Closed"，則觸發彈窗
                     if (newDetails.status === 'Closed' && oldDetails.status === 'Open') {
-                        this.triggerContextualPrompts(tempUpdatedTrade);
+                        // 使用 $nextTick 確保彈窗在 DOM 更新後顯示
+                        this.$nextTick(() => {
+                            this.triggerContextualPrompts(tempUpdatedTrade);
+                        });
                     }
                     // --- V3 實作結束 ---
 
