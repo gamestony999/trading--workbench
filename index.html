@@ -954,7 +954,7 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                                 <th scope="col" class="px-4 py-3 rounded-l-lg">Playbook / Setup</th>
                                 <th scope="col" class="px-4 py-3 text-center">總交易數</th>
                                 <th scope="col" class="px-4 py-3 text-center">勝率 (%)</th>
-                                <th scope="col" class_changed="px-4 py-3 text-center">利潤因子</th>
+                                <th scope="col" class="px-4 py-3 text-center">利潤因子</th>
                                 <th scope="col" class="px-4 py-3 text-center">平均 R 倍數</th>
                                 <th scope="col" class="px-4 py-3 rounded-r-lg text-right">總 P&L (USD)</th>
                             </tr>
@@ -1107,14 +1107,14 @@ overflow-y-auto">
             </div>
         </div>
 
-    </div> ```
+    </div>
     <script type="module">
         // --- 引入 Firebase 模組 ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-// --- 引入 Alpine.js 模組 ---
-import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // --- 引入 Alpine.js 模組 ---
+        import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.js';
 
         /**
          * 計算標準差 (Standard Deviation)
@@ -1123,10 +1123,10 @@ import Alpine from 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/module.esm.
          */
         function stdDev(arr) {
             if (arr.length < 2) return 0;
-const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
-const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
+            const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+            const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (arr.length - 1);
             return Math.sqrt(variance);
-}
+        }
 
         /**
          * Alpine.js 主應用程式數據和邏輯
@@ -1135,42 +1135,38 @@ const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (a
         function tradingApp() {
             return {
                 // --- 系統狀態 (System State) ---
-                isInitialized: false, 
-   // 是否初始化完成 (用於隱藏加載畫面)
+                isInitialized: false,    // 是否初始化完成 (用於隱藏加載畫面)
                 isLoggedIn: false,       // 用戶是否已登入
                 activeTab: 'dashboard',  // 當前選中的頁籤
                 isLoading: false,        // 是否正在加載 AI 數據
                 isUploadingImage: false, // 圖片是否上傳中
-   
-             isModalOpen: false,      // "顯示大圖" 彈窗是否開啟
+                isModalOpen: false,      // "顯示大圖" 彈窗是否開啟
                 modalImageUrl: '',       // "顯示大圖" 彈窗中的圖片 URL
                 authView: 'login',       // 認證視圖 ('login' 或 'register')
                 authForm: { email: '', password: '' }, // 登入/註冊表單的綁定數據
-              
-  authError: '',           // 登入/註冊時的錯誤訊息
+                authError: '',           // 登入/註冊時的錯誤訊息
                 appVersion: '7.0.0-v3', // (V3 升級) 更新版本號
                 lastUpdated: '2025-11-01', // (V3 升級) 更新日期
 
                 // --- Firebase 實例 ---
                 db: null,     // Firestore 數據庫實例
-   
-             auth: null,   // Firebase 認證實例
+                auth: null,   // Firebase 認證實例
                 userId: null, // 當前登入用戶的 UID
                 unsubscribers: [], // 用於儲存 Firebase 監聽器，以便在登出時取消訂閱
            
                 // --- 設定 (Settings) ---
                 settings: { 
-                  aiProvider: 'gemini',    // AI 供應商 (gemini 或 custom)
+                    aiProvider: 'gemini',    // AI 供應商 (gemini 或 custom)
                     customApiKey: '',      // 自訂 API Key
                     customApiUrl: '',      // 自訂 API 端點
-        usdPrincipal: 35000,   // 戶口本金 (默認為 35000)
+                    usdPrincipal: 35000,   // 戶口本金 (默認為 35000)
                     // (V3 升級) 新增市場羅盤數據
                     marketCompass: { us: 'neutral', usNotes: '', hk: 'neutral', hkNotes: '' }
                 },
                 
                 // --- 核心數據陣列 (Data Arrays) ---
                 trades: [],          // 交易日誌 (主交易) 列表
-     marketJournals: [],  // 市場日誌列表
+                marketJournals: [],  // 市場日誌列表
                 buyPlans: [],        // 買入計劃列表
                 modelBooks: [],      // Model Book 列表
                 reflections: [],     // 自我反思列表
@@ -1191,21 +1187,19 @@ const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (a
                     exchangeRate: 7.8     // 新增匯率 (模擬)
                 },
 
-   // --- 日曆 (Calendar) 狀態 ---
+                // --- 日曆 (Calendar) 狀態 ---
                 calendar: { year: new Date().getFullYear(), month: new Date().getMonth(), days: [] }, // 日曆狀態
-                showDateTradesModal: false, 
-  // 是否顯示 "當日交易" 彈窗
+                showDateTradesModal: false,  // 是否顯示 "當日交易" 彈窗
                 selectedDateForTrades: '',    // 在 "當日交易" 彈窗中顯示的日期
                 tradesForSelectedDate: [],    // "當日交易" 彈窗中顯示的交易列表
 
                 // --- 各種表單 (Forms) 狀態 ---
                 editingTradeId: null,     // 正在編輯的主交易 ID (null 表示新增)
                 journalForm: {},          // 交易日誌表單數據
-       editingMarketJournalId: null, // 正在編輯的市場日誌 ID
+                editingMarketJournalId: null, // 正在編輯的市場日誌 ID
                 marketJournalForm: {},    // 市場日誌表單數據
                 editingBuyPlanId: null,   // 正在編輯的買入計劃 ID
-                buyPlanForm: {}, 
-         // 買入計劃表單數據
+                buyPlanForm: {},          // 買入計劃表單數據
                 editingModelBookId: null, // 正在編輯的模型庫 ID
                 modelBookForm: {},        // 模型庫表單數據
                 editingReflectionId: null, // 正在編輯的自我反思 ID
@@ -1214,124 +1208,116 @@ const variance = arr.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (a
                 editingPlaybookId: null,
                 playbookForm: {},
                 
-// --- 搜尋 (Search) ---
+                // --- 搜尋 (Search) ---
                 searchTerm: '',      // 搜尋框輸入的文字
                 searchResults: [],   // 搜尋結果列表
 
                 // --- 注碼計算機 (Calculator) ---
-  stopLossPercent: 4.6,
+                stopLossPercent: 4.6,
                 currentRiskPercent: 1,
                 customRiskPercent: null,
                 
                 // --- AI & 績效 (AI & Performance) ---
-        plChart: null,           // 績效回顧頁 (Performance) 的資金曲線圖實例
+                plChart: null,           // 績效回顧頁 (Performance) 的資金曲線圖實例
                 dashboardPlChart: null,  // 儀表板頁 (Dashboard) 的資金曲線圖實例
                 // AI 佔位符文本
                 aiAnalysisResult: '<p class="text-gray-500">點擊「獲取分析」按鈕，讓 AI 根據您當前的設定提供交易策略建議。</p>',
                 maxDrawdownAnalysis: '<p class="text-gray-500">點擊按鈕，讓 AI 為您分析交易數據中的最大資金回撤。</p>',
-                aiEmotionAnalysisResult: '<p class="text-gray-500">點擊按鈕，讓 AI 
-分析您的情緒標籤與交易結果之間的關聯。</p>',
+                aiEmotionAnalysisResult: '<p class="text-gray-500">點擊按鈕，讓 AI 分析您的情緒標籤與交易結果之間的關聯。</p>',
                 aiModelBookAnalysis: '', // 模型庫 AI 分析結果 (HTML)
-    reviewNotes: { monthly: '', improve: '', goals: '' }, // "績效回顧" 頁的筆記
+                reviewNotes: { monthly: '', improve: '', goals: '' }, // "績效回顧" 頁的筆記
                 aiChatHistory: [ { role: 'ai', content: '您好！我是您的 AI 交易助手，您可以問我關於您交易表現的問題。' } ], // (V3 升級) 使用 V1 的聊天記錄
                 aiQuery: '',                 // 儀表板 AI 提問輸入框的綁定數據
 
-          // --- 工作流程 (Workflow) ---
+                // --- 工作流程 (Workflow) ---
                 showChecklistModal: false,     // 是否顯示 "交易前檢查清單" 彈窗
                 currentPlanToExecute: null,  // "檢查清單" 彈窗中正在操作的 "買入計劃"
                 checklistItems: [],          // "檢查清單" 彈窗中的檢查項列表
                 showContextualPromptModal: false, // 是否顯示 "交易後反思" 彈窗
-              contextualPrompt: { tradeId: null, question: '', answer: '' }, // "交易後反思" 數據
+                contextualPrompt: { tradeId: null, question: '', answer: '' }, // "交易後反思" 數據
 
                 // 
                 // ==============================
                 // === 計算屬性 (COMPUTED PROPERTIES) ===
                 // ==============================
-             //
+                //
                 
                 /**
                  * [計算屬性] 獲取當前選中的主交易物件
                  */
                 get selectedTrade() { 
-
-                  return this.trades.find(t => t.id === this.selectedTradeId) ||
-null; 
+                    return this.trades.find(t => t.id === this.selectedTradeId) || null; 
                 },
                 
                 /**
                  * [計算屬性] (用於 'calculator' 頁) 計算 1R 對應的美元金額
                  */
-                get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100);
-},
+                get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100); },
                 
                 /**
                  * [計算屬性] (用於 'calculator' 頁) 計算頭寸規模 (美元)
                  */
-                get positionSizeUsd() { if (!this.stopLossPercent) return 0;
-return this.rValueUsd / (this.stopLossPercent / 100); },
+                get positionSizeUsd() { if (!this.stopLossPercent) return 0; return this.rValueUsd / (this.stopLossPercent / 100); },
                 
                 /**
                  * [計算屬性] 檢查 "交易前檢查清單" 是否已全部勾選
                  */
-                get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked);
-},
+                get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
                 /**
                  * [計算屬性] 核心績效計算
                  * 遍歷所有 'Closed' 交易，計算所有關鍵指標。
                  */
                 get performance() {
-          const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed');
-const totalTrades = closedTrades.length;
+                    const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed');
+                    const totalTrades = closedTrades.length;
                     if (totalTrades === 0) return { winRate: 0, totalPl: 0, avgR: 0, totalTrades: 0, profitFactor: 0, avgWin: 0, avgLoss: 0, avgWinLossRatio: 0, maxDrawdown: 0, rStdDev: 0, sharpeRatio: 0 };
-const winningTrades = closedTrades.filter(t => t.totalPl > 0);
+
+                    const winningTrades = closedTrades.filter(t => t.totalPl > 0);
                     const losingTrades = closedTrades.filter(t => t.totalPl < 0);
-const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
+                    const totalPl = closedTrades.reduce((sum, t) => sum + t.totalPl, 0);
                     const totalR = closedTrades.reduce((sum, t) => sum + t.rMultiple, 0);
-const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
+                    const grossProfit = winningTrades.reduce((sum, t) => sum + t.totalPl, 0);
                     const grossLoss = Math.abs(losingTrades.reduce((sum, t) => sum + t.totalPl, 0));
-const avgWin = winningTrades.length > 0 ? grossProfit / winningTrades.length : 0;
-                    const avgLoss = losingTrades.length > 0 ?
-grossLoss / losingTrades.length : 0;
+                    const avgWin = winningTrades.length > 0 ? grossProfit / winningTrades.length : 0;
+                    const avgLoss = losingTrades.length > 0 ? grossLoss / losingTrades.length : 0;
 
                     // 計算最大回撤 (Max Drawdown)
                     let peak = 0;
-let maxDrawdown = 0;
+                    let maxDrawdown = 0;
                     let cumulativePl = 0;
-// (修正：使用 this.trades ... sort ... forEach 的邏輯)
                     this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed').sort((a,b) => new Date(a.parent.entryDate) - new Date(b.parent.entryDate)).forEach(trade => {
                         cumulativePl += trade.totalPl;
                         if (cumulativePl > peak) {
-    peak = cumulativePl;
+                            peak = cumulativePl;
                         }
                         const drawdown = peak - cumulativePl;
                         if (drawdown > maxDrawdown) {
-               maxDrawdown = drawdown;
+                            maxDrawdown = drawdown;
                         }
                     });
                     
-// R-multiple 標準差 (用於一致性)
+                    // R-multiple 標準差 (用於一致性)
                     const rValues = closedTrades.map(t => t.rMultiple);
                     const rStdDev = stdDev(rValues);
-// 簡化版夏普比率 (Sharpe Ratio)
-                    const avgR = totalTrades > 0 ?
-totalR / totalTrades : 0;
+                    
+                    // 簡化版夏普比率 (Sharpe Ratio)
+                    const avgR = totalTrades > 0 ? totalR / totalTrades : 0;
                     const sharpeRatio = rStdDev > 0 ? avgR / rStdDev : 0;
-return {
+
+                    return {
                         winRate: (winningTrades.length / totalTrades) * 100,
                         totalPl,
                         avgR,
-  totalTrades,
-                        profitFactor: grossLoss > 0 ?
-grossProfit / grossLoss : 0,
+                        totalTrades,
+                        profitFactor: grossLoss > 0 ? grossProfit / grossLoss : 0,
                         avgWin,
                         avgLoss,
-                        avgWinLossRatio: avgLoss > 0 ?
-avgWin / avgLoss : 0,
+                        avgWinLossRatio: avgLoss > 0 ? avgWin / avgLoss : 0,
                         maxDrawdown,
                         rStdDev, // Consistency metric
                         sharpeRatio // Risk-adjusted return metric
-   };
+                    };
                 },
 
                 /**
@@ -1339,20 +1325,18 @@ avgWin / avgLoss : 0,
                  * 根據 'performance' 的各項指標計算綜合分數和雷達圖座標。
                  */
                 get traderScore() {
-         
-           const p = this.performance;
-if (p.totalTrades < 5) {
+                    const p = this.performance;
+                    if (p.totalTrades < 5) {
                         const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
-return { 
+                        return { 
                             score: 0, 
                             metrics: {}, 
                             gridPoints: Array(5).fill(defaultPoints),
-         
-          axisPoints: [],
+                            axisPoints: [],
                             labelPoints: [],
                             dataPoints: defaultPoints
-  };
-}
+                        };
+                    }
                     
                     // 1. 將各項績效指標 "歸一化" (Normalize) 到 0-100 分
                     const metrics = {
@@ -1360,49 +1344,45 @@ return {
                         profitFactor: Math.min((p.profitFactor / 3) * 100, 100), // Target ideal profit factor >= 3
                         avgR: Math.min((p.avgR / 0.8) * 100, 100), // Target ideal avg R > 0.8
                         consistency: Math.max(100 - (p.rStdDev * 20), 0), // Lower stddev is better
-                  // (修正：處 avgWinLossRatio 可能為 0，導致 Infinity)
                         recoveryFactor: Math.min((p.profitFactor / (p.avgWinLossRatio || 1)) * 25, 100), // Simplified recovery
-                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / (this.settings.usdPrincipal || 1)) * 500), 0) // Lower is better (修正：防止本金為0)
-  };
+                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / (this.settings.usdPrincipal || 1)) * 500), 0) // Lower is better
+                    };
                     
                     // 2. 計算加權總分
                     const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15, recoveryFactor: 0.1, maxDrawdown: 0.15 };
-let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
+                    let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
                     score = Math.max(0, Math.min(score, 100));
-// 3. 計算雷達圖 SVG 座標
+
+                    // 3. 計算雷達圖 SVG 座標
                     const center = 100;
                     const radius = 90;
-const labels = ["勝率", "利潤因子", "平均R值", "一致性", "回報因子", "最大回撤"];
+                    const labels = ["勝率", "利潤因子", "平均R值", "一致性", "回報因子", "最大回撤"];
                     const angleSlice = (Math.PI * 2) / labels.length;
-// 輔助函數：將 (分數, 索引) 轉換為 SVG 座標點 (e.g., "150,50")
+
                     const toPoint = (value, i) => {
                         const r = radius * (value / 100);
-       const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
-const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
+                        const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
+                        const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
                         return `${x},${y}`;
                     };
-// (修正：使用 `toPoint` 輔助函數重構 的邏輯)
-                    // 背景網格 (5 個同心多邊形)
+
                     const gridPoints = Array.from({length: 5}, (_, i) => 
                         Array.from({length: labels.length}, (_, j) => toPoint(100 * (i + 1) / 5, j)).join(' ')
-            );
-// 軸線終點 (用於畫 6 條從中心出發的線)
+                    );
                     const axisPoints = labels.map((_, i) => ({
-                        label: labels[i], // (修正：為 key 添加 label)
+                        label: labels[i],
                         x: toPoint(100, i).split(',')[0],
                         y: toPoint(100, i).split(',')[1]
-            }));
-// 標籤文字位置 (在軸線終點外側 15 個單位)
+                    }));
                     const labelPoints = labels.map((label, i) => ({
                         label: label,
                         x: toPoint(115, i).split(',')[0], // 100 + 15
                         y: toPoint(115, i).split(',')[1] // 100 + 15
-               }));
-// 數據多邊形的頂點 (用戶的實際分數)
+                    }));
                     const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
                     
                     return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
-},
+                },
 
                 /**
                  * [V3 升級] 按 Playbook/Setup 計算績效
@@ -1449,12 +1429,9 @@ const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
                 // === INITIALIZATION & WATCHERS ===
                 // ==============================
                 //
-    init() {
-                    // *** 程式碼修正 (Fix) ***
-                    // 重新加入 5 秒超時保護，防止因網路問題卡住
+                init() {
                     const initializationTimeout = setTimeout(() => {
                         if (!this.isInitialized) {
-                            // (修正) 修正了 console.warn 中錯誤的換行
                             console.warn("Firebase auth state did not respond in 5 seconds. Forcing UI to display login.");
                             this.isInitialized = true;
                         }
@@ -1465,10 +1442,9 @@ const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
                             clearTimeout(initializationTimeout);
                         }
                     });
-                    // *** 修正結束 ***
 
-this.loadSettings();      // 從 localStorage 加載用戶設定
-this.resetAllForms();     // 重置所有表單
+                    this.loadSettings();      // 從 localStorage 加載用戶設定
+                    this.resetAllForms();     // 重置所有表單
                     this.initFirebase();    // 初始化 Firebase 連接
                     this.generateCalendar(); // 生成當月日曆
                     
@@ -1478,29 +1454,30 @@ this.resetAllForms();     // 重置所有表單
 
                     // --- 設置 $watch 監聽器 ---
                     this.$watch('calendar.month', () => this.generateCalendar());
-this.$watch('calendar.year', () => this.generateCalendar());
+                    this.$watch('calendar.year', () => this.generateCalendar());
                     this.$watch('trades', () => this.generateCalendar()); // 監聽交易變化
                     
                     // (V3 升級) 監聽 Quick Sizer v2.0 的輸入
-this.$watch('quickSizer.riskPercent', () => this.updateQuickSizer());
+                    this.$watch('quickSizer.riskPercent', () => this.updateQuickSizer());
                     this.$watch('quickSizer.stopLossPercent', () => this.updateQuickSizer());
 
-this.$watch('settings.usdPrincipal', (val) => {
+                    this.$watch('settings.usdPrincipal', (val) => {
                         // (V3 升級) 同時更新 Quick Sizer
                         this.updateQuickSizer();
                     });
-this.$watch('activeTab', (newTab) => {
+
+                    this.$watch('activeTab', (newTab) => {
                         if ((newTab === 'performance' || newTab === 'dashboard') && this.isLoggedIn) {
                            this.$nextTick(() => { 
                                this.renderChart('plChart');
-                             this.renderChart('dashboardPlChart');
+                               this.renderChart('dashboardPlChart');
                            });
                         }
                     });
-},
+                },
                 loadSettings() { 
                     const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
-if (savedSettings) { 
+                    if (savedSettings) { 
                         // (V3 升級) 合併時確保 marketCompass 也有默認值
                         const parsed = JSON.parse(savedSettings);
                         this.settings = { ...this.settings, ...parsed };
@@ -1509,7 +1486,7 @@ if (savedSettings) {
                 },
                 saveSettings(showAlert = false) { 
                     localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
-if (showAlert) alert('設定已儲存！'); 
+                    if (showAlert) alert('設定已儲存！'); 
                 },
 
                 // 
@@ -1517,247 +1494,228 @@ if (showAlert) alert('設定已儲存！');
                 // === FIREBASE & AUTH ===
                 // ==============================
                 //
-       async initFirebase() {
+                async initFirebase() {
                     try {
-                        // *** 程式碼修正 (Fix) ***
-                        // 這是 `新3.txt` 中正確的 Firebase 配置
                         const firebaseConfig = {
-                  apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
+                            apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
                             authDomain: "my-trading-workbench.firebaseapp.com",
                             projectId: "my-trading-workbench",
-     storageBucket: "my-trading-workbench.appspot.com",
+                            storageBucket: "my-trading-workbench.appspot.com",
                             messagingSenderId: "386958713208",
                             appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
                             measurementId: "G-2WEVVMRHV7"
- };
-const app = initializeApp(firebaseConfig);
+                        };
+                        const app = initializeApp(firebaseConfig);
                         this.db = getFirestore(app); this.auth = getAuth(app);
-onAuthStateChanged(this.auth, (user) => {
+                        
+                        onAuthStateChanged(this.auth, (user) => {
                             this.isInitialized = true; // 收到 Firebase 響應，清除 5 秒超時
                             if (user) { 
-  this.isLoggedIn = true; 
+                                this.isLoggedIn = true; 
                                 this.userId = user.uid; 
                                 this.initializeDataListeners(); // 初始化所有數據庫監聽器
-                            } 
-       else { 
+                            } else { 
                                 this.isLoggedIn = false; 
                                 this.userId = null; 
-              this.clearAllData(); // 清除所有本地數據並取消監聽
+                                this.clearAllData(); // 清除所有本地數據並取消監聽
                             }
                         });
-} catch(e) { 
+                    } catch(e) { 
                         console.error("Firebase initialization failed:", e); 
                         this.authError = "Firebase 初始化失敗。"; 
                         this.isInitialized = true; // 即使失敗也要顯示登入頁面
                     }
                 },
                 
-                // (*** 函數補全 ***: 這些函數在 `新3.txt` 中遺失了)
                 initializeDataListeners() {
-                 if (!this.userId) return;
-this.loadCollection('trades', 'trades', 'entryDate');
-                  this.loadCollection('marketJournals', 'marketJournals', 'date');
-                  this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc');
-                  this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
-                  this.loadCollection('reflections', 'reflections', 'date');
-                  this.loadCollection('playbooks', 'playbooks', 'name', 'asc'); // (V3 升級)
-},
+                    if (!this.userId) return;
+                    this.loadCollection('trades', 'trades', 'entryDate');
+                    this.loadCollection('marketJournals', 'marketJournals', 'date');
+                    this.loadCollection('buyPlans', 'buyPlans', 'name', 'asc');
+                    this.loadCollection('modelBooks', 'modelBooks', 'name', 'asc');
+                    this.loadCollection('reflections', 'reflections', 'date');
+                    this.loadCollection('playbooks', 'playbooks', 'name', 'asc'); // (V3 升級)
+                },
                 
-                // (*** 函數補全 ***)
                 async register() {
-                  try {
-                    await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
-this.authError = ''; 
-                  } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
-}
+                    try {
+                        await createUserWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
+                        this.authError = ''; 
+                    } catch (e) {
+                        this.authError = this.getFirebaseAuthErrorMessage(e.code);
+                    }
                 },
-                // (*** 函數補全 ***)
                 async login() {
-                  try {
-                    await signInWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
-this.authError = ''; 
-                  } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
-}
+                    try {
+                        await signInWithEmailAndPassword(this.auth, this.authForm.email, this.authForm.password);
+                        this.authError = ''; 
+                    } catch (e) {
+                        this.authError = this.getFirebaseAuthErrorMessage(e.code);
+                    }
                 },
-                // (*** 函數補全 ***)
                 async loginWithGoogle() {
-                  try {
-                    const provider = new GoogleAuthProvider();
-await signInWithPopup(this.auth, provider); 
-                    this.authError = ''; 
-                  } catch (e) {
-                    this.authError = this.getFirebaseAuthErrorMessage(e.code);
-}
+                    try {
+                        const provider = new GoogleAuthProvider();
+                        await signInWithPopup(this.auth, provider); 
+                        this.authError = ''; 
+                    } catch (e) {
+                        this.authError = this.getFirebaseAuthErrorMessage(e.code);
+                    }
                 },
-                // (*** 函數補全 ***)
                 async logout() {
-                  await signOut(this.auth);
-},
-                // (*** 函數補全 ***)
+                    await signOut(this.auth);
+                },
                 getFirebaseAuthErrorMessage(errorCode) {
-switch (errorCode) {
-                    case 'auth/invalid-email': return '電子郵件格式不正確。';
-                    case 'auth/user-not-found': return '找不到該用戶。';
-                    case 'auth/wrong-password': return '密碼錯誤。';
-                    case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
-                    default: return '登入或註冊時發生錯誤。';
-}
+                    switch (errorCode) {
+                        case 'auth/invalid-email': return '電子郵件格式不正確。';
+                        case 'auth/user-not-found': return '找不到該用戶。';
+                        case 'auth/wrong-password': return '密碼錯誤。';
+                        case 'auth/email-already-in-use': return '此電子郵件已被註冊。';
+                        default: return '登入或註冊時發生錯誤。';
+                    }
                 },
 
                 // 
                 // ==============================
                 // === CORE DATA METHODS ===
                 // ==============================
-    //
+                //
                 
-                // (*** 函數補全 ***)
                 loadCollection(path, targetProperty, orderByField, orderDirection = "desc") {
-                  const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField, orderDirection));
-const unsub = onSnapshot(q, (snapshot) => {
-                    this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                  }, (error) => console.error(`Error loading ${path}:`, error));
-this.unsubscribers.push(unsub);
+                    const q = query(collection(this.db, `users/${this.userId}/${path}`), orderBy(orderByField, orderDirection));
+                    const unsub = onSnapshot(q, (snapshot) => {
+                        this[targetProperty] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    }, (error) => console.error(`Error loading ${path}:`, error));
+                    this.unsubscribers.push(unsub);
                 },
-                // (*** 函數補全 ***)
                 async saveEntity(collectionName, entityId, formData) {
-                  try {
-                    const path = `users/${this.userId}/${collectionName}`;
-const dataToSave = { ...formData }; 
-                    if (entityId) {
-                      await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
-} else {
-                      dataToSave.createdAt = serverTimestamp();
-await addDoc(collection(this.db, path), dataToSave);
+                    try {
+                        const path = `users/${this.userId}/${collectionName}`;
+                        const dataToSave = { ...formData }; 
+                        if (entityId) {
+                            await setDoc(doc(this.db, path, entityId), dataToSave, { merge: true });
+                        } else {
+                            dataToSave.createdAt = serverTimestamp();
+                            await addDoc(collection(this.db, path), dataToSave);
+                        }
+                    } catch (e) {
+                        console.error(`Error saving to ${collectionName}:`, e);
                     }
-                  } catch (e) {
-                    console.error(`Error saving to ${collectionName}:`, e);
-}
                 },
-                // (*** 函數補全 ***)
                 async deleteEntity(collectionName, entityId) {
-                  if (confirm('確定要刪除嗎?')) { 
-                    await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
-}
+                    if (confirm('確定要刪除嗎?')) { 
+                        await deleteDoc(doc(this.db, `users/${this.userId}/${collectionName}`, entityId));
+                    }
                 },
-                // (*** 函數補全 ***)
                 handleImageUpload(event, targetForm) {
-                  this.isUploadingImage = true;
-// (來自 )
-                  const file = event.target.files[0];
-if (file) {
-                    const reader = new FileReader();
-reader.onload = (e) => {
-                      targetForm.chartImage = e.target.result;
-this.isUploadingImage = false; // (來自 )
-                    };
-reader.readAsDataURL(file); 
-                  } else {
-                    this.isUploadingImage = false;
-}
+                    this.isUploadingImage = true;
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            targetForm.chartImage = e.target.result;
+                            this.isUploadingImage = false;
+                        };
+                        reader.readAsDataURL(file); 
+                    } else {
+                        this.isUploadingImage = false;
+                    }
                 },
-                // (*** 函數補全 ***)
                 formatCurrency(value, currency = 'USD') {
-                  if (typeof value !== 'number' || isNaN(value)) {
-                    // (V3 升級) 根據貨幣返回不同的 $0.00
-                    const symbols = {'USD': '$', 'HKD': 'HK$', 'CNY': '¥', 'JPY': '¥', 'TWD': 'NT$'};
-                    return (symbols[currency] || '') + '0.00';
-                  }
-    return new Intl.NumberFormat('en-US', { 
-                    style: 'currency', 
-                    currency: currency, 
-                    minimumFractionDigits: 2 
-                  }).format(value);
-},
-                // (*** 函數補全 ***)
+                    if (typeof value !== 'number' || isNaN(value)) {
+                        const symbols = {'USD': '$', 'HKD': 'HK$', 'CNY': '¥', 'JPY': '¥', 'TWD': 'NT$'};
+                        return (symbols[currency] || '') + '0.00';
+                    }
+                    return new Intl.NumberFormat('en-US', { 
+                        style: 'currency', 
+                        currency: currency, 
+                        minimumFractionDigits: 2 
+                    }).format(value);
+                },
                 clearAllData() {
-                  this.unsubscribers.forEach(unsub => unsub());
-this.unsubscribers = []; 
-                  this.trades = [];
-                  this.marketJournals = [];
-                  this.buyPlans = [];
-                  this.modelBooks = [];
-                  this.reflections = [];
-                  this.playbooks = []; // (V3 升級)
-},
-           openChartModal(url) { 
-                  if (url) {
-                    this.modalImageUrl = url;
-this.isModalOpen = true;
-                  } 
+                    this.unsubscribers.forEach(unsub => unsub());
+                    this.unsubscribers = []; 
+                    this.trades = [];
+                    this.marketJournals = [];
+                    this.buyPlans = [];
+                    this.modelBooks = [];
+                    this.reflections = [];
+                    this.playbooks = []; // (V3 升級)
+                },
+                openChartModal(url) { 
+                    if (url) {
+                        this.modalImageUrl = url;
+                        this.isModalOpen = true;
+                    } 
                 },
                 closeChartModal() { 
-                  this.isModalOpen = false;
-this.modalImageUrl = '';
+                    this.isModalOpen = false;
+                    this.modalImageUrl = '';
                 },
                 
-                // (*** 函數補全 ***)
                 resetAllForms() {
-                  this.resetForm();
-this.resetMarketJournalForm();
-                  this.resetBuyPlanForm();
-                  this.resetModelBookForm();
-                  this.resetReflectionForm();
-                  this.resetPlaybookForm(); // (V3 升級)
+                    this.resetForm();
+                    this.resetMarketJournalForm();
+                    this.resetBuyPlanForm();
+                    this.resetModelBookForm();
+                    this.resetReflectionForm();
+                    this.resetPlaybookForm(); // (V3 升級)
                 },
                 
                 /**
                  * [Form] 獲取指定類型的空白表單模板
-                 * *** 程式碼合併 (Merge) ***
-                 * (V3 升級) 已添加 'playbook'
                  */
                 getBlankForm(type) {
-                  const today = new Date().toISOString().slice(0, 10); 
-switch (type) {
-                    case 'journal': 
-                      return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: this.quickSizer.riskAmount || 350, setup: '', customSetup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] }; // (V3 升級: 新增 customSetup)
-case 'marketJournal': 
-                      return { date: today, marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', sentiment: 3, summary: '' };
-case 'buyPlan': 
-                      return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' };
-case 'modelBook': 
-                      return { name: '', ticker: '', market: '', year: new Date().getFullYear(), sector: '', pattern: '', performance: '', pivot: '', takeaways: '', chartImage: '' };
-case 'reflection': 
-                      return { date: today, problem: '', thoughts: '' };
-                    // (V3 升級) 新增 'playbook'
-                    case 'playbook':
-                      return { name: '', timeframe: '', market: '', entry: '', stopLoss: '', takeProfit: '', notes: '', chartImage: '' };
-case 'txn': // 子交易
-                      return { type: 'Buy', date: today, quantity: null, price: null, notes: '' };
-default: return {};
-                  }
+                    const today = new Date().toISOString().slice(0, 10); 
+                    switch (type) {
+                        case 'journal': 
+                            return { entryDate: today, ticker: '', direction: 'Long', riskPercent: 1.0, riskAmount: this.quickSizer.riskAmount || 350, setup: '', customSetup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] }; // (V3 升級: 新增 customSetup)
+                        case 'marketJournal': 
+                            return { date: today, marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', sentiment: 3, summary: '' };
+                        case 'buyPlan': 
+                            return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' };
+                        case 'modelBook': 
+                            return { name: '', ticker: '', market: '', year: new Date().getFullYear(), sector: '', pattern: '', performance: '', pivot: '', takeaways: '', chartImage: '' };
+                        case 'reflection': 
+                            return { date: today, problem: '', thoughts: '' };
+                        // (V3 升級) 新增 'playbook'
+                        case 'playbook':
+                            return { name: '', timeframe: '', market: '', entry: '', stopLoss: '', takeProfit: '', notes: '', chartImage: '' };
+                        case 'txn': // 子交易
+                            return { type: 'Buy', date: today, quantity: null, price: null, notes: '' };
+                        default: return {};
+                    }
                 },
                 
                 // --- 各個表單的重置函數 ---
-resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
-resetMarketJournalForm() { this.editingMarketJournalId = null; this.marketJournalForm = this.getBlankForm('marketJournal'); },
-resetBuyPlanForm() { this.editingBuyPlanId = null; this.buyPlanForm = this.getBlankForm('buyPlan'); },
-resetModelBookForm() { this.editingModelBookId = null; this.modelBookForm = this.getBlankForm('modelBook'); },
-resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm = this.getBlankForm('reflection'); },
+                resetForm() { this.editingTradeId = null; this.journalForm = this.getBlankForm('journal'); },
+                resetMarketJournalForm() { this.editingMarketJournalId = null; this.marketJournalForm = this.getBlankForm('marketJournal'); },
+                resetBuyPlanForm() { this.editingBuyPlanId = null; this.buyPlanForm = this.getBlankForm('buyPlan'); },
+                resetModelBookForm() { this.editingModelBookId = null; this.modelBookForm = this.getBlankForm('modelBook'); },
+                resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm = this.getBlankForm('reflection'); },
                 resetPlaybookForm() { this.editingPlaybookId = null; this.playbookForm = this.getBlankForm('playbook'); }, // (V3 升級)
-   resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
+                resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); this.showTxnForm = false; },
 
                 // 
                 // ==============================
                 // === V3 SAVE/EDIT/DELETE METHODS ===
                 // ==============================
                 //
-      saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId, this.marketJournalForm); this.resetMarketJournalForm(); },
-editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm = { ...entry }; this.activeTab = 'marketJournal'; },
-deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
+                saveMarketJournal() { this.saveEntity('marketJournals', this.editingMarketJournalId, this.marketJournalForm); this.resetMarketJournalForm(); },
+                editMarketJournal(entry) { this.editingMarketJournalId = entry.id; this.marketJournalForm = { ...entry }; this.activeTab = 'marketJournal'; },
+                deleteMarketJournal(id) { this.deleteEntity('marketJournals', id); },
 
-saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm); this.resetBuyPlanForm(); },
-editBuyPlan(plan) { this.editingBuyPlanId = plan.id; this.buyPlanForm = { ...plan }; this.activeTab = 'buyPlan'; },
-deleteBuyPlan(id) { this.deleteEntity('buyPlans', id); },
+                saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm); this.resetBuyPlanForm(); },
+                editBuyPlan(plan) { this.editingBuyPlanId = plan.id; this.buyPlanForm = { ...plan }; this.activeTab = 'buyPlan'; },
+                deleteBuyPlan(id) { this.deleteEntity('buyPlans', id); },
 
-saveModelBook() { this.saveEntity('modelBooks', this.editingModelBookId, this.modelBookForm); this.resetModelBookForm(); },
-editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = { ...model }; this.activeTab = 'modelBook'; },
-deleteModelBook(id) { this.deleteEntity('modelBooks', id); },
+                saveModelBook() { this.saveEntity('modelBooks', this.editingModelBookId, this.modelBookForm); this.resetModelBookForm(); },
+                editModelBook(model) { this.editingModelBookId = model.id; this.modelBookForm = { ...model }; this.activeTab = 'modelBook'; },
+                deleteModelBook(id) { this.deleteEntity('modelBooks', id); },
 
-saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm); this.resetReflectionForm(); },
-editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry }; this.activeTab = 'reflection'; },
-deleteReflection(id) { this.deleteEntity('reflections', id); },
+                saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm); this.resetReflectionForm(); },
+                editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry }; this.activeTab = 'reflection'; },
+                deleteReflection(id) { this.deleteEntity('reflections', id); },
 
                 // (V3 升級) 新增 Playbook 函數
                 savePlaybook() { this.saveEntity('playbooks', this.editingPlaybookId, this.playbookForm); this.resetPlaybookForm(); },
@@ -1768,7 +1726,7 @@ deleteReflection(id) { this.deleteEntity('reflections', id); },
                 // ==============================
                 // === JOURNAL V4.0 METHODS ===
                 // ==============================
-    //
+                //
                 
                 // (V3 升級) Quick Sizer v2.0
                 async fetchExchangeRates() {
@@ -1787,21 +1745,16 @@ deleteReflection(id) { this.deleteEntity('reflections', id); },
                 },
                 applyQuickSizer() { 
                     this.journalForm.riskPercent = this.quickSizer.riskPercent;
-this.journalForm.riskAmount = this.quickSizer.riskAmount;
+                    this.journalForm.riskAmount = this.quickSizer.riskAmount;
                 },
                 selectTrade(trade) { 
-                    this.selectedTradeId = (this.selectedTradeId === trade.id) ?
-null : trade.id;
+                    this.selectedTradeId = (this.selectedTradeId === trade.id) ? null : trade.id;
                     if (this.selectedTradeId) {
                         this.resetTxnForm();
-}
+                    }
                 },
 
                 // *** V3 SPEC 4 & BUG FIX ***
-                // 1. 實作 V3 Spec 4: 在交易平倉時觸發反思彈窗。
-                // 2. 修復 Bug: 原先的 "新增" (arrayUnion) 和 "編輯" (full array) 邏輯不一致。
-                //    現在 "新增"、"編輯"、"刪除" 都使用完整的陣列覆寫 (updateDoc)，
-                //    這更為穩定，並允許我們在儲存後立即檢查交易狀態。
                 async saveSubTransaction() { 
                     if (!this.selectedTradeId) return;
                     const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
@@ -1816,7 +1769,7 @@ null : trade.id;
                     } else {
                         // 新增邏輯
                         updatedTransactions = [
-                            ...this.selectedTrade.transactions, 
+                            ...(this.selectedTrade.transactions || []), // 確保 transactions 存在
                             { ...this.txnForm, id: Date.now().toString() }
                         ];
                     }
@@ -1840,13 +1793,10 @@ null : trade.id;
                 
                 editSubTransaction(txn) { 
                     this.editingTxnId = txn.id;
-this.txnForm = { ...txn };  
+                    this.txnForm = { ...txn };  
                     this.showTxnForm = true;  
                 },
 
-                // *** BUG FIX ***
-                // 改為使用完整的陣列覆寫，以匹配 `saveSubTransaction` 的邏輯，
-                // 避免使用 Firebase 的 arrayRemove 所帶來的潛在問題。
                 async deleteSubTransaction(txnId) { 
                     if (!this.selectedTradeId) return;
 
@@ -1859,64 +1809,53 @@ this.txnForm = { ...txn };
                 },
 
                 getTradeDetails(trade) { 
-                    const txns = trade.transactions ||
-[];
+                    const txns = trade.transactions || [];
                     const buyTxns = txns.filter(t => t.type === 'Buy');
                     const sellTxns = txns.filter(t => t.type === 'Sell');
-const totalBuyQty = buyTxns.reduce((sum, t) => sum + t.quantity, 0);
+                    const totalBuyQty = buyTxns.reduce((sum, t) => sum + t.quantity, 0);
                     const totalSellQty = sellTxns.reduce((sum, t) => sum + t.quantity, 0);
-const totalBuyValue = buyTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
-const totalSellValue = sellTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
-const status = totalBuyQty > 0 && totalBuyQty === totalSellQty ? 'Closed' : 'Open';
-const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0; 
+                    const totalBuyValue = buyTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
+                    const totalSellValue = sellTxns.reduce((sum, t) => sum + t.quantity * t.price, 0);
+                    const status = totalBuyQty > 0 && totalBuyQty <= totalSellQty ? 'Closed' : 'Open'; // 修正：允許 SellQty >= BuyQty
+                    const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0; 
+                    
                     let totalPl = 0;
-if (status === 'Closed') {
-                        totalPl = totalSellValue - totalBuyValue;
-} else {
-                        // (修正) 計算未平倉 P&L
-                        const currentPosition = totalBuyQty - totalSellQty;
+                    if (status === 'Closed') {
+                        // 計算已平倉 P&L
+                        const avgCostForSold = avgBuyPrice * totalSellQty;
+                        totalPl = totalSellValue - avgCostForSold;
+                    } else {
+                        // 計算已實現 P&L (如果部分賣出)
                         const avgCostOfSold = avgBuyPrice * totalSellQty;
                         totalPl = totalSellValue - avgCostOfSold;
-                        // 注意: 這只是 "已實現" 的 P&L，"未實現" P&L 需要外部價格
-}
-                    const rMultiple = trade.riskAmount > 0 ?
-totalPl / trade.riskAmount : 0;
-                    return { status, totalPl, rMultiple, parent: trade };
+                    }
 
+                    const rMultiple = (trade.riskAmount > 0) ? (totalPl / trade.riskAmount) : 0;
+                    return { status, totalPl, rMultiple, parent: trade };
                 },
                 
                 /**
                  * [Journal] 保存 "主交易"
-                 * *** V3 升級 ***
-                 * 檢查 journalForm.setup 是否為 '--custom--'。
-                 * 如果是，將 journalForm.customSetup 的值存入 journalForm.setup。
                  */
-         async saveTrade() {
+                async saveTrade() {
                     const isNewTrade = !this.editingTradeId;
                     
                     // (V3 升級) 處理自訂 Setup
                     if (this.journalForm.setup === '--custom--') {
                         this.journalForm.setup = this.journalForm.customSetup || '自訂';
                     }
-                    // 清理不再需要的 customSetup 欄位
-                    delete this.journalForm.customSetup; 
+                    delete this.journalForm.customSetup; // 清理
                     
-await this.saveEntity('trades', this.editingTradeId, this.journalForm);
+                    await this.saveEntity('trades', this.editingTradeId, this.journalForm);
                     
                     if (isNewTrade) {
-                        // (V3 升級) `新3.txt` 中此功能被註解，我們保持原樣
-                        setTimeout(() => {
-                           const savedTrade = this.trades.find(t => t.ticker === 
-this.journalForm.ticker && t.entryDate === this.journalForm.entryDate);
-                           // if (savedTrade) this.triggerContextualPrompts(savedTrade);
-                        }, 500);
-
+                        // (V3 Spec 4) 新增交易時，我們不需要觸發反思 (因為它還是 Open)
                     }
                     this.resetForm();
-},
+                },
                 editTrade(trade) { 
                     this.editingTradeId = trade.id;
-this.journalForm = {...this.getBlankForm('journal'), ...trade, transactions: trade.transactions || [] };
+                    this.journalForm = {...this.getBlankForm('journal'), ...trade, transactions: trade.transactions || [] };
                     
                     // (V3 升級) 檢查 setup 是否在 Playbook 列表中
                     const isKnownPlaybook = this.playbooks.some(p => p.name === trade.setup);
@@ -1928,240 +1867,261 @@ this.journalForm = {...this.getBlankForm('journal'), ...trade, transactions: tra
                     
                     this.activeTab = 'journal'; 
                     this.selectTrade(trade);
-},
+                },
                 async deleteTrade(id) { 
                     await this.deleteEntity('trades', id);
-this.selectedTradeId = null; 
+                    if (this.selectedTradeId === id) {
+                        this.selectedTradeId = null; 
+                    }
                 },
                 
                 // 
                 // ==============================
                 // === NEW WORKFLOW & PSYCHOLOGY (from 新3.txt) ===
                 // ==============================
-      //
+                //
                 openPreTradeChecklist(plan) {
                     this.currentPlanToExecute = plan;
-this.checklistItems = [
+                    this.checklistItems = [
                         { text: `市場狀況適合此策略 (${plan.pattern}) 嗎？`, checked: false },
                         { text: '風險是否在我的承受範圍內？', checked: false },
                         { text: '我已確認關鍵價位 (買點、止損)？', checked: false },
-        { text: '我是否因 FOMO 或其他情緒而交易？', checked: false },
+                        { text: '我是否因 FOMO 或其他情緒而交易？', checked: false },
                         { text: '這筆交易符合我的交易計劃嗎？', checked: false }
                     ];
-this.showChecklistModal = true;
+                    this.showChecklistModal = true;
                 },
 
                 executeTradeFromPlan() {
                     if (!this.allChecklistItemsChecked) return;
-const plan = this.currentPlanToExecute;
+                    const plan = this.currentPlanToExecute;
                     
                     // Pre-fill journal form from plan
-this.resetForm(); // Clear any existing form data
+                    this.resetForm(); // Clear any existing form data
                     this.journalForm.ticker = plan.ticker;
-this.journalForm.setup = plan.pattern; // (V3 升級) 檢查 setup 是否在 playbooks 中
+                    
+                    // (V3 升級) 檢查 setup 是否在 playbooks 中
                     const isKnownPlaybook = this.playbooks.some(p => p.name === plan.pattern);
                     if (!isKnownPlaybook && plan.pattern) {
                         this.journalForm.customSetup = plan.pattern;
                         this.journalForm.setup = '--custom--';
+                    } else {
+                        this.journalForm.setup = plan.pattern;
                     }
                     
-                    this.journalForm.rationale = plan.rationale;
+                    this.journalForm.rationale = `從買入計劃執行: ${plan.rationale || ''}`;
                     this.journalForm.chartImage = plan.chartImage;
                     
                     this.activeTab = 'journal';
-this.showChecklistModal = false;
+                    this.showChecklistModal = false;
                     this.currentPlanToExecute = null;
                 },
 
-                // (V3 Spec 4) 觸發彈窗的函數 (此函數已存在，由 saveSubTransaction 調用)
+                // (V3 Spec 4) 觸發彈窗的函數 (由 saveSubTransaction 調用)
                 triggerContextualPrompts(trade) {
                     const details = this.getTradeDetails(trade);
-if (details.status !== 'Closed') return; // 再次確認
+                    if (details.status !== 'Closed') return; // 再次確認
+
+                    // 檢查是否已經反思過
+                    if (trade.reflectionNote) return; 
 
                     this.contextualPrompt.tradeId = trade.id;
                     if (details.rMultiple > 0) {
                         this.contextualPrompt.question = `這次盈利 (${details.rMultiple.toFixed(2)}R) 做對了什麼？是什麼關鍵因素導致了成功？`;
-} else {
+                    } else {
                         this.contextualPrompt.question = `這次虧損 (${details.rMultiple.toFixed(2)}R) 的主要原因是什麼？如果重來一次，你會怎麼做？`;
-}
+                    }
                     this.showContextualPromptModal = true;
-},
+                },
 
                 async saveContextualPrompt() {
-                    const tradeToUpdate = this.trades.find(t => t.id === this.contextualPrompt.tradeId);
-if (tradeToUpdate && this.contextualPrompt.answer) {
+                    if (this.contextualPrompt.tradeId && this.contextualPrompt.answer) {
                         const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.contextualPrompt.tradeId);
-await updateDoc(tradeRef, {
+                        await updateDoc(tradeRef, {
                             reflectionNote: this.contextualPrompt.answer // 將反思儲存到主交易中
                         });
-}
+                    }
                     this.showContextualPromptModal = false;
-this.contextualPrompt = { tradeId: null, question: '', answer: '' };
-},
+                    this.contextualPrompt = { tradeId: null, question: '', answer: '' };
+                },
 
                 // 
                 // ==============================
                 // === SEARCH, CHART, CALENDAR & AI ===
                 // ==============================
-      //
+                //
                 search() { 
-                  console.log("Searching for:", this.searchTerm);
-// 實際的搜尋邏輯應在此處實現
+                    console.log("Searching for:", this.searchTerm);
+                    // 實際的搜尋邏輯應在此處實現
                 },
                 goToSearchResult(item) { 
-                  console.log("Go to:", item);
-// 實際的跳轉邏輯應在此處實現
+                    console.log("Go to:", item);
+                    // 實際的跳轉邏輯應在此處實現
                 },
                 renderChart(canvasId) { 
-                  const ctx = document.getElementById(canvasId);
-if (!ctx) return;
-                  
-                  // 銷毀舊圖表
-                  if (canvasId === 'plChart' && this.plChart) {
-                    this.plChart.destroy();
-} else if (canvasId === 'dashboardPlChart' && this.dashboardPlChart) {
-                    this.dashboardPlChart.destroy();
-}
-                  
-                  // 準備數據
-                  const closedTrades = this.trades.map(t => this.getTradeDetails(t))
-   .filter(t => t.status === 'Closed')
-                                           .sort((a,b) => new Date(a.parent.entryDate) - new Date(b.parent.entryDate));
-let cumulativePl = 0;
-                  const chartLabels = closedTrades.map((t, index) => `Trade #${index + 1}`);
-const chartDataPoints = closedTrades.map(t => {
-                      cumulativePl += t.totalPl;
-                      return cumulativePl;
-                  });
-// 圖表配置
-                  const chartConfig = {
-                    type: 'line',
-                    data: {
-                        labels: ["Start", ...chartLabels], // (修正: 添加 "Start" 標籤)
-                   datasets: [{
-                            label: '資金曲線',
-                            data: [0, ...chartDataPoints], // (修正: 從 0 開始)
-            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-  tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                 maintainAspectRatio: false,
-                        scales: {
-                            x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } }, // (修正: 顏色)
-                 y: { 
-                                ticks: { color: '#9ca3af' }, 
-                                grid: { color: 'rgba(75, 85, 99, 0.5)' } ,
-                                // (V3 Spec 1) Y 軸顯示為現金金額
-                                callback: function(value, index, values) {
-                                    return '$' + value;
+                    const ctx = document.getElementById(canvasId);
+                    if (!ctx) return;
+                    
+                    // 銷毀舊圖表
+                    if (canvasId === 'plChart' && this.plChart) {
+                        this.plChart.destroy();
+                    } else if (canvasId === 'dashboardPlChart' && this.dashboardPlChart) {
+                        this.dashboardPlChart.destroy();
+                    }
+                    
+                    // 準備數據
+                    const closedTrades = this.trades.map(t => this.getTradeDetails(t))
+                                            .filter(t => t.status === 'Closed')
+                                            .sort((a,b) => new Date(a.parent.entryDate) - new Date(b.parent.entryDate));
+                    let cumulativePl = 0;
+                    const chartLabels = closedTrades.map((t, index) => `Trade #${index + 1}`);
+                    const chartDataPoints = closedTrades.map(t => {
+                        cumulativePl += t.totalPl;
+                        return cumulativePl;
+                    });
+                    
+                    // 圖表配置
+                    const chartConfig = {
+                        type: 'line',
+                        data: {
+                            labels: ["Start", ...chartLabels], // 從 0 開始
+                            datasets: [{
+                                label: '資金曲線',
+                                data: [0, ...chartDataPoints], // 從 0 開始
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } },
+                                y: { 
+                                    ticks: { 
+                                        color: '#9ca3af',
+                                        // (V3 Spec 1) Y 軸顯示為現金金額
+                                        callback: function(value, index, values) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    }, 
+                                    grid: { color: 'rgba(75, 85, 99, 0.5)' } 
+                                }
+                            },
+                            plugins: { 
+                                legend: { labels: { color: '#d1d5db' } },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.y !== null) {
+                                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                            }
+                                            return label;
+                                        }
+                                    }
                                 }
                             }
-                        },
-                        plugins: { legend: { labels: { color: '#d1d5db' } } }
-             }
-                  };
-// 創建新圖表
-                  if (canvasId === 'plChart') {
-                    this.plChart = new Chart(ctx, chartConfig);
-} else if (canvasId === 'dashboardPlChart') {
-                    this.dashboardPlChart = new Chart(ctx, chartConfig);
-}
+                        }
+                    };
+                    
+                    // 創建新圖表
+                    if (canvasId === 'plChart') {
+                        this.plChart = new Chart(ctx, chartConfig);
+                    } else if (canvasId === 'dashboardPlChart') {
+                        this.dashboardPlChart = new Chart(ctx, chartConfig);
+                    }
                 },
 
                 /**
                  * [Calendar] 生成日曆網格數據
                  */
-         generateCalendar() {
+                generateCalendar() {
                     const date = new Date(this.calendar.year, this.calendar.month, 1);
-const days = [];
+                    const days = [];
                     const startDay = date.getDay(); 
                     const daysInMonth = new Date(this.calendar.year, this.calendar.month + 1, 0).getDate();
-const todayStr = new Date().toISOString().slice(0, 10);
+                    const todayStr = new Date().toISOString().slice(0, 10);
                     
                     // 1. 填充上個月的空格
                     for (let i = 0; i < startDay; i++) {
                         days.push({ date: null, dayOfMonth: null, isCurrentMonth: false });
-}
+                    }
                     
                     // 2. 填充本月的日期
                     for (let i = 1; i <= daysInMonth; i++) {
-                        const d = new Date(this.calendar.year, 
-this.calendar.month, i);
+                        const d = new Date(this.calendar.year, this.calendar.month, i);
                         const dateStr = d.toISOString().slice(0, 10);
                         days.push({ 
                             date: dateStr, 
                             dayOfMonth: i, 
                             isCurrentMonth: true, 
-                          isToday: dateStr === todayStr, 
+                            isToday: dateStr === todayStr, 
                             pl: 0, 
                             tradeCount: 0, 
-                  relatedTrades: new Set() 
+                            relatedTrades: new Set() 
                         });
-}
+                    }
 
                     // 3. 遍歷所有交易，計算每天的 P&L
-        this.trades.forEach(trade => {
-                   (trade.transactions || []).forEach(txn => {
-                            const day = days.find(d => d.date === txn.date);
-                    if (day) {
-                                if (!day.relatedTrades) day.relatedTrades = new Set();
+                    this.trades.forEach(trade => {
+                        const details = this.getTradeDetails(trade);
+                        if (details.status === 'Closed') {
+                            // 找到最後一筆交易 (平倉) 的日期
+                            const lastTxnDate = (trade.transactions || [])
+                                .filter(t => t.type === 'Sell')
+                                .sort((a, b) => new Date(b.date) - new Date(a.date))[0]?.date;
+                            
+                            const closeDate = lastTxnDate || trade.entryDate; // 備用
+                            const day = days.find(d => d.date === closeDate);
+                            if (day) {
                                 day.relatedTrades.add(trade.id);
-
-                            if (txn.type === 'Sell') {
-                      const buysForThisSell = (trade.transactions || []).filter(t => t.type === 'Buy' && new Date(t.date) <= new Date(txn.date));
-                            const totalBuyQty = buysForThisSell.reduce((acc, t) => acc + t.quantity, 0);
-                            const totalBuyValue = buysForThisSell.reduce((acc, t) => acc + (t.price * t.quantity), 0);
-                            const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0;
-                                    const plForTxn = (txn.price - avgBuyPrice) * txn.quantity;
-                                    day.pl += plForTxn;
-}
+                                day.pl += details.totalPl;
                             }
-                        });
-});
+                        }
+                    });
                     
                     // 4. 更新 tradeCount
                     days.forEach(day => {
                         if (day.relatedTrades) {
                             day.tradeCount = day.relatedTrades.size;
                         }
-   });
+                    });
 
                     this.calendar.days = days;
-},
+                },
                 
                 /**
                  * [Calendar] 顯示指定日期的交易 (彈窗)
                  */
                 showTradesForDate(date) {
-      this.selectedDateForTrades = date;
+                    this.selectedDateForTrades = date;
                     const day = this.calendar.days.find(d => d.date === date);
-if (day && day.relatedTrades) {
+                    if (day && day.relatedTrades) {
                         this.tradesForSelectedDate = this.trades.filter(t => day.relatedTrades.has(t.id));
-} else {
+                    } else {
                         this.tradesForSelectedDate = [];
-}
+                    }
                     this.showDateTradesModal = true;
-},
+                },
 
                 /**
                  * [Calendar] 切換月份
                  */
                 changeMonth(delta) { 
                     let newMonth = this.calendar.month + delta;
-let newYear = this.calendar.year;
-                    if (newMonth > 11) { newMonth = 0; newYear++;
-}
-                    if (newMonth < 0) { newMonth = 11;
-newYear--; }
+                    let newYear = this.calendar.year;
+                    if (newMonth > 11) { newMonth = 0; newYear++; }
+                    if (newMonth < 0) { newMonth = 11; newYear--; }
                     this.calendar.month = newMonth;
-this.calendar.year = newYear;
+                    this.calendar.year = newYear;
                 },
                 
-                // (*** 函數補全 ***)
                 scrollToBottom(element) {
                     if (element) {
                         this.$nextTick(() => {
@@ -2173,18 +2133,18 @@ this.calendar.year = newYear;
                 /**
                  * [AI] 調用 AI API (佔位符)
                  */
-          async callAiApi(systemPrompt, userQuery, formatHtml = true, isJsonOutput = false) { 
+                async callAiApi(systemPrompt, userQuery, formatHtml = true, isJsonOutput = false) { 
                     this.isLoading = true;
                     console.log("Calling AI with system prompt:", systemPrompt, "User query:", userQuery);
                     let responseText = '';
 
                     try {
                         // 模擬 AI 回應
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        await new Promise(resolve => setTimeout(resolve, 1500));
                         if (this.settings.aiProvider === 'gemini') {
-                            responseText = `[Gemini 模擬回覆] ${userQuery}`;
+                            responseText = `[Gemini 模擬回覆] 根據您的數據，我分析了 ${userQuery.length} 字元的請求...`;
                         } else {
-                            responseText = `[Custom API 模擬回覆] ${userQuery}`;
+                            responseText = `[Custom API 模擬回覆] 根據您的數據，我分析了 ${userQuery.length} 字元的請求...`;
                         }
                     } catch (error) {
                         console.error("AI API call failed:", error);
@@ -2195,14 +2155,14 @@ this.calendar.year = newYear;
                     return formatHtml ? responseText.replace(/\n/g, '<br>') : responseText;
                 },
                 
-                // (*** 函數補全 ***: 佔位符)
                 async callGeminiApi(systemPrompt, userQuery, isJsonOutput) {
+                    // 實際的 Gemini API 調用邏輯
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     return `[Gemini 模擬回覆] ${userQuery}`;
                 },
                 
-                // (*** 函數補全 ***: 佔位符)
                 async callCustomApi(systemPrompt, userQuery, isJsonOutput) {
+                    // 實際的 Custom API 調用邏輯
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     return `[Custom API 模擬回覆] ${userQuery}`;
                 },
@@ -2212,7 +2172,6 @@ this.calendar.year = newYear;
                  */
                 async getAiDashboardSummary() { 
                     this.isLoading = true;
-                    // (V3 升級) 使用 V1 的聊天記錄
                     this.aiChatHistory.push({ role: 'ai', content: 'AI 總結中...' });
                     this.scrollToBottom(this.$refs.aiSummaryContainer);
 
@@ -2229,8 +2188,6 @@ this.calendar.year = newYear;
                 
                 /**
                  * [AI] 在 "儀表板" 提問
-                 * *** V3 升級 ***
-                 * 使用 V1 的聊天記錄 (aiChatHistory)
                  */
                 async askAi() {
                      if(!this.aiQuery) return;
@@ -2254,7 +2211,6 @@ this.calendar.year = newYear;
                      this.scrollToBottom(this.$refs.aiSummaryContainer);
                 },
                 
-                // (*** 函數補全 ***)
                 async getAiAnalysis() { 
                     this.isLoading = true;
                     this.aiAnalysisResult = '<p class="text-gray-400">AI 分析中...</p>';
@@ -2264,7 +2220,6 @@ this.calendar.year = newYear;
                     );
                     this.isLoading = false;
                 },
-                // (*** 函數補全 ***)
                 async getAiDrawdownAnalysis() { 
                     this.isLoading = true;
                     this.maxDrawdownAnalysis = '<p class="text-gray-400">AI 分析中...</p>';
@@ -2274,7 +2229,6 @@ this.calendar.year = newYear;
                     );
                     this.isLoading = false;
                 },
-                // (*** 函數補全 ***)
                 async getAiEmotionAnalysis() { 
                     this.isLoading = true;
                     this.aiEmotionAnalysisResult = '<p class="text-gray-400">AI 分析中...</p>';
@@ -2284,7 +2238,6 @@ this.calendar.year = newYear;
                     );
                     this.isLoading = false;
                 },
-                // (*** 函數補全 ***)
                 async getAiModelBookAnalysis() { 
                     this.isLoading = true;
                     this.aiModelBookAnalysis = '<p class="text-gray-400">AI 總結中...</p>';
@@ -2305,8 +2258,8 @@ this.calendar.year = newYear;
                         `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>this.getTradeDetails(t))})}`
                     );
                     this.reviewNotes.monthly = reviewText;
-                    this.reviewNotes.improve = "[AI 建議改善的地方...]"; // (補全)
-                    this.reviewNotes.goals = "[AI 建議下月目標...]"; // (補全)
+                    this.reviewNotes.improve = "[AI 建議改善的地方...]";
+                    this.reviewNotes.goals = "[AI 建議下月目標...]";
                     this.isLoading = false;
                 }
             }
@@ -2315,7 +2268,7 @@ this.calendar.year = newYear;
         // 將 'tradingApp' 函數註冊到 Alpine.js
         Alpine.data('tradingApp', tradingApp);
         // 啟動 Alpine.js
-Alpine.start();
+        Alpine.start();
     </script>
 </body>
 </html>
