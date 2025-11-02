@@ -239,15 +239,19 @@ sm:gap-6">
                                    <div class="radar-chart-container">
                                 <svg viewBox="0 0 200 200" class="radar-chart-svg">
                                     <g>
-                                        <template x-for="i in 5" :key="i">
+                                        <template x-for="i in 5" :key="`grid-${i}`">
                                             <polygon class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
                                         </template>
-                                                    
-                                        <template x-for="point in traderScore.axisPoints" :key="point.label">
+                                    </g>
+                                                
+                                    <g>
+                                        <template x-for="point in traderScore.axisPoints" :key="point.label + '-axis'">
                                             <line x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
                                         </template>
+                                    </g>
 
-                                        <template x-for="point in traderScore.labelPoints" :key="point.label">
+                                    <g>
+                                        <template x-for="point in traderScore.labelPoints" :key="point.label + '-label'">
                                             <text :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
                                         </template>
                                     </g>
@@ -504,7 +508,6 @@ p-2 mt-1" placeholder="冷靜, 焦慮, 有信心..."></textarea></div>
                 </div>
             </div>
         </div>
-
         <div x-show="activeTab === 'buyPlan'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 
@@ -848,7 +851,6 @@ justify-end gap-2"><button @click="editModelBook(model)" class="text-blue-400 ho
               </div>
             </div>
         </div>
-
         <div x-show="activeTab === 'playbook'" x-cloak>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit self-start">
@@ -1247,7 +1249,7 @@ overflow-y-auto">
                 },
                 
                 /**
-                 * [計算屬性] (用於 'calculator' 頁) 計算 1R 對應的美元金額
+                 * [計算屬性] (用於 'calculator' 頁) 計算 1R 對 ứng 的美元金額
                  */
                 get rValueUsd() { return this.settings.usdPrincipal * ((this.currentRiskPercent || 0) / 100); },
                 
