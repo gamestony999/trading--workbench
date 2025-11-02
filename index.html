@@ -183,17 +183,15 @@ text-blue-400">交易工作台 ✨</h1>
             <div class="border-b border-gray-700">
                  <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
                     <button @click="activeTab = 'dashboard'" :class="{ 'active': activeTab === 'dashboard' }" class="tab-btn">儀表板</button>
-             
-       <button @click="activeTab = 'tradingView'" :class="{ 'active': activeTab === 'tradingView' }" class="tab-btn">市場圖表</button>
+                    <button @click="activeTab = 'tradingView'" :class="{ 'active': activeTab === 'tradingView' }" class="tab-btn">市場圖表</button>
                     <button @click="activeTab = 'reflection'" :class="{ 'active': activeTab === 'reflection' }" class="tab-btn">自我反思</button>
-                    <button @click="activeTab = 'marketJournal'" :class="{ 'active': activeBTab === 'marketJournal' }" class="tab-btn">市場日誌</button>
+                    <button @click="activeTab = 'marketJournal'" :class="{ 'active': activeTab === 'marketJournal' }" class="tab-btn">市場日誌</button>
                     <button @click="activeTab = 'buyPlan'" :class="{ 'active': activeTab === 'buyPlan' }" class="tab-btn">買入計劃</button>
                     <button @click="activeTab = 'calculator'" :class="{ 'active': activeTab === 'calculator' }" class="tab-btn">注碼計算機</button>
                     <button @click="activeTab = 'journal'" :class="{ 'active': activeTab === 'journal' }" class="tab-btn">交易日誌</button>
                     <button @click="activeTab = 'modelBook'" :class="{ 'active': activeTab === 'modelBook' }" class="tab-btn">Model Book</button>
                     <button @click="activeTab = 'playbook'" :class="{ 'active': activeTab === 'playbook' }" class="tab-btn">Playbook</button>
-   
-                 <button @click="activeTab = 'performance'" :class="{ 'active': activeTab === 'performance' }" class="tab-btn">績效回顧</button>
+                    <button @click="activeTab = 'performance'" :class="{ 'active': activeTab === 'performance' }" class="tab-btn">績效回顧</button>
                     <button @click="activeTab = 'settings'" :class="{ 'active': activeTab === 'settings' }" class="tab-btn">設定</button>
                 </nav>
             </div>
@@ -240,17 +238,19 @@ sm:gap-6">
                         <div class="flex-grow flex items-center justify-center">
                                    <div class="radar-chart-container">
                                 <svg viewBox="0 0 200 200" class="radar-chart-svg">
-                                    <template x-for="(points, index) in traderScore.gridPoints" :key="index">
-                                        <polygon class="radar-grid-line" :points="points"></polygon>
-                                    </template>
-                                    
-                                    <template x-for="point in traderScore.axisPoints" :key="point.label">
-                                        <line x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
-                                    </template>
+                                    <g>
+                                        <template x-for="i in 5" :key="i">
+                                            <polygon class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
+                                        </template>
+                                                    
+                                        <template x-for="point in traderScore.axisPoints" :key="point.label">
+                                            <line x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
+                                        </template>
 
-                                    <template x-for="point in traderScore.labelPoints" :key="point.label">
-                                        <text :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
-                                    </template>
+                                        <template x-for="point in traderScore.labelPoints" :key="point.label">
+                                            <text :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
+                                        </template>
+                                    </g>
                                     <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
                                 </svg>
           </div>
@@ -320,7 +320,81 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 </button>
                 </div>
                         </div>
-                        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
+                        <div class="calendar-grid border-t border-l border-gray-700">
+                            <template x-for="day in ['日', '一', '二', '三', '四', '五', '六']">
+                                <div class="text-center font-semibold text-xs text-gray-400 py-2 border-r border-b border-gray-700 bg-gray-900/50" x-text="day"></div>
+                            </template>
+                         
+                               <template x-for="(day, idx) in calendar.days" :key="day.date || idx">
+                                 <div class="calendar-day p-2 border-r border-b border-gray-700 relative flex flex-col" :class="{'other-month': !day.isCurrentMonth, 'cursor-pointer': day.tradeCount > 0}" @click="day.tradeCount > 0 ? showTradesForDate(day.date) : ''">
+                                    <span class="text-sm" :class="{'text-gray-500': !day.isCurrentMonth, 'font-bold text-blue-400': day.isToday}" x-text="day.dayOfMonth"></span>
+                                    
+                                                     <div x-show="day.tradeCount > 0" class="day-pl mt-2 p-2 rounded-md text-xs space-y-1 flex-grow flex flex-col justify-center" 
+                                        :class="{'profit': day.pl > 0, 'loss': day.pl < 0, 'breakeven': day.pl === 0}">
+<p class="font-bold text-lg" :class="{'text-green-400': day.pl > 0, 'text-red-400': day.pl < 0, 'text-gray-300': day.pl === 0}" x-text="formatCurrency(day.pl)"></p>
+                                                               <p class="text-gray-400 text-[10px]" x-text="`${day.tradeCount} 筆交易`"></p>
+                                    </div>
+                                </div>
+                       </template>
+                        </div>
+                    </div>
+                    
+                           <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
+                        <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
+                        <div class="h-full flex flex-col">
+                            <button @click="getAiDashboardSummary()" :disabled="isLoading" 
+class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50">產生總結</button>
+                            
+                            <div x-ref="aiSummaryContainer" class="mt-4 flex-grow h-80 overflow-y-auto space-y-4 p-4 bg-gray-700/50 rounded-lg flex flex-col">
+                                <template x-for="(message, index) in aiChatHistory" :key="index">
+                                    <div class="ai-chat-bubble" :class="message.role === 'user' ? 'ai-chat-user' : 'ai-chat-ai'">
+                                        <div x-html="message.content"></div>
+                                    </div>
+                                </template>
+                                <div x-show="isLoading && aiQuery === ''" class="text-center py-4"><p class="text-sm text-gray-400">AI 總結中...</p></div>
+                                </div>
+                        
+                            <div class="mt-6">
+  <form @submit.prevent="askAi" class="flex gap-4">
+                                    <input type="text" id="aiQueryInput" name="aiQueryInput" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
+                                    <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                        </svg>
+   </button>
+                                </form>
+                            </div>
+                        </div>
+       </div>
+                </div>
+                
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300">市場羅盤</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">美股 (US Market)</h3>
+                            <div class="flex space-x-2 mb-3">
+                                <button @click="settings.marketCompass.us = 'bull'" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.us === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.us = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.us === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.us = 'bear'" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.us === 'bear'}">Bear 🐻</button>
+                            </div>
+                            <textarea id="compassUsNotes" name="compassUsNotes" x-model="settings.marketCompass.usNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="美股市場觀察筆記..."></textarea>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">港股 (HK Market)</h3>
+                            <div class="flex space-x-2 mb-3">
+                                <button @click="settings.marketCompass.hk = 'bull'" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.hk === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.hk = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.hk === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.hk = 'bear'" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.hk === 'bear'}">Bear 🐻</button>
+                            </div>
+                            <textarea id="compassHkNotes" name="compassHkNotes" x-model="settings.marketCompass.hkNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="港股市場觀察筆記..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
                 <div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{ 
 "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false, "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true, "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1", "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "rgba(17, 24, 39, 1)", "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true, "range": "YTD", "studies": [], "autosize": true }</script></div>
@@ -734,7 +808,8 @@ placeholder="100" class="w-full bg-gray-800 rounded p-2 mt-1 text-sm"></div>
           <label for="modelChartImage" class="block text-sm">圖表快照</label>
                             <div class="flex items-center space-x-2 mt-1"><input type="file" id="modelChartImage" name="modelChartImage" @change="handleImageUpload($event, modelBookForm)" accept="image/*" 
 class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                                <svg x-show="isUploadingImage" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+                                <svg x-show="isUploadingImage" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 
+7.938l3-2.647z"></path></svg></div>
                              <template x-if="modelBookForm.chartImage">
                                 <div class="relative mt-2"><img :src="modelBookForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="modelBookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div>
                  </template>
@@ -1067,7 +1142,7 @@ overflow-y-auto">
                 authView: 'login',       // 認證視圖 ('login' 或 'register')
                 authForm: { email: '', password: '' }, // 登入/註冊表單的綁定數據
                 authError: '',           // 登入/註冊時的錯誤訊息
-                appVersion: '7.1.0-fix', // (V3 升級) 更新版本號
+                appVersion: '7.2.0-svgfix', // (V3 升級) 更新版本號
                 lastUpdated: '2025-11-02', // (V3 升級) 更新日期
 
                 // --- Firebase 實例 ---
@@ -1244,7 +1319,6 @@ overflow-y-auto">
 
                 /**
                  * [計算屬性] 交易者評分 (雷達圖)
-                 * 根據 'performance' 的各項指標計算綜合分數和雷達圖座標。
                  * [MODIFIED] 更新為 6 項指標以匹配 Zella / 參考圖片。
                  */
                 get traderScore() {
