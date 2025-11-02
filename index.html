@@ -194,7 +194,7 @@ text-blue-400">交易工作台 ✨</h1>
                     <button @click="activeTab = 'playbook'" :class="{ 'active': activeTab === 'playbook' }" class="tab-btn">Playbook</button>
    
                  <button @click="activeTab = 'performance'" :class="{ 'active': activeTab === 'performance' }" class="tab-btn">績效回顧</button>
-                    <button @click="activeTab = 'settings'" :class="{ 'active': activeTab === 'settings' }" class="tab-btn">設定</button>
+                    <button @click="activeTab = 'settings'" :class="{ 'active': activeBTab === 'settings' }" class="tab-btn">設定</button>
                 </nav>
             </div>
    
@@ -240,18 +240,11 @@ sm:gap-6">
                         <div class="flex-grow flex items-center justify-center">
                                    <div class="radar-chart-container">
                                 <svg viewBox="0 0 200 200" class="radar-chart-svg">
-                                    <template x-for="i in 5" :key="i">
-                                        <polygon class="radar-grid-line" :points="traderScore.gridPoints[5-i]"></polygon>
-                                    </template>
-             
-                                                           
-                                    <template x-for="point in traderScore.axisPoints" :key="point.label">
-                                        <line x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
-                                    </template>
+                                    <polygon x-for="(points, index) in traderScore.gridPoints" :key="index" class="radar-grid-line" :points="points"></polygon>
+                                    
+                                    <line x-for="point in traderScore.axisPoints" :key="point.label" x1="100" y1="100" :x2="point.x" :y2="point.y" class="radar-axis-line"></line>
 
-                                        <template x-for="point in traderScore.labelPoints" :key="point.label">
-                                        <text :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
-                                    </template>
+                                    <text x-for="point in traderScore.labelPoints" :key="point.label" :x="point.x" :y="point.y" class="radar-label" x-text="point.label"></text>
 
                                     <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
                                 </svg>
@@ -376,27 +369,26 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
                         <div>
                             <h3 class="text-lg font-semibold mb-3">美股 (US Market)</h3>
                             <div class="flex space-x-2 mb-3">
-                                <button @click="marketCompass.us = 'bull'" class="compass-btn bull flex-1" :class="{'active': marketCompass.us === 'bull'}">Bull 🐂</button>
-                                <button @click="marketCompass.us = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': marketCompass.us === 'neutral'}">Neutral 😐</button>
-                                <button @click="marketCompass.us = 'bear'" class="compass-btn bear flex-1" :class="{'active': marketCompass.us === 'bear'}">Bear 🐻</button>
+                                <button @click="settings.marketCompass.us = 'bull'" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.us === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.us = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.us === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.us = 'bear'" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.us === 'bear'}">Bear 🐻</button>
                             </div>
-                            <textarea id="compassUsNotes" name="compassUsNotes" x-model="marketCompass.usNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="美股市場觀察筆記..."></textarea>
+                            <textarea id="compassUsNotes" name="compassUsNotes" x-model="settings.marketCompass.usNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="美股市場觀察筆記..."></textarea>
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold mb-3">港股 (HK Market)</h3>
                             <div class="flex space-x-2 mb-3">
-                                <button @click="marketCompass.hk = 'bull'" class="compass-btn bull flex-1" :class="{'active': marketCompass.hk === 'bull'}">Bull 🐂</button>
-                                <button @click="marketCompass.hk = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': marketCompass.hk === 'neutral'}">Neutral 😐</button>
-                                <button @click="marketCompass.hk = 'bear'" class="compass-btn bear flex-1" :class="{'active': marketCompass.hk === 'bear'}">Bear 🐻</button>
+                                <button @click="settings.marketCompass.hk = 'bull'" class="compass-btn bull flex-1" :class="{'active': settings.marketCompass.hk === 'bull'}">Bull 🐂</button>
+                                <button @click="settings.marketCompass.hk = 'neutral'" class="compass-btn neutral flex-1" :class="{'active': settings.marketCompass.hk === 'neutral'}">Neutral 😐</button>
+                                <button @click="settings.marketCompass.hk = 'bear'" class="compass-btn bear flex-1" :class="{'active': settings.marketCompass.hk === 'bear'}">Bear 🐻</button>
                             </div>
-                            <textarea id="compassHkNotes" name="compassHkNotes" x-model="marketCompass.hkNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="港股市場觀察筆記..."></textarea>
+                            <textarea id="compassHkNotes" name="compassHkNotes" x-model="settings.marketCompass.hkNotes" rows="3" class="w-full bg-gray-700 rounded p-2 text-sm" placeholder="港股市場觀察筆記..."></textarea>
                         </div>
                     </div>
                 </div>
 
             </div>
         </div>
-
         <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
                 <div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{ 
@@ -586,7 +578,7 @@ mt-1 text-right" x-text="`按 1 USD = ${quickSizer.exchangeRate} ${quickSizer.cu
                     </div>
                 </div>
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">2. 交易設定</h2>
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">2. D 交易設定</h2>
                     <div class="space-y-4">
                         <div><label for="stopLossPercent" class="block text-sm font-medium text-gray-300 mb-1">止損幅度 (%)</label><div class="input-group"><input type="number" id="stopLossPercent" name="stopLossPercent" x-model.number="stopLossPercent" step="0.1" class="text-lg"><span>%</span></div></div>
                         <div>
@@ -722,7 +714,6 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                         </div>
                     </form>
  </div>
-
                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 overflow-x-auto">
                     <div class="mb-6">
                         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">主交易列表</h2>
@@ -924,7 +915,7 @@ justify-end gap-2"><button @click="editModelBook(model)" class="text-blue-400 ho
                 </div>
             </div>
         </div>
-        <div x-show="activeTab === 'performance'" x-cloak>
+ <div x-show="activeTab === 'performance'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 
 gap-6">
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率 (Win Rate)</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
@@ -1145,8 +1136,8 @@ overflow-y-auto">
                 authView: 'login',       // 認證視圖 ('login' 或 'register')
                 authForm: { email: '', password: '' }, // 登入/註冊表單的綁定數據
                 authError: '',           // 登入/註冊時的錯誤訊息
-                appVersion: '7.0.0-v3', // (V3 升級) 更新版本號
-                lastUpdated: '2025-11-01', // (V3 升級) 更新日期
+                appVersion: '7.1.0-fix', // (V3 升級) 更新版本號
+                lastUpdated: '2025-11-02', // (V3 升級) 更新日期
 
                 // --- Firebase 實例 ---
                 db: null,     // Firestore 數據庫實例
@@ -1314,7 +1305,7 @@ overflow-y-auto">
                         avgWin,
                         avgLoss,
                         avgWinLossRatio: avgLoss > 0 ? avgWin / avgLoss : 0,
-                        maxDrawdown,
+                        maxDrawdown: maxDrawdown,
                         rStdDev, // Consistency metric
                         sharpeRatio // Risk-adjusted return metric
                     };
@@ -1323,11 +1314,13 @@ overflow-y-auto">
                 /**
                  * [計算屬性] 交易者評分 (雷達圖)
                  * 根據 'performance' 的各項指標計算綜合分數和雷達圖座標。
+                 * [MODIFIED] 更新為 6 項指標以匹配 Zella / 參考圖片。
                  */
                 get traderScore() {
                     const p = this.performance;
+                    const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
+                    
                     if (p.totalTrades < 5) {
-                        const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
                         return { 
                             score: 0, 
                             metrics: {}, 
@@ -1338,26 +1331,26 @@ overflow-y-auto">
                         };
                     }
                     
-                    // 1. 將各項績效指標 "歸一化" (Normalize) 到 0-100 分
+                    // 1. [MODIFIED] 將各項績效指標 "歸一化" (Normalize) 到 0-100 分
                     const metrics = {
                         winRate: Math.min(p.winRate * 1.5, 100), // Target ideal winrate around 66%
                         profitFactor: Math.min((p.profitFactor / 3) * 100, 100), // Target ideal profit factor >= 3
-                        avgR: Math.min((p.avgR / 0.8) * 100, 100), // Target ideal avg R > 0.8
-                        consistency: Math.max(100 - (p.rStdDev * 20), 0), // Lower stddev is better
-                        recoveryFactor: Math.min((p.profitFactor / (p.avgWinLossRatio || 1)) * 25, 100), // Simplified recovery
-                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / (this.settings.usdPrincipal || 1)) * 500), 0) // Lower is better
+                        avgWinLoss: Math.min((p.avgWinLossRatio / 3) * 100, 100), // Target ideal avg R:R >= 3
+                        recoveryFactor: p.maxDrawdown > 0 ? Math.min((p.totalPl / p.maxDrawdown) * 25, 100) : 100, // Target 4+
+                        maxDrawdown: Math.max(100 - ((p.maxDrawdown / (this.settings.usdPrincipal || 1)) * 500), 0), // Lower is better
+                        consistency: Math.max(100 - (p.rStdDev * 20), 0) // Lower stddev is better
                     };
                     
-                    // 2. 計算加權總分
-                    const weights = { winRate: 0.2, profitFactor: 0.25, avgR: 0.15, consistency: 0.15, recoveryFactor: 0.1, maxDrawdown: 0.15 };
+                    // 2. [MODIFIED] 計算加權總分 (6 項)
+                    const weights = { winRate: 0.2, profitFactor: 0.2, avgWinLoss: 0.2, recoveryFactor: 0.15, maxDrawdown: 0.15, consistency: 0.1 };
                     let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
                     score = Math.max(0, Math.min(score, 100));
 
-                    // 3. 計算雷達圖 SVG 座標
+                    // 3. [MODIFIED] 計算雷達圖 SVG 座標 (6 項)
                     const center = 100;
                     const radius = 90;
-                    const labels = ["勝率", "利潤因子", "平均R值", "一致性", "回報因子", "最大回撤"];
-                    const angleSlice = (Math.PI * 2) / labels.length;
+                    const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
+                    const angleSlice = (Math.PI * 2) / labels.length; // 自動變為 6
 
                     const toPoint = (value, i) => {
                         const r = radius * (value / 100);
