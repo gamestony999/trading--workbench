@@ -924,7 +924,6 @@ justify-end gap-2"><button @click="editModelBook(model)" class="text-blue-400 ho
                 </div>
             </div>
         </div>
-
         <div x-show="activeTab === 'performance'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 
 gap-6">
@@ -955,76 +954,7 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                                 <th scope="col" class="px-4 py-3 rounded-l-lg">Playbook / Setup</th>
                                 <th scope="col" class="px-4 py-3 text-center">總交易數</th>
                                 <th scope="col" class="px-4 py-3 text-center">勝率 (%)</th>
-                                <th scope="col" class="px-4 py-3 text-center">利潤因子</th>
-                                <th scope="col" class="px-4 py-3 text-center">平均 R 倍數</th>
-                                <th scope="col" class="px-4 py-3 rounded-r-lg text-right">總 P&L (USD)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="stat in performanceByPlaybook" :key="stat.setup">
-                                <tr class="border-b border-gray-700 hover:bg-gray-700/50">
-                                    <td class="px-4 py-3 font-medium text-white" x-text="stat.setup || 'N/A'"></td>
-                                    <td class="px-4 py-3 text-center" x-text="stat.totalTrades"></td>
-                                    <td class="px-4 py-3 text-center" x-text="stat.winRate.toFixed(2)"></td>
-                                    <td class="px-4 py-3 text-center" :class="stat.profitFactor >= 1 ? 'text-green-400' : 'text-red-400'" x-text="stat.profitFactor.toFixed(2)"></td>
-                                    <td class="px-4 py-3 text-center" :class="stat.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${stat.avgR.toFixed(2)} R`"></td>
-                                    <td class="px-4 py-3 text-right font-mono" :class="stat.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(stat.totalPl, 'USD')"></td>
-                                </tr>
-                            </template>
-                             <tr x-show="performanceByPlaybook.length === 0">
-                                <td colspan="6" class="text-center py-8 text-gray-500">暫無足夠數據進行 Playbook 分析</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"><h2 class="text-xl font-semibold">✨ AI 情緒模式分析</h2><button @click="getAiEmotionAnalysis()" :disabled="isLoading || trades.length < 1" class="w-full mt-2 sm:mt-0 sm:w-auto bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">分析情緒與績效關聯</button></div>
-                <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
-                <div x-html="aiEmotionAnalysisResult" class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
-    
-        </div>
-                 <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"><h2 class="text-xl font-semibold">月度 / 季度回顧</h2><button @click="getAiPerformanceReview()" :disabled="isLoading || trades.length < 1" class="w-full mt-2 sm:mt-0 sm:w-auto bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">✨ 產生 AI 回顧報告</button></div>
-                <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-green-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
-                <div class="space-y-4">
-               <div><label for="reviewMonthly" class="block text-sm font-medium text-gray-300">每月表現</label><textarea id="reviewMonthly" name="reviewMonthly" x-model="reviewNotes.monthly" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
-                     <div><label for="reviewImprove" class="block text-sm font-medium text-gray-300">需要改善的地方</label><textarea id="reviewImprove" name="reviewImprove" x-model="reviewNotes.improve" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
-                     <div><label for="reviewGoals" class="block text-sm font-medium text-gray-300">下月目標</label><textarea id="reviewGoals" name="reviewGoals" x-model="reviewNotes.goals" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
-       </div>
-            </div>
-        </div>
-        <div x-show="activeTab === 'performance'" x-cloak>
-             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">勝率 (Win Rate)</h3><p class="mt-2 text-3xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p></div>
-                           <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總盈虧 (Total P&L)</h3>
-                    <p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3>
-                    <p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"><h2 class="text-xl font-semibold mb-4">資金曲線圖</h2><canvas id="plChart"></canvas></div>
-                       <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4">最大回撤 (Max Drawdown)</h2>
-                     <button @click="getAiDrawdownAnalysis()" :disabled="isLoading || trades.length < 2" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">由 AI 分析</button>
-                    <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-6 w-6 text-indigo-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
-                    <div x-html="maxDrawdownAnalysis" 
-class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
- </div>
-            </div>
-
-            <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-xl font-semibold mb-4">按 Playbook 策略分析</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="text-xs text-gray-300 uppercase bg-gray-700">
-                            <tr>
-                                <th scope="col" class="px-4 py-3 rounded-l-lg">Playbook / Setup</th>
-                                <th scope="col" class="px-4 py-3 text-center">總交易數</th>
-                                <th scope="col" class="px-4 py-3 text-center">勝率 (%)</th>
-                                <th scope="col" class="px-4 py-3 text-center">利潤因子</th>
+                                <th scope="col" class_changed="px-4 py-3 text-center">利潤因子</th>
                                 <th scope="col" class="px-4 py-3 text-center">平均 R 倍數</th>
                                 <th scope="col" class="px-4 py-3 rounded-r-lg text-right">總 P&L (USD)</th>
                             </tr>
@@ -1177,9 +1107,9 @@ overflow-y-auto">
             </div>
         </div>
 
-    </div> <script type="module">
-        // --- 
-引入 Firebase 模組 ---
+    </div> ```
+    <script type="module">
+        // --- 引入 Firebase 模組 ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy, Timestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1866,30 +1796,68 @@ null : trade.id;
                         this.resetTxnForm();
 }
                 },
+
+                // *** V3 SPEC 4 & BUG FIX ***
+                // 1. 實作 V3 Spec 4: 在交易平倉時觸發反思彈窗。
+                // 2. 修復 Bug: 原先的 "新增" (arrayUnion) 和 "編輯" (full array) 邏輯不一致。
+                //    現在 "新增"、"編輯"、"刪除" 都使用完整的陣列覆寫 (updateDoc)，
+                //    這更為穩定，並允許我們在儲存後立即檢查交易狀態。
                 async saveSubTransaction() { 
                     if (!this.selectedTradeId) return;
-const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+                    const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+                    const oldDetails = this.getTradeDetails(this.selectedTrade); // 獲取儲存前的狀態
+
+                    let updatedTransactions;
                     if (this.editingTxnId) {
-                        const existingTxns = this.selectedTrade.transactions.filter(t => t.id !== this.editingTxnId);
-await updateDoc(tradeRef, { transactions: [...existingTxns, { ...this.txnForm, id: this.editingTxnId }] });
-} else {
-                        await updateDoc(tradeRef, { transactions: arrayUnion({ ...this.txnForm, id: Date.now().toString() }) });
-}
+                        // 編輯邏輯
+                        updatedTransactions = this.selectedTrade.transactions.map(t => 
+                            t.id === this.editingTxnId ? { ...this.txnForm, id: this.editingTxnId } : t
+                        );
+                    } else {
+                        // 新增邏輯
+                        updatedTransactions = [
+                            ...this.selectedTrade.transactions, 
+                            { ...this.txnForm, id: Date.now().toString() }
+                        ];
+                    }
+
+                    // 將完整的陣列儲存回 Firebase
+                    await updateDoc(tradeRef, { transactions: updatedTransactions });
+
+                    // --- V3 SPEC 4 實作 (情境式日誌提問) ---
+                    // 根據剛更新的本地陣列 `updatedTransactions` 來檢查新的交易狀態
+                    const tempUpdatedTrade = { ...this.selectedTrade, transactions: updatedTransactions };
+                    const newDetails = this.getTradeDetails(tempUpdatedTrade);
+
+                    // 如果這筆交易剛好導致狀態從 "Open" 變為 "Closed"，則觸發彈窗
+                    if (newDetails.status === 'Closed' && oldDetails.status === 'Open') {
+                        this.triggerContextualPrompts(tempUpdatedTrade);
+                    }
+                    // --- V3 實作結束 ---
+
                     this.resetTxnForm();
-},
+                },
+                
                 editSubTransaction(txn) { 
                     this.editingTxnId = txn.id;
 this.txnForm = { ...txn };  
                     this.showTxnForm = true;  
                 },
+
+                // *** BUG FIX ***
+                // 改為使用完整的陣列覆寫，以匹配 `saveSubTransaction` 的邏輯，
+                // 避免使用 Firebase 的 arrayRemove 所帶來的潛在問題。
                 async deleteSubTransaction(txnId) { 
                     if (!this.selectedTradeId) return;
-const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
-                    const txnToRemove = this.selectedTrade.transactions.find(t => t.id === txnId);
-if (txnToRemove) {
-                        await updateDoc(tradeRef, { transactions: arrayRemove(txnToRemove) });
-}
+
+                    // 建立一個不包含被刪除項的新陣列
+                    const updatedTransactions = this.selectedTrade.transactions.filter(t => t.id !== txnId);
+
+                    // 儲存完整的新陣列
+                    const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.selectedTradeId);
+                    await updateDoc(tradeRef, { transactions: updatedTransactions });
                 },
+
                 getTradeDetails(trade) { 
                     const txns = trade.transactions ||
 [];
@@ -1905,7 +1873,11 @@ const avgBuyPrice = totalBuyQty > 0 ? totalBuyValue / totalBuyQty : 0;
 if (status === 'Closed') {
                         totalPl = totalSellValue - totalBuyValue;
 } else {
-                        totalPl = totalSellValue - (avgBuyPrice * totalSellQty);
+                        // (修正) 計算未平倉 P&L
+                        const currentPosition = totalBuyQty - totalSellQty;
+                        const avgCostOfSold = avgBuyPrice * totalSellQty;
+                        totalPl = totalSellValue - avgCostOfSold;
+                        // 注意: 這只是 "已實現" 的 P&L，"未實現" P&L 需要外部價格
 }
                     const rMultiple = trade.riskAmount > 0 ?
 totalPl / trade.riskAmount : 0;
@@ -2001,9 +1973,10 @@ this.showChecklistModal = false;
                     this.currentPlanToExecute = null;
                 },
 
+                // (V3 Spec 4) 觸發彈窗的函數 (此函數已存在，由 saveSubTransaction 調用)
                 triggerContextualPrompts(trade) {
                     const details = this.getTradeDetails(trade);
-if (details.status !== 'Closed') return;
+if (details.status !== 'Closed') return; // 再次確認
 
                     this.contextualPrompt.tradeId = trade.id;
                     if (details.rMultiple > 0) {
@@ -2019,7 +1992,7 @@ if (details.status !== 'Closed') return;
 if (tradeToUpdate && this.contextualPrompt.answer) {
                         const tradeRef = doc(this.db, `users/${this.userId}/trades`, this.contextualPrompt.tradeId);
 await updateDoc(tradeRef, {
-                            reflectionNote: this.contextualPrompt.answer
+                            reflectionNote: this.contextualPrompt.answer // 將反思儲存到主交易中
                         });
 }
                     this.showContextualPromptModal = false;
@@ -2079,7 +2052,14 @@ const chartDataPoints = closedTrades.map(t => {
                  maintainAspectRatio: false,
                         scales: {
                             x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } }, // (修正: 顏色)
-                 y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(75, 85, 99, 0.5)' } } // (修正: 顏色)
+                 y: { 
+                                ticks: { color: '#9ca3af' }, 
+                                grid: { color: 'rgba(75, 85, 99, 0.5)' } ,
+                                // (V3 Spec 1) Y 軸顯示為現金金額
+                                callback: function(value, index, values) {
+                                    return '$' + value;
+                                }
+                            }
                         },
                         plugins: { legend: { labels: { color: '#d1d5db' } } }
              }
@@ -2181,6 +2161,15 @@ newYear--; }
 this.calendar.year = newYear;
                 },
                 
+                // (*** 函數補全 ***)
+                scrollToBottom(element) {
+                    if (element) {
+                        this.$nextTick(() => {
+                            element.scrollTop = element.scrollHeight;
+                        });
+                    }
+                },
+
                 /**
                  * [AI] 調用 AI API (佔位符)
                  */
@@ -2330,3 +2319,4 @@ Alpine.start();
     </script>
 </body>
 </html>
+    
