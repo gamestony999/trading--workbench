@@ -1322,23 +1322,61 @@ overflow-y-auto">
                 /**
                  * [計算屬性] 交易者評分 (雷達圖)
                  * [MODIFIED] 更新為 6 項指標以匹配 Zella / 參考圖片。
+                 * [FIX 2025-11-03] 將 UI 計算(網格/軸/標籤)移至頂層，確保無論數據是否足夠，UI 都能顯示。
                  */
                 get traderScore() {
                     const p = this.performance;
                     const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
                     
+                    // --- [FIX] UI 座標計算 (無條件執行) ---
+                    // 1. 定義六角型的基本參數和標籤
+                    const center = 100;
+                    const radius = 90;
+                    const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
+                    const angleSlice = (Math.PI * 2) / labels.length;
+
+                    // 2. 定義座標轉換函數
+                    const toPoint = (value, i) => {
+                        const r = radius * (value / 100);
+                        const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
+                        const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
+                        return `${x},${y}`;
+                    };
+
+                    // 3. 計算 UI 元素：網格 (Grid)
+                    const gridPoints = Array.from({length: 5}, (_, i) => 
+                        Array.from({length: labels.length}, (_, j) => toPoint(100 * (i + 1) / 5, j)).join(' ')
+                    );
+                    
+                    // 4. 計算 UI 元素：軸線 (Axis)
+                    const axisPoints = labels.map((_, i) => ({
+                        label: labels[i],
+                        x: toPoint(100, i).split(',')[0],
+                        y: toPoint(100, i).split(',')[1]
+                    }));
+
+                    // 5. 計算 UI 元素：標籤 (Labels)
+                    const labelPoints = labels.map((label, i) => ({
+                        label: label,
+                        x: toPoint(115, i).split(',')[0], // 100 + 15 (標籤外推)
+                        y: toPoint(115, i).split(',')[1] // 100 + 15 (標籤外推)
+                    }));
+                    // --- [END FIX] ---
+
+                    // 檢查數據是否足夠
                     if (p.totalTrades < 5) {
+                        // 數據不足：只回傳 UI，分數為 0，數據多邊形為空
                         return { 
                             score: 0, 
                             metrics: {}, 
-                            gridPoints: Array(5).fill(defaultPoints),
-                            axisPoints: [],
-                            labelPoints: [],
-                            dataPoints: defaultPoints
+                            gridPoints: gridPoints,  // <-- [FIX] 回傳計算好的 UI
+                            axisPoints: axisPoints,  // <-- [FIX] 回傳計算好的 UI
+                            labelPoints: labelPoints, // <-- [FIX] 回傳計算好的 UI
+                            dataPoints: defaultPoints // <-- 回傳空的(不可見)數據圖
                         };
                     }
                     
-                    // 1. [MODIFIED] 將各項績效指標 "歸一化" (Normalize) 到 0-100 分
+                    // 數據充足：計算指標
                     const metrics = {
                         winRate: Math.min(p.winRate * 1.5, 100), // Target ideal winrate around 66%
                         profitFactor: Math.min((p.profitFactor / 3) * 100, 100), // Target ideal profit factor >= 3
@@ -1348,39 +1386,15 @@ overflow-y-auto">
                         consistency: Math.max(100 - (p.rStdDev * 20), 0) // Lower stddev is better
                     };
                     
-                    // 2. [MODIFIED] 計算加權總分 (6 項)
+                    // 計算加權總分
                     const weights = { winRate: 0.2, profitFactor: 0.2, avgWinLoss: 0.2, recoveryFactor: 0.15, maxDrawdown: 0.15, consistency: 0.1 };
                     let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
                     score = Math.max(0, Math.min(score, 100));
 
-                    // 3. [MODIFIED] 計算雷達圖 SVG 座標 (6 項)
-                    const center = 100;
-                    const radius = 90;
-                    const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
-                    const angleSlice = (Math.PI * 2) / labels.length; // 自動變為 6
-
-                    const toPoint = (value, i) => {
-                        const r = radius * (value / 100);
-                        const x = center + r * Math.cos(angleSlice * i - Math.PI / 2);
-                        const y = center + r * Math.sin(angleSlice * i - Math.PI / 2);
-                        return `${x},${y}`;
-                    };
-
-                    const gridPoints = Array.from({length: 5}, (_, i) => 
-                        Array.from({length: labels.length}, (_, j) => toPoint(100 * (i + 1) / 5, j)).join(' ')
-                    );
-                    const axisPoints = labels.map((_, i) => ({
-                        label: labels[i],
-                        x: toPoint(100, i).split(',')[0],
-                        y: toPoint(100, i).split(',')[1]
-                    }));
-                    const labelPoints = labels.map((label, i) => ({
-                        label: label,
-                        x: toPoint(115, i).split(',')[0], // 100 + 15
-                        y: toPoint(115, i).split(',')[1] // 100 + 15
-                    }));
+                    // 計算數據多邊形 (Data Polygon)
                     const dataPoints = Object.values(metrics).map((value, i) => toPoint(value, i)).join(' ');
                     
+                    // 回傳所有資料
                     return { score, metrics, gridPoints, axisPoints, labelPoints, dataPoints };
                 },
 
