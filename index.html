@@ -295,14 +295,14 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                             </div>
                             <div class="flex justify-between items-center pt-2">
                                 <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
-"
                                 <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
                             </div>
                         </form>
                     </div>
+                    
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                        <div class="space-y-4 max-h-[400px] overflow-y-auto">
+                        <div class="space-y-4 max-h-[400px] lg:min-h-[440px] overflow-y-auto">
                             <template x-for="entry in marketCompassLog" :key="entry.id">
                                 <div class="bg-gray-700/50 p-4 rounded-lg">
                                     <div class="flex justify-between items-center">
