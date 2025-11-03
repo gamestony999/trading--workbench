@@ -64,24 +64,23 @@ grid-template-columns: repeat(7, minmax(0, 1fr)); }
         .day-pl.breakeven { background-color: rgba(107, 114, 128, 0.2); border-left: 3px solid #6b7280;
 }
 
-/* Trader Score Radar Chart Styles */
+        /* Trader Score Radar Chart Styles */
         .radar-chart-container { position: relative;
 width: 100%; aspect-ratio: 1 / 1; }
         .radar-chart-svg { width: 100%; height: 100%;
 }
-        /* [FIX] 線條改細 (0.5px) */
-        .radar-grid-line { stroke: #4b5563; stroke-width: 0.5; fill: none;
+        .radar-grid-line { stroke: #4b5563; stroke-width: 1; fill: none;
 }
-        /* [FIX] 線條改細 (0.5px) */
-        .radar-axis-line { stroke: #4b5563; stroke-width: 0.5;
+        .radar-axis-line { stroke: #4b5563; stroke-width: 1;
 }
-        /* [FIX] 文字改 9px 正常粗細 (更細/更小) */
-        .radar-label { fill: #9ca3af; font-size: 8px; font-weight: 400; text-anchor: middle; dominant-baseline: middle;
+        /* [FIX] 調整字體大小以適應行動裝置並避免文字截斷 */
+        .radar-label { fill: #9ca3af; font-size: 10px; text-anchor: middle; dominant-baseline: middle;
 }
         .radar-data-polygon { fill: rgba(99, 102, 241, 0.4); stroke: #6366f1; stroke-width: 2;
 transition: all 0.3s ease-in-out; }
         .radar-data-point { fill: #818cf8; stroke: #e0e7ff; stroke-width: 2;
 }
+
         /* AI Chat CSS (Re-added for AI Chat History) */
         .ai-chat-bubble { 
             padding: 0.75rem 1rem;
@@ -216,10 +215,15 @@ text-blue-400">交易工作台 ✨</h1>
                         <div class="flex-grow flex items-center justify-center">
                             <div class="radar-chart-container">
                                 <svg viewBox="0 0 200 200" class="radar-chart-svg">
+                                    
                                     <g x-html="traderScore.svgGridLines"></g>
+                                    
                                     <g x-html="traderScore.svgAxisLines"></g>
+                                    
                                     <g x-html="traderScore.svgLabels"></g>
+                                    
                                     <polygon class="radar-data-polygon" :points="traderScore.dataPoints"></polygon>
+
                                 </svg>
                                 </div>
                         </div>
@@ -233,73 +237,98 @@ text-blue-400">交易工作台 ✨</h1>
                     </div>
 
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
-                        
-                        <div class="lg:col-span-1">
-                            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
-                            <form @submit.prevent="saveCompassLog" class="space-y-4">
-                                <div>
-                                    <label for="compassLogDate" class="block text-sm">日期</label>
-                                    <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                                </div>
-                                <div>
-                                    <label for="compassLogMarket" class="block text-sm">市場</label>
-                                    <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                                        <option value="US">美股 (US)</option>
-                                        <option value="HK">港股 (HK)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm">情緒</label>
-                                    <div class="flex space-x-2 mt-1">
-                                        <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
-                                        <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
-                                        <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
-                                    <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
-                                </div>
-                                <div class="flex justify-between items-center pt-2">
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
-                                    <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                                </div>
-                            </form>
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
+                        <div class="h-80">
+                           <canvas id="dashboardPlChart"></canvas>
                         </div>
+                 </div>
 
-                        <div class="lg:col-span-2 lg:pl-8 lg:border-l border-gray-600 mt-6 lg:mt-0">
-                            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                            <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                                <template x-for="entry in marketCompassLog" :key="entry.id">
-                                    <div class="bg-gray-700/50 p-4 rounded-lg">
-                                        <div class="flex justify-between items-center">
-                                            <div>
-                                                <span class="font-bold text-lg" x-text="entry.date"></span>
-                                                <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-                                                      :class="{
-                                                        'bg-green-900 text-green-300': entry.sentiment === 'bull',
-                                                        'bg-red-900 text-red-300': entry.sentiment === 'bear',
-                                                        'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
-                                                      }"
-                                                      x-text="entry.market === 'US' ? '美股' : '港股'">
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                                                <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
-                                            </div>
-                                        </div>
-                                        <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
-                                    </div>
-                                </template>
-                                <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-2xl 
+font-semibold mb-4 text-blue-300">帳戶狀況</h2>
+                            <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
+                            <div class="input-group">
+                                <span class="text-lg font-bold text-blue-400">$</span>
+                                                               <input type="number" id="usdPrincipalDashboard" name="usdPrincipalDashboard" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
                             </div>
                         </div>
-
-                    </div>
+                                     <div class="mt-6 space-y-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
+          <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
+                            </div>
+                            <div>
+   <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
+                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
+                            </div>
+                        </div>
+               </div>
                 </div>
 
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
+                        <form @submit.prevent="saveCompassLog" class="space-y-4">
+                            <div>
+                                <label for="compassLogDate" class="block text-sm">日期</label>
+                                <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                            </div>
+                            <div>
+                                <label for="compassLogMarket" class="block text-sm">市場</label>
+                                <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                                    <option value="US">美股 (US)</option>
+                                    <option value="HK">港股 (HK)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm">情緒</label>
+                                <div class="flex space-x-2 mt-1">
+                                    <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
+                                    <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
+                                    <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
+                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
+                            </div>
+                            <div class="flex justify-between items-center pt-2">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
+"
+                                <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
+                        <div class="space-y-4 max-h-[400px] overflow-y-auto">
+                            <template x-for="entry in marketCompassLog" :key="entry.id">
+                                <div class="bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <span class="font-bold text-lg" x-text="entry.date"></span>
+                                            <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                  :class="{
+                                                    'bg-green-900 text-green-300': entry.sentiment === 'bull',
+                                                    'bg-red-900 text-red-300': entry.sentiment === 'bear',
+                                                    'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
+                                                  }"
+                                                  x-text="entry.market === 'US' ? '美股' : '港股'">
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                </div>
+                            </template>
+                            <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
@@ -308,7 +337,7 @@ text-blue-400">交易工作台 ✨</h1>
                             <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
                             <div class="flex items-center gap-2 flex-wrap">
                                     <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
         </button>
                                 <select id="calendarYearSelect" name="calendarYearSelect" x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm">
                                     <template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)">
@@ -323,7 +352,7 @@ text-blue-400">交易工作台 ✨</h1>
                                 <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white">回到本月</button>
                                 
                                 <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                                            <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                                 </button>
                 </div>
                         </div>
@@ -365,7 +394,7 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
   <form @submit.prevent="askAi" class="flex gap-4">
                                     <input type="text" id="aiQueryInput" name="aiQueryInput" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
                                     <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                                         </svg>
    </button>
@@ -375,7 +404,7 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
        </div>
                 </div>
                 
-            </div>
+                </div>
         </div>
        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
@@ -1242,6 +1271,8 @@ overflow-y-auto">
 
                 /**
                  * [重點修復] 交易者評分 (雷達圖)
+                 * [FIX 2025-11-03] 使用 x-html 和 JS 字串生成來重寫，100% 繞過 Alpine.js 的 SVG 渲染 Bug。
+                 * 確保背景網格和標籤永久顯示。
                  */
                 get traderScore() {
                     const p = this.performance;
@@ -1250,9 +1281,7 @@ overflow-y-auto">
                     // --- 1. UI 座標計算 (無條件執行) ---
                     const center = 100;
                     const radius = 90;
-                    
-                    // [FIX] 縮短標籤文字以防止截斷
-                    const labels = ["Win %", "Profit F.", "Avg W/L", "Recovery", "Max DD", "Consist."];
+                    const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
                     const angleSlice = (Math.PI * 2) / labels.length;
 
                     const toPoint = (value, i) => {
@@ -1284,11 +1313,10 @@ overflow-y-auto">
                     // 生成軸線 (Axis) 和標籤 (Labels)
                     for (let i = 0; i < labels.length; i++) {
                         const axisPoint = toPoint(100, i);
-                        
-                        // [FIX] 將 115 改為 105，讓標籤更靠近圖表 ("在框中")
-                        const labelPoint = toPoint(105, i); 
+                        const labelPoint = toPoint(115, i); // 100 + 15 (標籤外推)
                         
                         svgAxisLines += `<line x1="100" y1="100" x2="${axisPoint.x}" y2="${axisPoint.y}" class="radar-axis-line"></line>`;
+                        // [FIX] 使用 .radar-label (已在 CSS 中將 font-size 設為 10px)
                         svgLabels += `<text x="${labelPoint.x}" y="${labelPoint.y}" class="radar-label">${labels[i]}</text>`;
                     }
                     // --- [END FIX] ---
@@ -1298,10 +1326,10 @@ overflow-y-auto">
                         return { 
                             score: 0, 
                             metrics: {}, 
-                            svgGridLines,
-                            svgAxisLines,
-                            svgLabels,
-                            dataPoints: defaultPoints
+                            svgGridLines,  // <-- [FIX] 回傳計算好的 SVG 字串
+                            svgAxisLines,  // <-- [FIX] 回傳計算好的 SVG 字串
+                            svgLabels,     // <-- [FIX] 回傳計算好的 SVG 字串
+                            dataPoints: defaultPoints // <-- 回傳空的(不可見)數據圖
                         };
                     }
                     
@@ -1319,8 +1347,10 @@ overflow-y-auto">
                     let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
                     score = Math.max(0, Math.min(score, 100));
 
+                    // 計算數據多邊形 (Data Polygon)
                     const dataPoints = Object.values(metrics).map((value, i) => toPointString(value, i)).join(' ');
                     
+                    // 回傳所有資料
                     return { score, metrics, svgGridLines, svgAxisLines, svgLabels, dataPoints };
                 },
 
