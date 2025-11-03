@@ -69,12 +69,14 @@ grid-template-columns: repeat(7, minmax(0, 1fr)); }
 width: 100%; aspect-ratio: 1 / 1; }
         .radar-chart-svg { width: 100%; height: 100%;
 }
-        .radar-grid-line { stroke: #4b5563; stroke-width: 1; fill: none;
+        /* [FIX] 線條改細 */
+        .radar-grid-line { stroke: #4b5563; stroke-width: 0.5; fill: none;
 }
-        .radar-axis-line { stroke: #4b5563; stroke-width: 1;
+        /* [FIX] 線條改細 */
+        .radar-axis-line { stroke: #4b5563; stroke-width: 0.5;
 }
-        /* [FIX] 調整字體大小以適應行動裝置並避免文字截斷 */
-        .radar-label { fill: #9ca3af; font-size: 10px; text-anchor: middle; dominant-baseline: middle;
+        /* [FIX] 文字改 10px 粗體 (semibold) */
+        .radar-label { fill: #9ca3af; font-size: 10px; font-weight: 600; text-anchor: middle; dominant-baseline: middle;
 }
         .radar-data-polygon { fill: rgba(99, 102, 241, 0.4); stroke: #6366f1; stroke-width: 2;
 transition: all 0.3s ease-in-out; }
@@ -206,11 +208,9 @@ text-blue-400">交易工作台 ✨</h1>
             <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
         </div>
        <div x-show="activeTab === 'dashboard'" x-cloak>
-            <div class="space-y-8">
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+           <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                   <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col lg:min-h-[450px]">
                         <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
                         <div class="flex-grow flex items-center justify-center">
                             <div class="radar-chart-container">
@@ -236,40 +236,23 @@ text-blue-400">交易工作台 ✨</h1>
                         </div>
                     </div>
 
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-2xl font-semibold mb-4 text-blue-300">資金曲線圖</h2>
-                        <div class="h-80">
-                           <canvas id="dashboardPlChart"></canvas>
-                        </div>
-                 </div>
+                
 
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col justify-between">
-                        <div>
-                            <h2 class="text-2xl 
-font-semibold mb-4 text-blue-300">帳戶狀況</h2>
-                            <h3 class="text-sm font-medium text-gray-400 mb-2">股票戶口本金 (USD)</h3>
-                            <div class="input-group">
-                                <span class="text-lg font-bold text-blue-400">$</span>
-                                                               <input type="number" id="usdPrincipalDashboard" name="usdPrincipalDashboard" x-model.number="settings.usdPrincipal" @blur="saveSettings()" class="text-3xl font-bold text-blue-400">
-                            </div>
-                        </div>
-                                     <div class="mt-6 space-y-4">
-                            <div>
-                                <h3 class="text-sm font-medium text-gray-400">平均盈利交易</h3>
-          <p class="text-xl font-bold text-green-400" x-text="formatCurrency(performance.avgWin, 'USD')"></p>
-                            </div>
-                            <div>
-   <h3 class="text-sm font-medium text-gray-400">平均虧損交易</h3>
-                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(performance.avgLoss, 'USD')"></p>
-                            </div>
-                        </div>
-               </div>
-                </div>
+---
 
+### 3. 市場判讀 (HTML 高度修改)
+
+**位置：** 在 `x-show="activeTab === 'dashboard'"` 內，找到「市場判讀」的區塊。
+
+**說明：**
+* **縮短表單：** 我將「觀察筆記」的 `textarea` 從 `rows="3"` 改為 `rows="2"`，使左側表單變短。
+* **縮短歷史：** 我將「市場判讀歷史」的滾動區高度從 `max-h-[400px] lg:min-h-[440px]` 改為 `max-h-[350px]`，使其**整體高度變短**。
+
+```html
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
                         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
-                        <form @submit.prevent="saveCompassLog" class="space-y-4">
+                        <form @submit="prevent" class="space-y-4">
                             <div>
                                 <label for="compassLogDate" class="block text-sm">日期</label>
                                 <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
@@ -291,18 +274,17 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                             </div>
                             <div>
                                 <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
-                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
+                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
                             </div>
                             <div class="flex justify-between items-center pt-2">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
+                                <button type="submit" @click="saveCompassLog()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
                                 <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
                             </div>
                         </form>
                     </div>
-                    
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                        <div class="space-y-4 max-h-[400px] lg:min-h-[440px] overflow-y-auto">
+                        <div class="space-y-4 max-h-[350px] overflow-y-auto">
                             <template x-for="entry in marketCompassLog" :key="entry.id">
                                 <div class="bg-gray-700/50 p-4 rounded-lg">
                                     <div class="flex justify-between items-center">
