@@ -69,14 +69,14 @@ grid-template-columns: repeat(7, minmax(0, 1fr)); }
 width: 100%; aspect-ratio: 1 / 1; }
         .radar-chart-svg { width: 100%; height: 100%;
 }
-        /* [FIX] 線條改細 */
+        /* [FIX] 線條改細 (0.5px) */
         .radar-grid-line { stroke: #4b5563; stroke-width: 0.5; fill: none;
 }
-        /* [FIX] 線條改細 */
+        /* [FIX] 線條改細 (0.5px) */
         .radar-axis-line { stroke: #4b5563; stroke-width: 0.5;
 }
-        /* [FIX] 文字改 10px 粗體 (semibold) */
-        .radar-label { fill: #9ca3af; font-size: 10px; font-weight: 600; text-anchor: middle; dominant-baseline: middle;
+        /* [FIX] 文字改 9px 正常粗細 (更細/更小) */
+        .radar-label { fill: #9ca3af; font-size: 8px; font-weight: 400; text-anchor: middle; dominant-baseline: middle;
 }
         .radar-data-polygon { fill: rgba(99, 102, 241, 0.4); stroke: #6366f1; stroke-width: 2;
 transition: all 0.3s ease-in-out; }
@@ -211,7 +211,7 @@ text-blue-400">交易工作台 ✨</h1>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col lg:min-h-[450px]">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
                         <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
                         <div class="flex-grow flex items-center justify-center">
                             <div class="radar-chart-container">
@@ -297,7 +297,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                     </div>
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                         <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                        <div class="space-y-4 max-h-[350px] overflow-y-auto">
+                        <div class="space-y-4 max-h-[300px] overflow-y-auto">
                             <template x-for="entry in marketCompassLog" :key="entry.id">
                                 <div class="bg-gray-700/50 p-4 rounded-lg">
                                     <div class="flex justify-between items-center">
@@ -1267,8 +1267,6 @@ overflow-y-auto">
 
                 /**
                  * [重點修復] 交易者評分 (雷達圖)
-                 * [FIX 2025-11-03] 使用 x-html 和 JS 字串生成來重寫，100% 繞過 Alpine.js 的 SVG 渲染 Bug。
-                 * 確保背景網格和標籤永久顯示。
                  */
                 get traderScore() {
                     const p = this.performance;
@@ -1277,7 +1275,9 @@ overflow-y-auto">
                     // --- 1. UI 座標計算 (無條件執行) ---
                     const center = 100;
                     const radius = 90;
-                    const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
+                    
+                    // [FIX] 縮短標籤文字以防止截斷
+                    const labels = ["Win %", "Profit F.", "Avg W/L", "Recovery", "Max DD", "Consist."];
                     const angleSlice = (Math.PI * 2) / labels.length;
 
                     const toPoint = (value, i) => {
@@ -1309,10 +1309,11 @@ overflow-y-auto">
                     // 生成軸線 (Axis) 和標籤 (Labels)
                     for (let i = 0; i < labels.length; i++) {
                         const axisPoint = toPoint(100, i);
-                        const labelPoint = toPoint(115, i); // 100 + 15 (標籤外推)
+                        
+                        // [FIX] 將 115 改為 105，讓標籤更靠近圖表 ("在框中")
+                        const labelPoint = toPoint(105, i); 
                         
                         svgAxisLines += `<line x1="100" y1="100" x2="${axisPoint.x}" y2="${axisPoint.y}" class="radar-axis-line"></line>`;
-                        // [FIX] 使用 .radar-label (已在 CSS 中將 font-size 設為 10px)
                         svgLabels += `<text x="${labelPoint.x}" y="${labelPoint.y}" class="radar-label">${labels[i]}</text>`;
                     }
                     // --- [END FIX] ---
@@ -1322,10 +1323,10 @@ overflow-y-auto">
                         return { 
                             score: 0, 
                             metrics: {}, 
-                            svgGridLines,  // <-- [FIX] 回傳計算好的 SVG 字串
-                            svgAxisLines,  // <-- [FIX] 回傳計算好的 SVG 字串
-                            svgLabels,     // <-- [FIX] 回傳計算好的 SVG 字串
-                            dataPoints: defaultPoints // <-- 回傳空的(不可見)數據圖
+                            svgGridLines,
+                            svgAxisLines,
+                            svgLabels,
+                            dataPoints: defaultPoints
                         };
                     }
                     
@@ -1343,10 +1344,8 @@ overflow-y-auto">
                     let score = Object.keys(metrics).reduce((acc, key) => acc + (metrics[key] || 0) * weights[key], 0);
                     score = Math.max(0, Math.min(score, 100));
 
-                    // 計算數據多邊形 (Data Polygon)
                     const dataPoints = Object.values(metrics).map((value, i) => toPointString(value, i)).join(' ');
                     
-                    // 回傳所有資料
                     return { score, metrics, svgGridLines, svgAxisLines, svgLabels, dataPoints };
                 },
 
