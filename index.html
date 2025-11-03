@@ -1469,8 +1469,14 @@ overflow-y-auto">
                     // --- 設置 $watch 監聽器 ---
                     this.$watch('calendar.month', () => this.generateCalendar());
                     this.$watch('calendar.year', () => this.generateCalendar());
-                    this.$watch('trades', () => this.generateCalendar()); // 監聽交易變化
-                    
+                    this.$watch('trades', () => {
+                        this.generateCalendar();
+                        // [FIX] 當交易數據更新時，同時更新圖表
+                        this.$nextTick(() => {
+                            this.renderChart('plChart');
+                            this.renderChart('dashboardPlChart');
+                        });
+                    });
                     // (V3 升級) 監聽 Quick Sizer v2.0 的輸入
                     this.$watch('quickSizer.riskPercent', () => this.updateQuickSizer());
                     this.$watch('quickSizer.stopLossPercent', () => this.updateQuickSizer());
