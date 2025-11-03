@@ -73,7 +73,8 @@ width: 100%; aspect-ratio: 1 / 1; }
 }
         .radar-axis-line { stroke: #4b5563; stroke-width: 1;
 }
-        .radar-label { fill: #9ca3af; font-size: 12px; text-anchor: middle; dominant-baseline: middle;
+        /* [FIX] 調整字體大小以適應行動裝置並避免文字截斷 */
+        .radar-label { fill: #9ca3af; font-size: 10px; text-anchor: middle; dominant-baseline: middle;
 }
         .radar-data-polygon { fill: rgba(99, 102, 241, 0.4); stroke: #6366f1; stroke-width: 2;
 transition: all 0.3s ease-in-out; }
@@ -176,7 +177,7 @@ text-blue-400">交易工作台 ✨</h1>
              
    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
                 { "symbols": [ { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" }, { "proName": "FOREXCOM:NSXUSD", "title": "US 100" }, { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" }, { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }, { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" }, { "proName": "HSI:HSI", "title": "Hang Seng" } ], "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": false, "displayMode": "adaptive", "locale": "zh_TW" }
-                </script>
+                </SCRIPT>
          
    </div>
         </header>
@@ -204,98 +205,9 @@ text-blue-400">交易工作台 ✨</h1>
             <p>User ID: <span x-text="userId || 'N/A'"></span></p>
             <button @click="logout()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded-lg text-xs">登出</button>
         </div>
-        <div x-show="activeTab === 'dashboard'" x-cloak>
+       <div x-show="activeTab === 'dashboard'" x-cloak>
             <div class="space-y-8">
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 
-sm:gap-6">
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">總盈虧 (Net P&L)</h3>
-                        <p class="mt-2 text-2xl font-bold" :class="performance.totalPl >= 0 ?
-'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">勝率 (Win %)</h3>
-                            <p class="mt-2 text-2xl font-bold" x-text="`${performance.winRate.toFixed(2)}%`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">利潤因子</h3>
-                              <p class="mt-2 text-2xl font-bold" :class="performance.profitFactor >= 1 ?
-'text-green-400' : 'text-red-400'" x-text="performance.profitFactor.toFixed(2)"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center">
-                        <h3 class="text-sm font-medium text-gray-400">平均盈虧比</h3>
-                         <p class="mt-2 text-2xl font-bold" :class="performance.avgWinLossRatio >= 1 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgWinLossRatio.toFixed(2)} : 1`"></p>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 text-center col-span-2 md:col-span-1 lg:col-span-1">
-                        <h3 class="text-sm font-medium text-gray-400">總交易數</h3>
-                                       <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
-                        <form @submit.prevent="saveCompassLog" class="space-y-4">
-                            <div>
-                                <label for="compassLogDate" class="block text-sm">日期</label>
-                                <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                            </div>
-                            <div>
-                                <label for="compassLogMarket" class="block text-sm">市場</label>
-                                <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                                    <option value="US">美股 (US)</option>
-                                    <option value="HK">港股 (HK)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm">情緒</label>
-                                <div class="flex space-x-2 mt-1">
-                                    <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
-                                    <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
-                                    <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
-                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
-                            </div>
-                            <div class="flex justify-between items-center pt-2">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
-                                <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                        <div class="space-y-4 max-h-[400px] overflow-y-auto">
-                            <template x-for="entry in marketCompassLog" :key="entry.id">
-                                <div class="bg-gray-700/50 p-4 rounded-lg">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <span class="font-bold text-lg" x-text="entry.date"></span>
-                                            <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-                                                  :class="{
-                                                    'bg-green-900 text-green-300': entry.sentiment === 'bull',
-                                                    'bg-red-900 text-red-300': entry.sentiment === 'bear',
-                                                    'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
-                                                  }"
-                                                  x-text="entry.market === 'US' ? '美股' : '港股'">
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
-                                </div>
-                            </template>
-                            <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
-                        </div>
-                    </div>
-                </div>
-                ```
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
@@ -354,6 +266,70 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                </div>
                 </div>
 
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
+                        <form @submit.prevent="saveCompassLog" class="space-y-4">
+                            <div>
+                                <label for="compassLogDate" class="block text-sm">日期</label>
+                                <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                            </div>
+                            <div>
+                                <label for="compassLogMarket" class="block text-sm">市場</label>
+                                <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                                    <option value="US">美股 (US)</option>
+                                    <option value="HK">港股 (HK)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm">情緒</label>
+                                <div class="flex space-x-2 mt-1">
+                                    <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
+                                    <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
+                                    <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
+                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
+                            </div>
+                            <div class="flex justify-between items-center pt-2">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
+"
+                                <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
+                        <div class="space-y-4 max-h-[400px] overflow-y-auto">
+                            <template x-for="entry in marketCompassLog" :key="entry.id">
+                                <div class="bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <span class="font-bold text-lg" x-text="entry.date"></span>
+                                            <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                  :class="{
+                                                    'bg-green-900 text-green-300': entry.sentiment === 'bull',
+                                                    'bg-red-900 text-red-300': entry.sentiment === 'bear',
+                                                    'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
+                                                  }"
+                                                  x-text="entry.market === 'US' ? '美股' : '港股'">
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                </div>
+                            </template>
+                            <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -361,7 +337,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                             <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
                             <div class="flex items-center gap-2 flex-wrap">
                                     <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
         </button>
                                 <select id="calendarYearSelect" name="calendarYearSelect" x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm">
                                     <template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)">
@@ -376,7 +352,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white">回到本月</button>
                                 
                                 <button @click="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                                                            <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                                 </button>
                 </div>
                         </div>
@@ -418,7 +394,7 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
   <form @submit.prevent="askAi" class="flex gap-4">
                                     <input type="text" id="aiQueryInput" name="aiQueryInput" x-model="aiQuery" placeholder="向 AI 提問關於你的交易數據..." class="w-full bg-gray-700 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500">
                                     <button type="submit" :disabled="isLoading || !aiQuery" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-5 rounded-lg disabled:opacity-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                                         </svg>
    </button>
@@ -430,7 +406,7 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
                 
                 </div>
         </div>
-        <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
+       <div x-show="activeTab === 'tradingView'" x-cloak class="space-y-8">
             <div class="h-[70vh] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
                 <div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>{ 
 "allow_symbol_change": true, "calendar": false, "details": true, "hide_side_toolbar": false, "hide_top_toolbar": false, "hide_legend": false, "hide_volume": false, "hotlist": true, "interval": "D", "locale": "zh_TW", "save_image": true, "style": "1", "symbol": "NASDAQ:AAPL", "theme": "dark", "timezone": "Etc/UTC", "backgroundColor": "rgba(17, 24, 39, 1)", "gridColor": "rgba(242, 242, 242, 0.06)", "watchlist": [], "withdateranges": true, "range": "YTD", "studies": [], "autosize": true }</script></div>
@@ -653,6 +629,254 @@ class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-2 text-sm text-gray-400">分析中，請稍候...</p></div>
             </div>
         </div>
+        <div x-show="activeTab === 'journal'" x-cloak>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit max-h-[80vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                        <h2 class="text-xl font-semibold">交易列表</h2>
+                        <button @click="activeTab = 'journal'; resetForm(); selectedTradeId = null;" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-3 rounded-lg text-sm">新增交易</button>
+                    </div>
+                    <div class="space-y-3">
+                        <template x-for="trade in trades" :key="trade.id">
+                            <div @click="selectTrade(trade)" class="p-3 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg" x-text="trade.ticker || 'N/A'"></span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full"
+                                          :class="{
+                                            'bg-green-300 text-green-900': getTradeDetails(trade).status === 'Open' && getTradeDetails(trade).totalPl > 0,
+                                            'bg-red-300 text-red-900': getTradeDetails(trade).status === 'Open' && getTradeDetails(trade).totalPl < 0,
+                                            'bg-gray-300 text-gray-800': getTradeDetails(trade).status === 'Open' && getTradeDetails(trade).totalPl === 0,
+                                            'bg-gray-500 text-gray-100': getTradeDetails(trade).status === 'Closed'
+                                          }"
+                                          x-text="getTradeDetails(trade).status">
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-end mt-1">
+                                    <span class="text-xs text-gray-400" x-text="trade.entryDate"></span>
+                                    <span class="font-mono text-sm"
+                                          :class="{
+                                            'text-green-400': getTradeDetails(trade).totalPl > 0,
+                                            'text-red-400': getTradeDetails(trade).totalPl < 0,
+                                            'text-gray-400': getTradeDetails(trade).totalPl === 0
+                                          }"
+                                          x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`">
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="trades.length === 0" class="text-center py-10 text-gray-500">
+                            <p>暫無交易記錄</p>
+                            <p class="text-sm mt-1">點擊 "新增交易" 開始</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯主交易' : '新增主交易'"></h2>
+                        <form @submit.prevent="saveTrade" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label for="entryDate" class="block text-sm">日期</label><input type="date" id="entryDate" name="entryDate" x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                                <div><label for="ticker" class="block text-sm">代號 (Ticker)</label><input type="text" id="ticker" name="ticker" x-model="journalForm.ticker" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                                <div><label for="direction" class="block text-sm">方向</label><select id="direction" name="direction" x-model="journalForm.direction" class="w-full bg-gray-700 rounded p-2 mt-1"><option value="Long">Long (做多)</option><option value="Short">Short (做空)</option></select></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label for="riskPercent" class="block text-sm">風險 (R%)</label><input type="number" id="riskPercent" name="riskPercent" step="0.1" x-model.number="journalForm.riskPercent" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                                <div><label for="riskAmount" class="block text-sm">風險金額 (1R)</label><input type="number" id="riskAmount" name="riskAmount" step="1" x-model.number="journalForm.riskAmount" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            </div>
+
+                            <div>
+                                <label for="setup" class="block text-sm">策略 / Setup (Playbook)</label>
+                                <select id="setup" name="setup" x-model="journalForm.setup" class="w-full bg-gray-700 rounded p-2 mt-1">
+                                    <option value="">-- 選擇 Playbook --</option>
+                                    <template x-for="playbook in playbooks" :key="playbook.id">
+                                        <option :value="playbook.name" x-text="playbook.name"></option>
+                                    </template>
+                                    <option value="--custom--">自訂...</option>
+                                </select>
+                                <input type="text" x-show="journalForm.setup === '--custom--'" x-model="journalForm.customSetup" placeholder="請輸入自訂策略名稱" class="w-full bg-gray-600 rounded p-2 mt-2">
+                            </div>
+
+                            <div><label for="rationale" class="block text-sm">Rationale (交易理由)</label><textarea id="rationale" name="rationale" x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label for="grade" class="block text-sm">情緒 / 執行評分</label><input type="text" id="grade" name="grade" x-model="journalForm.grade" placeholder="A+, B-, C..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                                <div><label for="tags" class="block text-sm">標籤 (Tags)</label><input type="text" id="tags" name="tags" x-model="journalForm.tags" placeholder="FOMO, 紀律, ..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            </div>
+                            
+                            <div>
+                                <label for="chartImage" class="block text-sm">股價圖片</label>
+                                <input type_ ="file" id="chartImage" name="chartImage" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                <template x-if="journalForm.chartImage"><div class="relative mt-2"><img :src="journalForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-48 w-auto"><button type="button" @click="journalForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
+                            </div>
+                            
+                            <div class="flex justify-between items-center pt-2">
+                                <div>
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新主交易' : '儲存主交易'"></button>
+                                    <button type="button" @click="resetForm(); selectedTradeId = null;" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg ml-2">取消編輯</button>
+                                </div>
+                                <button type="button" @click="deleteTrade(editingTradeId)" x-show="editingTradeId" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">刪除此交易</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div x-show="selectedTradeId" x-cloak class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">子交易 (Transactions)</h2>
+                        
+                        <div class="space-y-3 mb-4">
+                            <template x-for="txn in selectedTrade.transactions" :key="txn.id">
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <span class="font-bold" :class="txn.type === 'Buy' ? 'text-green-400' : 'text-red-400'" x-text="txn.type"></span>
+                                        <span class="ml-2" x-text="`${txn.quantity} 股 @ ${txn.price}`"></span>
+                                        <p class="text-xs text-gray-400 mt-1" x-text="txn.date"></p>
+                                    </div>
+                                    <div>
+                                        <button @click="editSubTransaction(txn)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                        <button @click="deleteSubTransaction(txn.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                    </div>
+                                </div>
+                            </template>
+                            <div x-show="!selectedTrade.transactions || selectedTrade.transactions.length === 0" class="text-center py-4 text-gray-500">
+                                <p>暫無子交易</p>
+                            </div>
+                        </div>
+
+                        <button @click="showTxnForm = !showTxnForm; resetTxnForm();" class="w-full text-left text-blue-400 mb-4" x-text="showTxnForm ? '▼ 隱藏表單' : '▶ 新增子交易'"></button>
+                        <form x-show="showTxnForm" @submit.prevent="saveSubTransaction" class="space-y-4 bg-gray-700/50 p-4 rounded-lg">
+                            <h3 class="font-semibold" x-text="editingTxnId ? '編輯子交易' : '新增子交易'"></h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label for="txnType" class="block text-sm">類型</label><select id="txnType" name="txnType" x-model="txnForm.type" class="w-full bg-gray-600 rounded p-2 mt-1"><option>Buy</option><option>Sell</option></select></div>
+                                <div><label for="txnDate" class="block text-sm">日期</label><input type="date" id="txnDate" name="txnDate" x-model="txnForm.date" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                                <div><label for="txnQty" class="block text-sm">數量</label><input type="number" id="txnQty" name="txnQty" x-model.number="txnForm.quantity" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            </div>
+                            <div><label for="txnPrice" class="block text-sm">價格</label><input type="number" id="txnPrice" name="txnPrice" step="any" x-model.number="txnForm.price" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            <div><label for="txnNotes" class="block text-sm">筆記</label><input type="text" id="txnNotes" name="txnNotes" x-model="txnForm.notes" class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" @click="showTxnForm = false; resetTxnForm();" class="bg-gray-500 hover:bg-gray-400 text-white py-2 px-4 rounded-lg">取消</button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg" x-text="editingTxnId ? '更新' : '儲存'"></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'modelBook'" x-cloak>
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingModelBookId ? '編輯模型' : '新增 Model'"></h2>
+                    <form @submit.prevent="saveModelBook" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label for="modelName" class="block text-sm">名稱</label><input type="text" id="modelName" name="modelName" x-model="modelBookForm.name" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            <div><label for="modelTicker" class="block text-sm">代號</label><input type="text" id="modelTicker" name="modelTicker" x-model="modelBookForm.ticker" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div><label for="modelMarket" class="block text-sm">市場</label><input type="text" id="modelMarket" name="modelMarket" x-model="modelBookForm.market" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            <div><label for="modelYear" class="block text-sm">年份</label><input type="number" id="modelYear" name="modelYear" x-model.number="modelBookForm.year" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            <div><label for="modelSector" class="block text-sm">行業</label><input type="text" id="modelSector" name="modelSector" x-model="modelBookForm.sector" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        </div>
+                        <div><label for="modelPattern" class="block text-sm">型態 (Pattern)</label><input type="text" id="modelPattern" name="modelPattern" x-model="modelBookForm.pattern" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        <div><label for="modelPerformance" class="block text-sm">表現 (e.g. +300% in 2m)</label><input type="text" id="modelPerformance" name="modelPerformance" x-model="modelBookForm.performance" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        <div><label for="modelTakeaways" class="block text-sm">關鍵啟示 (Takeaways)</label><textarea id="modelTakeaways" name="modelTakeaways" x-model="modelBookForm.takeaways" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                        <div>
+                          <label for="modelChartImage" class="block text-sm">股價圖片</label>
+                            <input type_ ="file" id="modelChartImage" name="modelChartImage" @change="handleImageUpload($event, modelBookForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+   <template x-if="modelBookForm.chartImage"><div class="relative mt-2"><img :src="modelBookForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="modelBookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                                      <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingModelBookId ? '更新' : '儲存'"></button>
+                             <button type="button" @click="resetModelBookForm" x-show="editingModelBookId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                     <div class="flex justify-between items-center mb-4 border-b border-gray-600 pb-2"><h2 class="text-xl font-semibold">模型庫 (Model Book)</h2><button @click="getAiModelBookAnalysis()" :disabled="isLoading" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-3 rounded-lg text-sm disabled:opacity-50">✨ AI 總結</button></div>
+                     
+                     <div x-show="isLoading" class="text-center py-4"><p class="text-sm text-gray-400">AI 總結中...</p></div>
+                     <div x-html="aiModelBookAnalysis" class="prose prose-sm prose-invert max-w-none mb-4 text-gray-300"></div>
+
+                     <div class="space-y-4 max-h-[70vh] overflow-y-auto">
+                        <template x-for="model in modelBooks" :key="model.id">
+                            <div class="bg-gray-700/50 p-4 rounded-lg flex flex-col sm:flex-row items-start gap-4">
+                               <img :src="model.chartImage || 'https://placehold.co/120x90/1f2937/9ca3af?text=No+Chart'" @click="openChartModal(model.chartImage || '')" class="w-full sm:w-32 h-auto sm:h-24 object-cover rounded-md cursor-pointer flex-shrink-0">
+                                <div class="flex-grow">
+                                    <div class="flex justify-between items-start">
+                      <div>
+                                            <p class="font-bold text-lg" x-text="`${model.name} (${model.ticker})`"></p>
+              <p class="text-sm text-gray-400" x-text="model.pattern"></p>
+                                        </div>
+                                        <div class="flex items-center gap-2 flex-shrink-0">
+                                            <span class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300" x-text="model.year"></span>
+                                            <button @click="editModelBook(model)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                            <button @click="deleteModelBook(model.id)" class="text-red-400 hover:text-red-300 text-sm">刪除</button>
+                                     </div>
+                                    </div>
+         <p class="text-sm mt-2"><strong class="text-gray-400">表現:</strong> <span class="font-bold text-green-400" x-text="model.performance"></span></p>
+                                    <p class="text-sm mt-1"><strong class="text-gray-400">啟示:</strong> <span x-text="model.takeaways"></span></p>
+                           </div>
+                             </div>
+                        </template>
+     <div x-show="modelBooks.length === 0" class="text-center py-16 text-gray-500">暫無模型</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'playbook'" x-cloak>
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
+                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingPlaybookId ? '編輯策略' : '新增 Playbook'"></h2>
+                    <form @submit.prevent="savePlaybook" class="space-y-4">
+                        <div><label for="playbookName" class="block text-sm">策略名稱</label><input type="text" id="playbookName" name="playbookName" x-model="playbookForm.name" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label for="playbookTimeframe" class="block text-sm">時框</label><input type="text" id="playbookTimeframe" name="playbookTimeframe" x-model="playbookForm.timeframe" placeholder="e.g. 日線, 15分鐘" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                            <div><label for="playbookMarket" class="block text-sm">適用市場</label><input type="text" id="playbookMarket" name="playbookMarket" x-model="playbookForm.market" placeholder="e.g. 美股, 港股" class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                        </div>
+                        <div><label for="playbookEntry" class="block text-sm">進場條件</label><textarea id="playbookEntry" name="playbookEntry" x-model="playbookForm.entry" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                        <div><label for="playbookStopLoss" class="block text-sm">止損條件</label><textarea id="playbookStopLoss" name="playbookStopLoss" x-model="playbookForm.stopLoss" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                        <div><label for="playbookTakeProfit" class="block text-sm">止盈條件</label><textarea id="playbookTakeProfit" name="playbookTakeProfit" x-model="playbookForm.takeProfit" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                        <div><label for="playbookNotes" class="block text-sm">注意事項</label><textarea id="playbookNotes" name="playbookNotes" x-model="playbookForm.notes" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
+                        <div>
+                          <label for="playbookChartImage" class="block text-sm">範例圖片</label>
+                            <input type_ ="file" id="playbookChartImage" name="playbookChartImage" @change="handleImageUpload($event, playbookForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+   <template x-if="playbookForm.chartImage"><div class="relative mt-2"><img :src="playbookForm.chartImage" alt="Chart Preview" class="rounded-lg max-h-40 w-auto mx-auto"><button type="button" @click="playbookForm.chartImage = ''" class="absolute top-1 right-1 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">&times;</button></div></template>
+                        </div>
+                        <div class="flex justify-between items-center pt-2">
+                                      <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingPlaybookId ? '更新' : '儲存'"></button>
+                             <button type="button" @click="resetPlaybookForm" x-show="editingPlaybookId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                     <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">我的 Playbook</h2>
+                     <div class="space-y-4 max-h-[70vh] overflow-y-auto">
+                        <template x-for="playbook in playbooks" :key="playbook.id">
+                            <div class="bg-gray-700/50 p-4 rounded-lg flex flex-col sm:flex-row items-start gap-4">
+                               <img :src="playbook.chartImage || 'https://placehold.co/120x90/1f2937/9ca3af?text=No+Chart'" @click="openChartModal(playbook.chartImage || '')" class="w-full sm:w-32 h-auto sm:h-24 object-cover rounded-md cursor-pointer flex-shrink-0">
+                                <div class="flex-grow">
+                                    <div class="flex justify-between items-start">
+                      <div>
+                                            <p class="font-bold text-lg" x-text="playbook.name"></p>
+              <p class="text-sm text-gray-400" x-text="`時框: ${playbook.timeframe} | 市場: ${playbook.market}`"></p>
+                                        </div>
+                                        <div class="flex items-center gap-2 flex-shrink-0">
+                                            <button @click="editPlaybook(playbook)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                            <button @click="deletePlaybook(playbook.id)" class="text-red-400 hover:text-red-300 text-sm">刪除</button>
+                                     </div>
+                                    </div>
+         <p class="text-sm mt-2"><strong class="text-gray-400">進場:</strong> <span x-text="playbook.entry"></span></p>
+                                    <p class="text-sm mt-1"><strong class="text-gray-400">止損:</strong> <span x-text="playbook.stopLoss"></span></p>
+                           </div>
+                             </div>
+                        </template>
+     <div x-show="playbooks.length === 0" class="text-center py-16 text-gray-500">暫無 Playbook 策略</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div x-show="activeTab === 'performance'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 
 gap-6">
@@ -661,7 +885,7 @@ gap-6">
                     <p class="mt-2 text-3xl font-bold" :class="performance.totalPl >= 0 ? 'text-green-400' : 'text-red-400'" x-text="formatCurrency(performance.totalPl, 'USD')"></p></div>
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">平均 R 值</h3>
                     <p class="mt-2 text-3xl font-bold" :class="performance.avgR >= 0 ? 'text-green-400' : 'text-red-400'" x-text="`${performance.avgR.toFixed(2)} R`"></p></div>
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg text-center"><h3 class_ ="text-sm font-medium text-gray-400">總交易數</h3><p class="mt-2 text-3xl font-bold" x-text="performance.totalTrades"></p></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                  <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"><h2 class="text-xl font-semibold mb-4">資金曲線圖</h2><canvas id="plChart"></canvas></div>
@@ -723,7 +947,6 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
        </div>
             </div>
         </div>
-        
         <div x-show="activeTab === 'settings'" x-cloak>
             <div class="max-w-2xl mx-auto bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                 <h2 class="text-2xl font-semibold mb-4 text-blue-300 border-b border-gray-600 pb-2">常規設定</h2>
@@ -836,8 +1059,7 @@ overflow-y-auto">
             </div>
         </div>
 
-    </div>
-    <script type="module">
+    </div> <script type="module">
         // --- 引入 Firebase 模組 ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1094,6 +1316,7 @@ overflow-y-auto">
                         const labelPoint = toPoint(115, i); // 100 + 15 (標籤外推)
                         
                         svgAxisLines += `<line x1="100" y1="100" x2="${axisPoint.x}" y2="${axisPoint.y}" class="radar-axis-line"></line>`;
+                        // [FIX] 使用 .radar-label (已在 CSS 中將 font-size 設為 10px)
                         svgLabels += `<text x="${labelPoint.x}" y="${labelPoint.y}" class="radar-label">${labels[i]}</text>`;
                     }
                     // --- [END FIX] ---
@@ -1223,6 +1446,18 @@ overflow-y-auto">
                                this.renderChart('plChart');
                                this.renderChart('dashboardPlChart');
                            });
+                        }
+                        
+                        // [REWORK] 佈局重排後，確保儀表板圖表在切換時能正確渲染
+                        if (newTab === 'dashboard' && this.isLoggedIn) {
+                            this.$nextTick(() => {
+                                this.renderChart('dashboardPlChart');
+                            });
+                        }
+                        if (newTab === 'performance' && this.isLoggedIn) {
+                            this.$nextTick(() => {
+                                this.renderChart('plChart');
+                            });
                         }
                     });
                 },
@@ -1412,6 +1647,7 @@ overflow-y-auto">
                     this.resetReflectionForm();
                     this.resetPlaybookForm();
                     this.resetCompassLogForm(); // [NEW] 重置市場羅盤表單
+                    this.resetTxnForm();
                 },
                 
                 /**
@@ -1448,6 +1684,7 @@ overflow-y-auto">
                 resetReflectionForm() { this.editingReflectionId = null; this.reflectionForm = this.getBlankForm('reflection'); },
                 resetPlaybookForm() { this.editingPlaybookId = null; this.playbookForm = this.getBlankForm('playbook'); },
                 resetCompassLogForm() { this.editingCompassLogId = null; this.compassLogForm = this.getBlankForm('compassLog'); }, // [NEW]
+                resetTxnForm() { this.editingTxnId = null; this.txnForm = this.getBlankForm('txn'); }, // [REWORK] 確保 txnForm 被重置
 
                 // 
                 // ==============================
