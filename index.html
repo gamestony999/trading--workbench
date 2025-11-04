@@ -1322,6 +1322,8 @@ overflow-y-auto">
                 get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
                 // [REQ #15 - BUG FIX] Removed redundant .sort()
+                // ... (在 <script type="module"> 標籤內)
+
                 get groupedTrades() {
                     let currentMonthYear = '';
                     const grouped = [];
@@ -1334,14 +1336,21 @@ overflow-y-auto">
                         if (isNaN(date.getTime())) continue; 
                         
                         const monthYear = `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
+                        
+                        // 步驟 1: 檢查是否需要推送新的月份標題
                         if (monthYear !== currentMonthYear) {
                             currentMonthYear = monthYear;
                             grouped.push({ isHeader: true, monthYear: monthYear, id: monthYear });
                         }
-                        grouped.push(trade);
+                        
+                        // 步驟 2: 無論如何都要推送交易本身
+                        // 確保這一行在 'if' 區塊的外面！
+                        grouped.push(trade); 
                     }
                     return grouped;
                 },
+
+                // ... (檔案的其餘部分)
 
                 get performance() {
                     const closedTrades = this.trades.map(t => this.getTradeDetails(t)).filter(t => t.status === 'Closed');
