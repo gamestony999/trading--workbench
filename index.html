@@ -1639,15 +1639,15 @@ overflow-y-auto">
                 //
                 async initFirebase() {
                     try {
-                      const firebaseConfig = {
-    apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
-    authDomain: "my-trading-workbench.firebaseapp.com",
-    projectId: "my-trading-workbench",
-    storageBucket: "my-trading-workbench.firebasestorage.app",
-    messagingSenderId: "386958713208",
-    appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
-    measurementId: "G-2WEVVMRHV7"
-  };
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyD_NXXcXNzKfeUct_kcv9nhSEk5ynguO0o",
+                            authDomain: "my-trading-workbench.firebaseapp.com",
+                            projectId: "my-trading-workbench",
+                            storageBucket: "my-trading-workbench.appspot.com",
+                            messagingSenderId: "386958713208",
+                            appId: "1:386958713208:web:028035e1ac4b47bd55e88d",
+                            measurementId: "G-2WEVVMRHV7"
+                        };
                         const app = initializeApp(firebaseConfig);
                         this.db = getFirestore(app); this.auth = getAuth(app);
                         
