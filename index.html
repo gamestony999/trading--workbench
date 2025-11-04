@@ -306,31 +306,49 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                             
                             <div class="lg:col-span-2">
                                 <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                                <div class="space-y-4 max-h-[350px] overflow-y-auto">
-                                    <template x-for="entry in marketCompassLog" :key="entry.id">
-                                        <div class="bg-gray-700/50 p-4 rounded-lg">
-                                            <div class="flex justify-between items-center">
-                                                <div>
-                                                    <span class="font-bold text-lg" x-text="entry.date"></span>
-                                                    <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-                                                          :class="{
-                                                            'bg-green-900 text-green-300': entry.sentiment === 'bull',
-                                                            'bg-red-900 text-red-300': entry.sentiment === 'bear',
-                                                            'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
-                                                          }"
-                                                          x-text="entry.market === 'US' ? '美股' : '港股'">
-                                                    </span>
+                                
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    
+                                    <div>
+                                        <h3 class="text-lg font-medium text-blue-300 mb-2">美股 (US)</h3>
+                                        <div class="space-y-4 max-h-[320px] overflow-y-auto pr-2">
+                                            <template x-for="entry in marketCompassLog.filter(e => e.market === 'US')" :key="entry.id">
+                                                <div class="bg-gray-700/50 p-4 rounded-lg">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="font-bold text-lg" x-text="entry.date"></span>
+                                                        <div>
+                                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
                                                 </div>
-                                                <div>
-                                                    <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                                                    <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
-                                                </div>
-                                            </div>
-                                            <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                            </template>
+                                            <div x-show="marketCompassLog.filter(e => e.market === 'US').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無美股記錄</div>
                                         </div>
-                                    </template>
-                                    <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
-                                </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 class="text-lg font-medium text-green-300 mb-2">港股 (HK)</h3>
+                                        <div class="space-y-4 max-h-[320px] overflow-y-auto pr-2">
+                                            <template x-for="entry in marketCompassLog.filter(e => e.market === 'HK')" :key="entry.id">
+                                                <div class="bg-gray-700/50 p-4 rounded-lg">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="font-bold text-lg" x-text="entry.date"></span>
+                                                        <div>
+                                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                                </div>
+                                            </template>
+                                            <div x-show="marketCompassLog.filter(e => e.market === 'HK').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無港股記錄</div>
+                                        </div>
+                                    </div>
+
+                                </div> <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
+                            </div>
                             </div>
                             </div>
 
