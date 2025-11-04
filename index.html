@@ -266,70 +266,74 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
-                        <form @submit.prevent="saveCompassLog" class="space-y-4">
-                            <div>
-                                <label for="compassLogDate" class="block text-sm">日期</label>
-                                <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                            </div>
-                            <div>
-                                <label for="compassLogMarket" class="block text-sm">市場</label>
-                                <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
-                                    <option value="US">美股 (US)</option>
-                                    <option value="HK">港股 (HK)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm">情緒</label>
-                                <div class="flex space-x-2 mt-1">
-                                    <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
-                                    <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
-                                    <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
-                                <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
-                            </div>
-                            <div class="flex justify-between items-center pt-2">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
-"
-                                <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
-                        <div class="space-y-4 max-h-[400px] overflow-y-auto">
-                            <template x-for="entry in marketCompassLog" :key="entry.id">
-                                <div class="bg-gray-700/50 p-4 rounded-lg">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <span class="font-bold text-lg" x-text="entry.date"></span>
-                                            <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-                                                  :class="{
-                                                    'bg-green-900 text-green-300': entry.sentiment === 'bull',
-                                                    'bg-red-900 text-red-300': entry.sentiment === 'bear',
-                                                    'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
-                                                  }"
-                                                  x-text="entry.market === 'US' ? '美股' : '港股'">
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                                            <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                    <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <div class="lg:col-span-1 h-fit">
+                                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
+                                <form @submit.prevent="saveCompassLog" class="space-y-4">
+                                    <div>
+                                        <label for="compassLogDate" class="block text-sm">日期</label>
+                                        <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                                    </div>
+                                    <div>
+                                        <label for="compassLogMarket" class="block text-sm">市場</label>
+                                        <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                                            <option value="US">美股 (US)</option>
+                                            <option value="HK">港股 (HK)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm">情緒</label>
+                                        <div class="flex space-x-2 mt-1">
+                                            <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
+                                            <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
+                                            <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
                                         </div>
                                     </div>
-                                    <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                    <div>
+                                        <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
+                                        <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-2">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
+"
+                                        <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="lg:col-span-2">
+                                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
+                                <div class="space-y-4 max-h-[350px] overflow-y-auto">
+                                    <template x-for="entry in marketCompassLog" :key="entry.id">
+                                        <div class="bg-gray-700/50 p-4 rounded-lg">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <span class="font-bold text-lg" x-text="entry.date"></span>
+                                                    <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                          :class="{
+                                                            'bg-green-900 text-green-300': entry.sentiment === 'bull',
+                                                            'bg-red-900 text-red-300': entry.sentiment === 'bear',
+                                                            'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
+                                                          }"
+                                                          x-text="entry.market === 'US' ? '美股' : '港股'">
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                                    <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                        </div>
+                                    </template>
+                                    <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
                                 </div>
-                            </template>
-                            <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
-                        </div>
-                    </div>
-                </div>
+                            </div>
 
+                        </div> </div> </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
