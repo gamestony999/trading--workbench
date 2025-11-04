@@ -814,13 +814,10 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                     </div>
                     
                     <div class="space-y-4 max-h-[85vh] overflow-y-auto pr-2">
-                       <template x-for="trade in groupedTrades" :key="trade.id || trade.monthYear">
+                       
+                       <template x-for="trade in trades" :key="trade.id">
                             
-                            <div x-if="trade.isHeader" class="pt-4 pb-1 border-b border-gray-700 sticky top-0 bg-gray-800">
-                                <h3 class="text-sm font-semibold text-gray-400" x-text="trade.monthYear"></h3>
-                            </div>
-
-                            <div x-if="!trade.isHeader" @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
+                            <div @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
                                 
                                 <div class="flex justify-between items-start">
                                     <div class="flex items-center gap-3">
@@ -1321,9 +1318,8 @@ overflow-y-auto">
                 
                 get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
-                // [REQ #15 - BUG FIX] Removed redundant .sort()
-                // ... (在 <script type="module"> 標籤內)
-
+                // [修改] 移除了 get groupedTrades() 函數，因為 HTML 不再使用它
+                /*
                 get groupedTrades() {
                     let currentMonthYear = '';
                     const grouped = [];
@@ -1336,19 +1332,15 @@ overflow-y-auto">
                         if (isNaN(date.getTime())) continue; 
                         
                         const monthYear = `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
-                        
-                        // 步驟 1: 檢查是否需要推送新的月份標題
                         if (monthYear !== currentMonthYear) {
                             currentMonthYear = monthYear;
                             grouped.push({ isHeader: true, monthYear: monthYear, id: monthYear });
                         }
-                        
-                        // 步驟 2: 無論如何都要推送交易本身
-                        // 確保這一行在 'if' 區塊的外面！
-                        grouped.push(trade); 
+                        grouped.push(trade);
                     }
                     return grouped;
                 },
+                */
 
                 // ... (檔案的其餘部分)
 
