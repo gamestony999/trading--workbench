@@ -145,8 +145,7 @@ padding-left: 40px; }
                     </SCRIPT>
                 </div>
             </header>
-
-            <div class="mb-6">
+                        <div class="mb-6">
                 <div class="border-b border-gray-700">
                      <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
                         <button @click="activeTab = 'dashboard'" :class="{ 'active': activeTab === 'dashboard' }" class="tab-btn">儀表板</button>
@@ -657,12 +656,11 @@ class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><p class="mt-2 text-sm text-gray-400">分析中，請稍候...</p></div>
             </div>
         </div>
-
         <div x-show="activeTab === 'journal'" x-cloak>
             
             <div class="mb-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                 <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">快捷注碼計算</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 items-end">
+                <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4 items-end">
                     
                     <div class="md:col-span-1 lg:col-span-1">
                         <label for="journalDisplayCurrency" class="block text-sm font-medium text-gray-300">顯示貨幣</label>
@@ -705,7 +703,13 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                         <p class="text-sm text-gray-400" x-text="`${settings.displayCurrency} ${formatCurrency(rValueUsd * quickSizer.exchangeRate, settings.displayCurrency)}`"></p>
                     </div>
 
-                    <div class="md:col-span-2 lg:col-span-1">
+                    <div class="md:col-span-2 lg:col-span-1 text-center md:text-left">
+                        <p class="text-sm text-green-300">建議買入資金</p>
+                        <p class="text-lg font-bold" x-text="`USD ${formatCurrency(positionSizeUsd, 'USD')}`"></p>
+                        <p class="text-sm text-gray-400" x-text="`${settings.displayCurrency} ${formatCurrency(positionSizeUsd * quickSizer.exchangeRate, settings.displayCurrency)}`"></p>
+                    </div>
+
+                    <div class="md:col-span-4 lg:col-span-1">
                         <button @click="applyQuickSizerToJournal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">
                             套用風險至日誌
                         </button>
@@ -757,11 +761,9 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                                 </div>
                                 
                                 <div class="flex justify-between items-center pt-2">
-                                    <div>
-                                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新主交易' : '儲存主交易'"></button>
-                                        <button type="button" @click="resetForm(); selectedTradeId = null;" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg ml-2">取消編輯</button>
-                                    </div>
-                                    <button type="button" @click="deleteTrade(editingTradeId)" x-show="editingTradeId" class="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">刪除</button>
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingTradeId ? '更新主交易' : '儲存主交易'"></button>
+                                    
+                                    <button type="button" @click="resetForm(); selectedTradeId = null;" x-show="editingTradeId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg ml-2">取消選中</button>
                                 </div>
                             </form>
                         </div>
@@ -817,7 +819,7 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                        
                        <template x-for="trade in trades" :key="trade.id">
                             
-                            <div @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
+                            <div @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-gray-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
                                 
                                 <div class="flex justify-between items-start">
                                     <div class="flex items-center gap-3">
@@ -831,26 +833,56 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                                               }"
                                               x-text="getTradeDetails(trade).status">
                                         </span>
-                                        <span x-show="trade.grade" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-800 text-yellow-200" x-text="trade.grade"></span>
                                     </div>
-                                    <span class="font-mono text-lg font-bold"
-                                          :class="{
-                                            'text-green-400': getTradeDetails(trade).rMultiple > 0,
-                                            'text-red-400': getTradeDetails(trade).rMultiple < 0,
-                                            'text-gray-400': getTradeDetails(trade).rMultiple === 0
-                                          }"
-                                          x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`">
-                                    </span>
+
+                                    <div class="text-right flex-shrink-0">
+                                        <span class="font-mono text-lg font-bold"
+                                              :class="{
+                                                'text-green-400': getTradeDetails(trade).rMultiple > 0,
+                                                'text-red-400': getTradeDetails(trade).rMultiple < 0,
+                                                'text-gray-400': getTradeDetails(trade).rMultiple === 0
+                                              }"
+                                              x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`">
+                                        </span>
+                                        
+                                        <div class="mt-1 space-x-2">
+                                             <button @click.stop="resetForm(); selectedTradeId = null;" x-show="selectedTradeId === trade.id" class="text-xs text-yellow-400 hover:text-yellow-300">取消選中</button>
+                                             <button @click.stop="deleteTrade(trade.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="mt-2 text-sm text-gray-400">
-                                    <p><strong>策略:</strong> <span x-text="trade.setup || 'N/A'"></span></p>
-                                    <p class="truncate"><strong>理由:</strong> <span x-text="trade.rationale || 'N/A'"></span></p>
+                                <div class="mt-2 space-y-1">
+                                    <div class="flex flex-wrap gap-x-4 text-sm">
+                                        <div>
+                                            <strong class="text-gray-400">策略:</strong>
+                                            <span class="text-white" x-text="trade.setup || 'N/A'"></span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-gray-400">評分:</strong>
+                                            <span class="text-yellow-300" x-text="trade.grade || 'N/A'"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap gap-x-4 text-xs">
+                                        <div>
+                                            <strong class="text-gray-500">風險 (R%):</strong>
+                                            <span x-text="trade.riskPercent ? `${trade.riskPercent}%` : 'N/A'" class="text-gray-300"></span>
+                                        </div>
+                                        <div>
+                                            <strong class="text-gray-500">風險 (1R):</strong>
+                                            <span x-text="trade.riskAmount ? formatCurrency(trade.riskAmount, 'USD') : 'N/A'" class="text-gray-300 font-mono"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-sm text-gray-400 truncate pt-1">
+                                        <strong class="text-gray-400">理由:</strong>
+                                        <span class="text-gray-300" x-text="trade.rationale || 'N/A'"></span>
+                                    </div>
                                 </div>
 
                                 <p class="text-xs text-gray-500 mt-2" x-text="trade.entryDate"></p>
                             </div>
-
                         </template>
 
                         <div x-show="trades.length === 0" class="text-center py-10 text-gray-500">
@@ -861,7 +893,6 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
 
             </div>
         </div>
-
         <div x-show="activeTab === 'modelBook'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
@@ -1038,7 +1069,8 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                     </table>
                 </div>
             </div>
-<div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+
+            <div class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4"><h2 class="text-xl font-semibold">✨ AI 情緒模式分析</h2><button @click="getAiEmotionAnalysis()" :disabled="isLoading || trades.length < 1" class="w-full mt-2 sm:mt-0 sm:w-auto bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">分析情緒與績效關聯</button></div>
                 <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-8 w-8 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
                 <div x-html="aiEmotionAnalysisResult" class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
@@ -1175,7 +1207,6 @@ overflow-y-auto">
             </div>
         </div>
     </div>
-
     <script type="module">
         // --- 引入 Firebase 模組 (保持不變) ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
