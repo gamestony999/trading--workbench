@@ -819,7 +819,7 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                                 <h3 class="text-sm font-semibold text-gray-400" x-text="trade.monthYear"></h3>
                             </div>
 
-                            <div x-if="!trade.isHeader" @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
+                           <div x-if="!trade.isHeader" @click="selectTrade(trade)" class="p-4 rounded-lg cursor-pointer" :class="selectedTradeId === trade.id ? 'bg-blue-700 shadow-lg' : 'bg-gray-700/50 hover:bg-gray-700'">
                 <div class="flex justify-between items-start">
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-xl text-white" x-text="trade.ticker || 'N/A'"></span>
@@ -834,6 +834,23 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                         </span>
                         <span x-show="trade.grade" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-800 text-yellow-200" x-text="trade.grade"></span>
                     </div>
+                    <span class="font-mono text-lg font-bold"
+                          :class="{
+                            'text-green-400': getTradeDetails(trade).rMultiple > 0,
+                            'text-red-400': getTradeDetails(trade).rMultiple < 0,
+                            'text-gray-400': getTradeDetails(trade).rMultiple === 0
+                          }"
+                          x-text="`${getTradeDetails(trade).rMultiple.toFixed(2)} R`">
+                    </span>
+                </div>
+                <div class="mt-2 text-sm text-gray-400">
+                    <p><strong>策略:</strong> <span x-text="trade.setup || 'N/A'"></span></p>
+                    
+                    <p class="truncate"><strong>理由:</strong> <span x-text="trade.rationale || 'N/A'"></span></p>
+                
+                </div>
+                <p class="text-xs text-gray-500 mt-2" x-text="trade.entryDate"></p>
+            </div>
                     <span class="font-mono text-lg font-bold"
                           :class="{
                             'text-green-400': getTradeDetails(trade).rMultiple > 0,
