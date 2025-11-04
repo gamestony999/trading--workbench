@@ -369,12 +369,15 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 </form>
                             </div>
 
-                            <div x-show="marketJournalTab === 'US'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                           <div x-show="marketJournalTab === 'US'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                                 <template x-for="entry in marketJournals.filter(j => j.market === 'US').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
                                     <div class="bg-gray-700/50 p-3 rounded-lg">
                                         <div class="flex justify-between items-center">
                                             <span class="font-semibold text-white" x-text="entry.date"></span>
-                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${entry.sentiment || 'N/A'}`"></span>
+                                                <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                            </div>
                                         </div>
                                         <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
                                         <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
@@ -386,6 +389,50 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                     </div>
                                 </template>
                                 <div x-show="marketJournals.filter(j => j.market === 'US').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無美股日誌</div>
+                            </div>
+                            
+                            <div x-show="marketJournalTab === 'HK'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                                <template x-for="entry in marketJournals.filter(j => j.market === 'HK').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
+                                     <div class="bg-gray-700/50 p-3 rounded-lg">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-semibold text-white" x-text="entry.date"></span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${entry.sentiment || 'N/A'}`"></span>
+                                                <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="entry.watchlist || '...'"></span></p>
+                                        <div class="flex justify-end gap-3 mt-2 pt-2 border-t border-gray-600/50">
+                                            <button @click="editMarketJournal(entry); marketJournalTab='form';" class="text-xs text-blue-400 hover:text-blue-300">編輯</button>
+                                            <button @click="deleteMarketJournal(entry.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="marketJournals.filter(j => j.market === 'HK').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無港股日誌</div>
+                            </div>
+                            
+                            <div x-show="marketJournalTab === 'Futures'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                                <template x-for="entry in marketJournals.filter(j => j.market === 'Futures').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
+                                     <div class="bg-gray-700/50 p-3 rounded-lg">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-semibold text-white" x-text="entry.date"></span>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${entry.sentiment || 'N/A'}`"></span>
+                                                <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="entry.watchlist || '...'"></span></p>
+                                        <div class="flex justify-end gap-3 mt-2 pt-2 border-t border-gray-600/50">
+                                            <button @click="editMarketJournal(entry); marketJournalTab='form';" class="text-xs text-blue-400 hover:text-blue-300">編輯</button>
+                                            <button @click="deleteMarketJournal(entry.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="marketJournals.filter(j => j.market === 'Futures').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無期貨日誌</div>
                             </div>
                             
                             <div x-show="marketJournalTab === 'HK'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
@@ -1112,7 +1159,10 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                         <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('US')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">🇺🇸 美股</span>
-                                <span class="text-lg" x-text="getLatestMarketSummary('US').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('US').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${getLatestMarketSummary('US').sentiment || 'N/A'}`"></span>
+                                    <span class="text-lg" x-text="getLatestMarketSummary('US').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('US').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                </div>
                             </div>
                             <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('US').date"></p>
                             <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('US').summary || '...'"></span></p>
@@ -1123,7 +1173,10 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                          <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('HK')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">🇭🇰 港股</span>
-                                <span class="text-lg" x-text="getLatestMarketSummary('HK').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('HK').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${getLatestMarketSummary('HK').sentiment || 'N/A'}`"></span>
+                                    <span class="text-lg" x-text="getLatestMarketSummary('HK').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('HK').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                </div>
                             </div>
                             <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('HK').date"></p>
                             <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('HK').summary || '...'"></span></p>
@@ -1134,7 +1187,10 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                          <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('Futures')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">📈 期貨</span>
-                                <span class="text-lg" x-text="getLatestMarketSummary('Futures').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('Futures').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-yellow-300" x-text="`信心: ${getLatestMarketSummary('Futures').sentiment || 'N/A'}`"></span>
+                                    <span class="text-lg" x-text="getLatestMarketSummary('Futures').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('Futures').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                </div>
                             </div>
                             <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('Futures').date"></p>
                             <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('Futures').summary || '...'"></span></p>
