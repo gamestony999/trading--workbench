@@ -214,7 +214,7 @@ text-blue-400">交易工作台 ✨</h1>
                         <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
                         <div class="flex-grow flex items-center justify-center">
                             <div class="radar-chart-container">
-                                <svg viewBox="0 0 200 200" class="radar-chart-svg">
+                                <svg viewBox="-20 -20 240 240" class="radar-chart-svg">
                                     
                                     <g x-html="traderScore.svgGridLines"></g>
                                     
@@ -440,81 +440,72 @@ class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 
             </div>
   </div>
   <div x-show="activeTab === 'reflection'" x-cloak>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingReflectionId ? '編輯反思' : '新增自我反思'"></h2>
-                    <form @submit.prevent="saveReflection" class="space-y-4">
-                        <div><label for="reflectionDate" class="block text-sm">日期</label><input type="date" id="reflectionDate" name="reflectionDate" x-model="reflectionForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div><label for="reflectionProblem" class="block text-sm">需要改善的問題</label><input type="text" id="reflectionProblem" name="reflectionProblem" x-model="reflectionForm.problem" required class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="例如: 過早止盈、FOMO追高..."></div>
-                                          <div><label for="reflectionThoughts" class="block text-sm">詳細發現與思考</label><textarea id="reflectionThoughts" name="reflectionThoughts" x-model="reflectionForm.thoughts" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄下當時的想法、情緒和事後分析..."></textarea></div>
-                        <div class="flex justify-between items-center pt-2">
-                             <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingReflectionId ? '更新' : '儲存'"></button>
-                             <button type="button" @click="resetReflectionForm" x-show="editingReflectionId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                        </div>
-                    </form>
- </div>
-                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">歷史反思列表</h2>
-                    <div class="space-y-4 max-h-[70vh] overflow-y-auto">
-                        <template x-for="entry in reflections" :key="entry.id">
-                            <div class="bg-gray-700/50 p-4 rounded-lg">
-                                <div class="flex justify-between items-center">
-    <p class="font-bold text-lg text-yellow-300" x-text="entry.problem"></p>
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6"> <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700"> <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <div class="lg:col-span-1 h-fit">
+                                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingCompassLogId ? '編輯市場判讀' : '新增市場判讀'"></h2>
+                                <form @submit.prevent="saveCompassLog" class="space-y-4">
                                     <div>
-                                        <button @click="editReflection(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                            <button @click="deleteReflection(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                        <label for="compassLogDate" class="block text-sm">日期</label>
+                                        <input type="date" id="compassLogDate" name="compassLogDate" x-model="compassLogForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1">
                                     </div>
- </div>
-                                <p class="text-xs text-gray-400 mt-1" x-text="entry.date"></p>
-                                <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.thoughts"></p>
- </div>
-                        </template>
-                        <div x-show="reflections.length === 0" class="text-center py-16 text-gray-500">暫無反思記錄</div>
-                    </div>
-                </div>
-   </div>
-        </div>
-
-        <div x-show="activeTab === 'marketJournal'" x-cloak>
-             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingMarketJournalId ? '編輯日誌' : '新增市場日誌'"></h2>
-                    <form @submit.prevent="saveMarketJournal" class="space-y-4">
-                        <div><label for="marketJournalDate" class="block text-sm">日期</label><input type="date" id="marketJournalDate" name="marketJournalDate" x-model="marketJournalForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div><label for="marketJournalSummary" class="block text-sm">大盤走勢摘要</label><textarea id="marketJournalSummary" name="marketJournalSummary" x-model="marketJournalForm.marketSummary" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="例如: S&P 500 盤整，NASDAQ 強勢..."></textarea></div>
-                    <div><label for="marketJournalLeadingSectors" class="block text-sm">領漲板塊</label><input type="text" id="marketJournalLeadingSectors" name="marketJournalLeadingSectors" x-model="marketJournalForm.leadingSectors" placeholder="半導體, 軟件..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                        <div><label for="marketJournalWatchlist" class="block text-sm">觀察股清單</label><textarea id="marketJournalWatchlist" name="marketJournalWatchlist" x-model="marketJournalForm.watchlist" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="NVDA, PLTR..."></textarea></div>
-                        <div><label for="marketJournalMindset" class="block text-sm">心理狀態 / Mindset</label><textarea id="marketJournalMindset" name="marketJournalMindset" x-model="marketJournalForm.mindset" rows="2" class="w-full bg-gray-700 rounded 
-p-2 mt-1" placeholder="冷靜, 焦慮, 有信心..."></textarea></div>
-                        <div><label for="marketJournalSentiment" class="block text-sm">市場氛圍指數 (1-5)</label><input type="range" id="marketJournalSentiment" name="marketJournalSentiment" min="1" max="5" x-model.number="marketJournalForm.sentiment" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"><div class="text-center" x-text="marketJournalForm.sentiment"></div></div>
-                        <div><label for="marketJournalConclusion" class="block text-sm">總結 (進攻/防守)</label><textarea id="marketJournalConclusion" name="marketJournalConclusion" x-model="marketJournalForm.summary" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="目前適合積極進攻/保持防守, 因為..."></textarea></div>
-   <div class="flex justify-between items-center pt-2">
-                             <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingMarketJournalId ? '更新' : '儲存'"></button>
-                             <button type="button" @click="resetMarketJournalForm" x-show="editingMarketJournalId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
-                        </div>
-                    </form>
- </div>
-                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">過往日誌</h2>
-                    <div class="space-y-4 max-h-[70vh] overflow-y-auto">
-                        <template x-for="entry in marketJournals" :key="entry.id">
-                            <div class="bg-gray-700/50 p-4 rounded-lg">
-                                <div class="flex justify-between items-center">
-    <p class="font-bold text-lg" x-text="entry.date"></p>
                                     <div>
-                                        <button @click="editMarketJournal(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                            <button @click="deleteMarketJournal(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                        <label for="compassLogMarket" class="block text-sm">市場</label>
+                                        <select id="compassLogMarket" name="compassLogMarket" x-model="compassLogForm.market" required class="w-full bg-gray-700 rounded p-2 mt-1">
+                                            <option value="US">美股 (US)</option>
+                                            <option value="HK">港股 (HK)</option>
+                                        </select>
                                     </div>
-</div>
-                                <p class="text-sm mt-2"><strong class="text-gray-400">大盤:</strong> <span x-text="entry.marketSummary"></span></p>
-                                <p class="text-sm"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors"></span></p>
-     <p class="text-sm"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary"></span></p>
+                                    <div>
+                                        <label class="block text-sm">情緒</label>
+                                        <div class="flex space-x-2 mt-1">
+                                            <button type="button" @click="compassLogForm.sentiment = 'bull'" class="compass-btn bull flex-1" :class="{'active': compassLogForm.sentiment === 'bull'}">Bull 🐂</button>
+                                            <button type="button" @click="compassLogForm.sentiment = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': compassLogForm.sentiment === 'sideways'}">震盪 😐</button>
+                                            <button type="button" @click="compassLogForm.sentiment = 'bear'" class="compass-btn bear flex-1" :class="{'active': compassLogForm.sentiment === 'bear'}">Bear 🐻</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="compassLogNotes" class="block text-sm">觀察筆記</label>
+                                        <textarea id="compassLogNotes" name="compassLogNotes" x-model="compassLogForm.notes" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄您對市場的觀察..."></textarea>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-2">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingCompassLogId ? '更新' : '儲存'"></button>
+"
+                                        <button type="button" @click="resetCompassLogForm" x-show="editingCompassLogId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
+                                    </div>
+                                </form>
                             </div>
-                        </template>
-                        <div x-show="marketJournals.length === 0" class="text-center py-16 text-gray-500">暫無市場日誌</div>
-           </div>
-                </div>
-            </div>
+                            
+                            <div class="lg:col-span-2">
+                                <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">市場判讀歷史</h2>
+                                <div class="space-y-4 max-h-[350px] overflow-y-auto">
+                                    <template x-for="entry in marketCompassLog" :key="entry.id">
+                                        <div class="bg-gray-700/50 p-4 rounded-lg">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <span class="font-bold text-lg" x-text="entry.date"></span>
+                                                    <span class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                                          :class="{
+                                                            'bg-green-900 text-green-300': entry.sentiment === 'bull',
+                                                            'bg-red-900 text-red-300': entry.sentiment === 'bear',
+                                                            'bg-gray-600 text-gray-200': entry.sentiment === 'sideways'
+                                                          }"
+                                                          x-text="entry.market === 'US' ? '美股' : '港股'">
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <button @click="editCompassLog(entry)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                                    <button @click="deleteCompassLog(entry.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm mt-2 whitespace-pre-wrap" x-text="entry.notes"></p>
+                                        </div>
+                                    </template>
+                                    <div x-show="marketCompassLog.length === 0" class="text-center py-16 text-gray-500">暫無市場判讀記錄</div>
+                                </div>
+                            </div>
+
+                        </div> </div> </div>
         </div>
         <div x-show="activeTab === 'buyPlan'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
