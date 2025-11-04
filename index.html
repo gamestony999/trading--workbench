@@ -124,10 +124,12 @@ padding-left: 40px; }
                         <h1 class="text-3xl sm:text-4xl font-bold text-blue-400">交易工作台 ✨</h1>
                         <p class="text-gray-400 mt-2">由 AI 驅動的整合式交易分析系統</p>
                      </div>
-                     <div class="text-center text-gray-500 text-xs hidden md:block">
+                     
+                     <div class="text-center text-yellow-400 font-bold text-sm hidden md:block">
                         <p>長期（10 萬次交易） → 個別輸贏完全不重要，</p>
                         <p>真正的輸贏來自「次數 + 紀律」的複利及精準買入點。</p>
                      </div>
+
                      <div class="relative w-full">
                         <input type="text" id="mainSearch" name="mainSearch" x-model="searchTerm" @input.debounce.300ms="search" placeholder="搜尋交易日誌或模型庫..." class="search-input w-full bg-gray-800 border border-gray-700 rounded-full py-2 px-4 text-white focus:ring-blue-500 focus:border-blue-500">
                         <div x-show="searchTerm && searchResults.length > 0" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
@@ -305,6 +307,9 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                     <button @click="marketJournalTab = 'HK'" :class="{ 'active': marketJournalTab === 'HK' }" class="journal-tab-btn">
                                         🇭🇰 港股歷史
                                     </button>
+                                    <button @click="marketJournalTab = 'Futures'" :class="{ 'active': marketJournalTab === 'Futures' }" class="journal-tab-btn">
+                                        📈 期貨歷史
+                                    </button>
                                 </nav>
                             </div>
 
@@ -319,13 +324,14 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                         <select id="marketJournalMarket" name="marketJournalMarket" x-model="marketJournalForm.market" @change="loadMarketJournalFor($event.target.value)" required class="w-full bg-gray-700 rounded p-2 mt-1">
                                             <option value="US">🇺🇸 美股 (US)</option>
                                             <option value="HK">🇭🇰 港股 (HK)</option>
+                                            <option value="Futures">📈 商品期貨 (Futures)</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="block text-sm">市場情緒 (Bull/Bear)</label>
                                         <div class="flex space-x-2 mt-1">
                                             <button type="button" @click="marketJournalForm.emotion = 'bull'" class="compass-btn bull flex-1" :class="{'active': marketJournalForm.emotion === 'bull'}">🐂</button>
-                                            <button type="button" @click="marketJournalForm.emotion = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': marketJournalForm.emotion === 'sideways'}">😐</button>
+                                            <button type="button" @click="marketJournalForm.emotion = 'sideways'" class="compass-btn sideways flex-1" :class="{'active': marketJournalForm.emotion === 'sideways'}">↔️</button>
                                             <button type="button" @click="marketJournalForm.emotion = 'bear'" class="compass-btn bear flex-1" :class="{'active': marketJournalForm.emotion === 'bear'}">🐻</button>
                                         </div>
                                     </div>
@@ -339,7 +345,10 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                         <textarea id="marketJournalSummary" name="marketJournalSummary" x-model="marketJournalForm.marketSummary" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="S&P 500 盤整..."></textarea>
                                     </div>
                                     <div>
-                                        <label for="marketJournalConclusion" class="block text-sm">總結 (進攻/防守)</label>
+                                        <div class="flex justify-between items-center">
+                                            <label for="marketJournalConclusion" class="block text-sm">總結 (進攻/防守)</label>
+                                            <button type="button" @click="getAiMarketJournalAnalysis()" :disabled="isLoading" class="text-xs text-purple-400 hover:text-purple-300 disabled:opacity-50">✨ AI 輔助分析</button>
+                                        </div>
                                         <textarea id="marketJournalConclusion" name="marketJournalConclusion" x-model="marketJournalForm.summary" rows="2" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="積極進攻..."></textarea>
                                     </div>
                                     <div>
@@ -363,14 +372,18 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
 
                             <div x-show="marketJournalTab === 'US'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                                 <template x-for="entry in marketJournals.filter(j => j.market === 'US').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
-                                    <div @click="editMarketJournal(entry); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
+                                    <div class="bg-gray-700/50 p-3 rounded-lg">
                                         <div class="flex justify-between items-center">
                                             <span class="font-semibold text-white" x-text="entry.date"></span>
-                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '😐')"></span>
+                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
                                         </div>
                                         <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
                                         <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
                                         <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="entry.watchlist || '...'"></span></p>
+                                        <div class="flex justify-end gap-3 mt-2 pt-2 border-t border-gray-600/50">
+                                            <button @click="editMarketJournal(entry); marketJournalTab='form';" class="text-xs text-blue-400 hover:text-blue-300">編輯</button>
+                                            <button @click="deleteMarketJournal(entry.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
                                     </div>
                                 </template>
                                 <div x-show="marketJournals.filter(j => j.market === 'US').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無美股日誌</div>
@@ -378,17 +391,40 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                             
                             <div x-show="marketJournalTab === 'HK'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                                 <template x-for="entry in marketJournals.filter(j => j.market === 'HK').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
-                                    <div @click="editMarketJournal(entry); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
+                                     <div class="bg-gray-700/50 p-3 rounded-lg">
                                         <div class="flex justify-between items-center">
                                             <span class="font-semibold text-white" x-text="entry.date"></span>
-                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '😐')"></span>
+                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
                                         </div>
                                         <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
                                         <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
                                         <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="entry.watchlist || '...'"></span></p>
+                                        <div class="flex justify-end gap-3 mt-2 pt-2 border-t border-gray-600/50">
+                                            <button @click="editMarketJournal(entry); marketJournalTab='form';" class="text-xs text-blue-400 hover:text-blue-300">編輯</button>
+                                            <button @click="deleteMarketJournal(entry.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
                                     </div>
                                 </template>
                                 <div x-show="marketJournals.filter(j => j.market === 'HK').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無港股日誌</div>
+                            </div>
+                            
+                            <div x-show="marketJournalTab === 'Futures'" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+                                <template x-for="entry in marketJournals.filter(j => j.market === 'Futures').sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
+                                     <div class="bg-gray-700/50 p-3 rounded-lg">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-semibold text-white" x-text="entry.date"></span>
+                                            <span class="text-lg" x-text="entry.emotion === 'bull' ? '🐂' : (entry.emotion === 'bear' ? '🐻' : '↔️')"></span>
+                                        </div>
+                                        <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="entry.summary || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">領漲:</strong> <span x-text="entry.leadingSectors || '...'"></span></p>
+                                        <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="entry.watchlist || '...'"></span></p>
+                                        <div class="flex justify-end gap-3 mt-2 pt-2 border-t border-gray-600/50">
+                                            <button @click="editMarketJournal(entry); marketJournalTab='form';" class="text-xs text-blue-400 hover:text-blue-300">編輯</button>
+                                            <button @click="deleteMarketJournal(entry.id)" class="text-xs text-red-400 hover:text-red-300">刪除</button>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div x-show="marketJournals.filter(j => j.market === 'Futures').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無期貨日誌</div>
                             </div>
                         </div>
 
@@ -454,7 +490,6 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                 </div>
             </div>
   </div>
-
   <div x-show="activeTab === 'reflection'" x-cloak>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
@@ -470,9 +505,17 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                     </form>
  </div>
                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">歷史反思列表</h2>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b border-gray-600 pb-2 gap-2">
+                        <h2 class="text-xl font-semibold">歷史反思列表</h2>
+                        <button @click="getAiReflectionAnalysis()" :disabled="isLoading" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            ✨ AI 智能分析
+                        </button>
+                    </div>
+                    <div x-show="isLoading && aiReflectionAnalysis" class="text-center py-4"><p class="text-sm text-gray-400">AI 分析中...</p></div>
+                    <div x-html="aiReflectionAnalysis" class="prose prose-sm prose-invert max-w-none mb-4 text-gray-300"></div>
+
                     <div class="space-y-4 max-h-[70vh] overflow-y-auto">
-                        <template x-for="entry in reflections" :key="entry.id">
+                        <template x-for="entry in reflections.sort((a,b) => b.date.localeCompare(a.date))" :key="entry.id">
                             <div class="bg-gray-700/50 p-4 rounded-lg">
                                 <div class="flex justify-between items-center">
     <p class="font-bold text-lg text-yellow-300" x-text="entry.problem"></p>
@@ -557,6 +600,7 @@ gap-2 flex-shrink-0">
                 </div>
             </div>
         </div>
+
         <div x-show="activeTab === 'calculator'" x-cloak>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
@@ -601,7 +645,7 @@ class="mt-6 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                 <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2 flex justify-between items-center flex-wrap"><span>盈利目標</span><span class="text-sm font-medium text-gray-400">風險倉位: <span x-text="`${parseFloat(currentRiskPercent) || 0}%`" class="text-blue-400"></span> / 止損幅度: <span x-text="`${parseFloat(stopLossPercent) || 0}%`" class="text-yellow-400"></span></span></h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left"><thead class="text-xs text-gray-300 uppercase bg-gray-700"><tr><th scope="col" class="px-4 py-3 rounded-l-lg">盈虧比 (R)</th><th scope="col" class="px-4 py-3">目標價格升幅 (%)</th><th scope="col" class="px-4 py-3">潛在利潤 (USD)</th><th scope="col" class="px-4 py-3 rounded-r-lg" x-text="`潛在利潤 (${settings.displayCurrency})`"></th></tr></thead>
-                        <tbody><template x-for="ratio in [1, 2, 2.5, 3, 4, 5, 7, 10]" :key="ratio"><tr class="border-b border-gray-700 hover:bg-gamma-700/50"><td class="px-4 py-3 font-medium text-white" x-text="`${ratio}R`"></td><td class="px-4 py-3 text-yellow-400 font-mono" x-text="`+${(stopLossPercent * ratio).toFixed(2)}%`"></td><td class="px-4 py-3 text-green-400 font-mono" x-text="`+${formatCurrency(rValueUsd * ratio, 'USD')}`"></td><td class="px-4 py-3 text-green-400 font-mono" x-text="`+${formatCurrency((rValueUsd * ratio) * quickSizer.exchangeRate, settings.displayCurrency)}`"></td></tr></template></tbody>
+                        <tbody><template x-for="ratio in [1, 2, 2.5, 3, 4, 5, 7, 10]" :key="ratio"><tr class="border-b border-gray-700 hover:bg-gamma-700/50"><td class="px-4 py-3 font-medium text-white" x-text="`${ratio}R`"></td><td class="px-4 py-3 text-yellow-400 font-mono" x-text="`+${(parseFloat(stopLossPercent) * ratio).toFixed(2)}%`"></td><td class="px-4 py-3 text-green-400 font-mono" x-text="`+${formatCurrency(rValueUsd * ratio, 'USD')}`"></td><td class="px-4 py-3 text-green-400 font-mono" x-text="`+${formatCurrency((rValueUsd * ratio) * quickSizer.exchangeRate, settings.displayCurrency)}`"></td></tr></template></tbody>
                     </table>
                 </div>
             </div>
@@ -903,7 +947,15 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                     </form>
                 </div>
                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                     <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">我的 Playbook</h2>
+                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b border-gray-600 pb-2 gap-2">
+                        <h2 class="text-xl font-semibold">我的 Playbook</h2>
+                        <button @click="getAiPlaybookAnalysis()" :disabled="isLoading" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            ✨ AI 執行度分析
+                        </button>
+                    </div>
+                    <div x-show="isLoading && aiPlaybookAnalysis" class="text-center py-4"><p class="text-sm text-gray-400">AI 分析中...</p></div>
+                    <div x-html="aiPlaybookAnalysis" class="prose prose-sm prose-invert max-w-none mb-4 text-gray-300"></div>
+
                      <div class="space-y-4 max-h-[70vh] overflow-y-auto">
                         <template x-for="playbook in playbooks" :key="playbook.id">
                             <div class="bg-gray-700/50 p-4 rounded-lg flex flex-col sm:flex-row items-start gap-4">
@@ -945,7 +997,8 @@ gap-6">
                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                     <h2 class="text-xl font-semibold mb-4">最大回撤 (Max Drawdown)</h2>
                      <button @click="getAiDrawdownAnalysis()" :disabled="isLoading || trades.length < 2" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg transition mb-4 disabled:opacity-50 disabled:cursor-not-allowed">由 AI 分析</button>
-                    <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-6 w-6 text-indigo-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
+                    <div x-show="isLoading" class="text-center py-4"><svg class="animate-spin h-6 w-6 text-indigo-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8
+ 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div>
                     <div x-html="maxDrawdownAnalysis" 
 class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
  </div>
@@ -1026,23 +1079,36 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                         <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('US')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">🇺🇸 美股</span>
-                                <span class="text-lg" x-text="getLatestMarketSummary('US').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('US').emotion === 'bear' ? '🐻' : '😐')"></span>
+                                <span class="text-lg" x-text="getLatestMarketSummary('US').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('US').emotion === 'bear' ? '🐻' : '↔️')"></span>
                             </div>
                             <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('US').date"></p>
-                            <p class="text-sm text-gray-400 mt-1 line-clamp-2" x-text="`總結: ${getLatestMarketSummary('US').summary || '...'}`"></p>
+                            <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('US').summary || '...'"></span></p>
+                            <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="getLatestMarketSummary('US').watchlist || '...'"></span></p>
                         </div>
                     </template>
                     <template x-if="getLatestMarketSummary('HK')">
                          <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('HK')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">🇭🇰 港股</span>
-                                <span class="text-lg" x-text="getLatestMarketSummary('HK').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('HK').emotion === 'bear' ? '🐻' : '😐')"></span>
+                                <span class="text-lg" x-text="getLatestMarketSummary('HK').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('HK').emotion === 'bear' ? '🐻' : '↔️')"></span>
                             </div>
                             <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('HK').date"></p>
-                            <p class="text-sm text-gray-400 mt-1 line-clamp-2" x-text="`總結: ${getLatestMarketSummary('HK').summary || '...'}`"></p>
+                            <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('HK').summary || '...'"></span></p>
+                            <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="getLatestMarketSummary('HK').watchlist || '...'"></span></p>
                         </div>
                     </template>
-                    <div x-show="!getLatestMarketSummary('US') && !getLatestMarketSummary('HK')" class="text-center py-10 text-gray-500 text-sm">暫無市場總結</div>
+                    <template x-if="getLatestMarketSummary('Futures')">
+                         <div @click="activeTab='dashboard'; editMarketJournal(getLatestMarketSummary('Futures')); marketJournalTab='form';" class="bg-gray-700/50 p-3 rounded-lg cursor-pointer hover:bg-gray-700">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-white">📈 期貨</span>
+                                <span class="text-lg" x-text="getLatestMarketSummary('Futures').emotion === 'bull' ? '🐂' : (getLatestMarketSummary('Futures').emotion === 'bear' ? '🐻' : '↔️')"></span>
+                            </div>
+                            <p class="text-xs text-gray-500" x-text="getLatestMarketSummary('Futures').date"></p>
+                            <p class="text-sm text-gray-300 mt-2 whitespace-pre-wrap"><strong class="text-gray-400">總結:</strong> <span x-text="getLatestMarketSummary('Futures').summary || '...'"></span></p>
+                            <p class="text-sm text-gray-300 mt-1 whitespace-pre-wrap"><strong class="text-gray-400">觀察:</strong> <span x-text="getLatestMarketSummary('Futures').watchlist || '...'"></span></p>
+                        </div>
+                    </template>
+                    <div x-show="!getLatestMarketSummary('US') && !getLatestMarketSummary('HK') && !getLatestMarketSummary('Futures')" class="text-center py-10 text-gray-500 text-sm">暫無市場總結</div>
                 </div>
             </div>
         </div>
@@ -1143,7 +1209,7 @@ overflow-y-auto">
                 authView: 'login',       
                 authForm: { email: '', password: '' }, 
                 authError: '',           
-                appVersion: '8.0.0-dashboard-makeover', // [Refactor] 更新版本號
+                appVersion: '9.0.0-full-makeover', // [Refactor] 更新版本號
                 lastUpdated: '2025-11-05', 
 
                 // --- Firebase 實例 (保持不變) ---
@@ -1180,7 +1246,7 @@ overflow-y-auto">
                 selectedDateForTrades: '',    
                 tradesForSelectedDate: [],    
 
-                // [REQ 1.2] (NEW) 儀表板日誌頁籤狀態
+                // [REQ #5] (NEW) 儀表板日誌頁籤狀態
                 marketJournalTab: 'form', 
 
                 // --- 各種表單 (Forms) 狀態 ---
@@ -1202,6 +1268,7 @@ overflow-y-auto">
                 searchResults: [],   
 
                 // --- 注碼計算機 (Calculator) ---
+                // [REQ #16] Default values are numbers, but x-model binds them as strings
                 stopLossPercent: 4.6,
                 currentRiskPercent: 1,
                 customRiskPercent: null,
@@ -1213,6 +1280,9 @@ overflow-y-auto">
                 maxDrawdownAnalysis: '<p class="text-gray-500">點擊按鈕，讓 AI 分析...</p>',
                 aiEmotionAnalysisResult: '<p class="text-gray-500">點擊按鈕，讓 AI 分析...</p>',
                 aiModelBookAnalysis: '', 
+                // [REQ #11, #14] Added new AI result holders
+                aiReflectionAnalysis: '', 
+                aiPlaybookAnalysis: '',
                 reviewNotes: { monthly: '', improve: '', goals: '' }, 
                 aiChatHistory: [ { role: 'ai', content: '您好！我是您的 AI 交易助手。' } ], 
                 aiQuery: '',                 
@@ -1234,7 +1304,7 @@ overflow-y-auto">
                     return this.trades.find(t => t.id === this.selectedTradeId) || null; 
                 },
                 
-                // [REQ 2 - BUG FIX] Use parseFloat to handle string inputs (e.g., "4.")
+                // [REQ #16 - BUG FIX] Use parseFloat to handle string inputs (e.g., "4.")
                 get rValueUsd() { 
                     return this.settings.usdPrincipal * ((parseFloat(this.currentRiskPercent) || 0) / 100); 
                 },
@@ -1246,7 +1316,7 @@ overflow-y-auto">
                 
                 get allChecklistItemsChecked() { return this.checklistItems.every(item => item.checked); },
 
-                // [REQ 3 - BUG FIX] Removed redundant .sort()
+                // [REQ #15 - BUG FIX] Removed redundant .sort()
                 get groupedTrades() {
                     let currentMonthYear = '';
                     const grouped = [];
@@ -1309,7 +1379,7 @@ overflow-y-auto">
                     const p = this.performance;
                     const defaultPoints = "100,100 100,100 100,100 100,100 100,100 100,100";
                     const center = 100, radius = 90;
-                    // [REQ 1 - BUG FIX] Labels moved inwards by increasing label radius to 103.5
+                    // [REQ #17 - BUG FIX] Labels moved inwards by increasing label radius to 103.5
                     const labels = ["Win %", "Profit factor", "Avg win/loss", "Recovery factor", "Max drawdown", "Consistency"];
                     const angleSlice = (Math.PI * 2) / labels.length;
                     const toPoint = (v, i) => ({ x: center + radius * (v/100) * Math.cos(angleSlice * i - Math.PI / 2), y: center + radius * (v/100) * Math.sin(angleSlice * i - Math.PI / 2) });
@@ -1510,8 +1580,9 @@ overflow-y-auto">
                     const today = new Date().toISOString().slice(0, 10); 
                     switch (type) {
                         case 'journal': 
+                            // [REQ #16] Use parseFloat for defaults
                             return { entryDate: today, ticker: '', direction: 'Long', riskPercent: (parseFloat(this.currentRiskPercent) || 1.0), riskAmount: (this.rValueUsd || 350), setup: '', customSetup: '', grade: '', tags: '', marketCondition: '', rationale: '', chartImage: '', transactions: [] }; 
-                        case 'marketJournal': // [REQ 1.2] 統一的日誌表單
+                        case 'marketJournal': // [REQ #4, #9] 統一的日誌表單
                             return { date: today, market: this.marketJournalForm.market || 'US', emotion: 'sideways', sentiment: 3, marketSummary: '', leadingSectors: '', watchlist: '', mindset: '', summary: '' };
                         case 'buyPlan': 
                             return { name: '', ticker: '', sector: '', pattern: '', pivot: null, stopLoss: null, target: null, rationale: '', chartImage: '' };
@@ -1541,20 +1612,36 @@ overflow-y-auto">
                 // ==============================
                 //
                 
-                // [REQ 1.2] 更新：市場日誌 CRUD
-                saveMarketJournal() { 
-                    this.saveEntity('marketJournals', this.editingMarketJournalId, this.marketJournalForm); 
+                // [REQ #8 - BUG FIX] Rewritten to prevent duplicates
+                async saveMarketJournal() {
+                    let idToSave = this.editingMarketJournalId;
+                    // If not editing, check for duplicates
+                    if (!idToSave) {
+                        const existingEntry = this.marketJournals.find(j => 
+                            j.date === this.marketJournalForm.date && 
+                            j.market === this.marketJournalForm.market
+                        );
+                        if (existingEntry) {
+                            idToSave = existingEntry.id;
+                        }
+                    }
+                    await this.saveEntity('marketJournals', idToSave, this.marketJournalForm); 
                     this.resetMarketJournalForm(); 
                 },
+                
+                // [REQ #7] Updated to switch tab
                 editMarketJournal(entry) { 
                     this.editingMarketJournalId = entry.id; 
                     this.marketJournalForm = { ...this.getBlankForm('marketJournal'), ...entry }; 
                     this.activeTab = 'dashboard'; // 確保在儀表板
-                    this.marketJournalTab = 'form'; // [REQ 1.2] (NEW) 切換到表單頁籤
+                    this.marketJournalTab = 'form'; // [REQ #7] (NEW) 切換到表單頁籤
                 },
-                deleteMarketJournal(id) { 
-                    this.deleteEntity('marketJournals', id); 
-                    this.loadMarketJournalFor(this.marketJournalForm.market, true); // 刪除後重置表單
+                
+                async deleteMarketJournal(id) { 
+                    await this.deleteEntity('marketJournals', id); 
+                    if (this.editingMarketJournalId === id) {
+                        this.loadMarketJournalFor(this.marketJournalForm.market, true); // 刪除後重置表單
+                    }
                 },
 
                 saveBuyPlan() { this.saveEntity('buyPlans', this.editingBuyPlanId, this.buyPlanForm); this.resetBuyPlanForm(); },
@@ -1591,7 +1678,7 @@ overflow-y-auto">
                     }
                 },
                 
-                // [REQ 2] 新增：將快捷計算機的結果套用到日誌表單
+                // [REQ #16] Use parseFloat
                 applyQuickSizerToJournal() {
                     this.journalForm.riskPercent = parseFloat(this.currentRiskPercent) || 1.0;
                     this.journalForm.riskAmount = this.rValueUsd;
@@ -1726,15 +1813,18 @@ overflow-y-auto">
                 
                 // [REQ 1.2] 更新：加載對應的市場日誌 (用於三欄式佈局)
                 loadMarketJournalFor(market, forceNew = false) {
-                    if (market !== 'US' && market !== 'HK') return;
+                    if (!market) market = 'US'; // Default market
                     const dateToLoad = this.marketJournalForm.date || new Date().toISOString().slice(0, 10);
+                    
                     if (forceNew) {
                         this.editingMarketJournalId = null;
                         this.marketJournalForm = this.getBlankForm('marketJournal');
-                        this.marketJournalForm.market = market; this.marketJournalForm.date = dateToLoad;
+                        this.marketJournalForm.market = market; 
+                        this.marketJournalForm.date = dateToLoad;
                         return;
                     }
-                    // Don't auto-load if a tab is active, only load if form is visible
+                    
+                    // Only auto-load if the form tab is active
                     if (this.marketJournalTab !== 'form' && !forceNew) return; 
 
                     const existingEntry = this.marketJournals.find(j => j.date === dateToLoad && j.market === market);
@@ -1744,7 +1834,8 @@ overflow-y-auto">
                     } else {
                         this.editingMarketJournalId = null;
                         this.marketJournalForm = this.getBlankForm('marketJournal');
-                        this.marketJournalForm.market = market; this.marketJournalForm.date = dateToLoad;
+                        this.marketJournalForm.market = market; 
+                        this.marketJournalForm.date = dateToLoad;
                     }
                 },
                 // [REQ 方案三] 輔助函數：獲取最新的市場總結
@@ -1806,8 +1897,8 @@ overflow-y-auto">
                     this.isLoading = true; console.log("Calling AI..."); let responseText = '';
                     try {
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        if (this.settings.aiProvider === 'gemini') { responseText = `[Gemini 模擬回覆]...`; } 
-                        else { responseText = `[Custom API 模擬回覆]...`; }
+                        if (this.settings.aiProvider === 'gemini') { responseText = `[Gemini 模擬回覆]...\nSystem: ${systemPrompt}\nUser: ${userQuery.substring(0, 200)}...`; } 
+                        else { responseText = `[Custom API 模擬回覆]...\nSystem: ${systemPrompt}\nUser: ${userQuery.substring(0, 200)}...`; }
                     } catch (error) { console.error("AI API call failed:", error); responseText = "AI 連接失敗：" + error.message; }
                     this.isLoading = false;
                     return formatHtml ? responseText.replace(/\n/g, '<br>') : responseText;
@@ -1838,22 +1929,61 @@ overflow-y-auto">
                     this.maxDrawdownAnalysis = await this.callAiApi("Analyze max drawdown.", `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>this.getTradeDetails(t))})}`);
                     this.isLoading = false;
                 },
+                
+                // [REQ #12 - UPGRADED] Now includes rationale
                 async getAiEmotionAnalysis() { 
                     this.isLoading = true; this.aiEmotionAnalysisResult = '<p class="text-gray-400">AI 分析中...</p>';
-                    this.aiEmotionAnalysisResult = await this.callAiApi("Analyze emotional tags.", `Data: ${JSON.stringify(this.trades.map(t => ({ grade: t.grade, tags: t.tags, rMultiple: this.getTradeDetails(t).rMultiple })))}`);
+                    this.aiEmotionAnalysisResult = await this.callAiApi("Analyze emotional tags and rationale.", `Data: ${JSON.stringify(this.trades.map(t => ({ grade: t.grade, tags: t.tags, rationale: t.rationale, rMultiple: this.getTradeDetails(t).rMultiple })))}`);
                     this.isLoading = false;
                 },
+                
                 async getAiModelBookAnalysis() { 
                     this.isLoading = true; this.aiModelBookAnalysis = '<p class="text-gray-400">AI 總結中...</p>';
                     this.aiModelBookAnalysis = await this.callAiApi("Summarize model book.", `Data: ${JSON.stringify(this.modelBooks)}`);
                     this.isLoading = false;
                 },
+
+                // [REQ #12 - UPGRADED] Now includes rationale
                 async getAiPerformanceReview() { 
                     this.isLoading = true; this.reviewNotes = { monthly: 'AI 正在產生報告...', improve: '...', goals: '...' };
-                    const reviewText = await this.callAiApi("Generate performance review.", `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>this.getTradeDetails(t))})}`);
+                    const reviewText = await this.callAiApi("Generate performance review.", `Data: ${JSON.stringify({performance: this.performance, trades: this.trades.map(t=>({ ...this.getTradeDetails(t).parent, rMultiple: this.getTradeDetails(t).rMultiple }))})}`);
                     this.reviewNotes.monthly = reviewText;
                     this.reviewNotes.improve = "[AI 建議改善的地方...]";
                     this.reviewNotes.goals = "[AI 建議下月目標...]";
+                    this.isLoading = false;
+                },
+
+                // [REQ #13 - NEW] AI for Market Journal
+                async getAiMarketJournalAnalysis() {
+                    this.isLoading = true;
+                    this.marketJournalForm.summary = "AI 分析中...";
+                    const summary = await this.callAiApi(
+                        "You are a trading coach. Based on the user's market summary and their past performance, suggest a 'Conclusion (Offense/Defense)'.", 
+                        `Market Summary: ${this.marketJournalForm.marketSummary}\nPerformance Data: ${JSON.stringify(this.performance)}`
+                    );
+                    this.marketJournalForm.summary = `[AI 建議] ${summary.replace(/<br>/g, '\n')}`;
+                    this.isLoading = false;
+                },
+
+                // [REQ #11 - NEW] AI for Reflections
+                async getAiReflectionAnalysis() {
+                    this.isLoading = true;
+                    this.aiReflectionAnalysis = '<p class="text-gray-400">AI 正在分析您的反思與績效關聯...</p>';
+                    this.aiReflectionAnalysis = await this.callAiApi(
+                        "Analyze the user's reflections against their trade performance. Find correlations between their stated problems and their actual trading results (tags, rationales, P&L).",
+                        `Reflections: ${JSON.stringify(this.reflections)}\nTrades: ${JSON.stringify(this.trades.map(t => ({ ...this.getTradeDetails(t).parent, rMultiple: this.getTradeDetails(t).rMultiple })))}`
+                    );
+                    this.isLoading = false;
+                },
+
+                // [REQ #14 - NEW] AI for Playbook
+                async getAiPlaybookAnalysis() {
+                    this.isLoading = true;
+                    this.aiPlaybookAnalysis = '<p class="text-gray-400">AI 正在分析您的策略執行紀律...</p>';
+                    this.aiPlaybookAnalysis = await this.callAiApi(
+                        "Analyze the user's trade execution discipline. Compare their defined 'Playbooks' (entry/exit rules) against their actual 'Trades' (especially the 'rationale' field) for trades tagged with that playbook. Identify deviations.",
+                        `Playbooks: ${JSON.stringify(this.playbooks)}\nTrades: ${JSON.stringify(this.trades.map(t => ({ ...this.getTradeDetails(t).parent, rMultiple: this.getTradeDetails(t).rMultiple })))}`
+                    );
                     this.isLoading = false;
                 }
             }
