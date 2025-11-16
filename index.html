@@ -1822,13 +1822,23 @@ overflow-y-auto">
                     return { status, totalPl, rMultiple, parent: trade };
                 },
                 
-                async saveTrade() { 
-                    if (this.journalForm.setup === '--custom--') { this.journalForm.setup = this.journalForm.customSetup || '自訂'; }
-                    delete this.journalForm.customSetup; 
-                    await this.saveEntity('trades', this.editingTradeId, this.journalForm);
-                    this.resetForm();
-                    this.selectedTradeId = null; // [REQ 2] 儲存後取消選中
-                },
+               // index.html (L1494)
+async saveTrade() { 
+    if (this.journalForm.setup === '--custom--') { this.journalForm.setup = this.journalForm.customSetup || '自訂'; }
+    delete this.journalForm.customSetup; 
+
+    // [修復] 複製一份 journalForm，並刪除 transactions 欄位
+    // 這樣 saveEntity 就只會更新主交易的欄位，
+    // 而不會用舊的(或空的) transactions 陣列覆蓋掉子交易
+    const mainTradeData = { ...this.journalForm };
+    delete mainTradeData.transactions; 
+
+    // 使用修改後的數據進行儲存
+    await this.saveEntity('trades', this.editingTradeId, mainTradeData);
+    
+    this.resetForm();
+    this.selectedTradeId = null; 
+},
                 editTrade(trade) { // [REQ 2] 此函數現在僅用於載入表單
                     this.editingTradeId = trade.id;
                     this.journalForm = {...this.getBlankForm('journal'), ...trade, transactions: trade.transactions || [] };
