@@ -245,8 +245,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                         </div>
                </div>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
                         <div class="lg:col-span-3 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
                               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                             <h2 class="text-2xl font-semibold text-blue-300">交易日曆</h2>
@@ -579,7 +578,6 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                 </div>
    </div>
         </div>
-
         <div x-show="activeTab === 'buyPlan'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 
@@ -766,9 +764,49 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 <div class="lg:col-span-1 space-y-6">
+                    
+                    <div x-show="selectedTradeId" x-cloak class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="`子交易記錄 (${selectedTrade ? selectedTrade.ticker : ''})`"></h2>
+                        
+                        <div class="space-y-3 mb-4">
+                            <template x-for="txn in selectedTrade.transactions" :key="txn.id">
+                                <div class="bg-gray-700/50 p-3 rounded-lg flex justify-between items-center">
+                                    <div>
+                                        <span class="font-bold" :class="txn.type === 'Buy' ? 'text-green-400' : 'text-red-400'" x-text="txn.type"></span>
+                                        <span class="ml-2" x-text="`${txn.quantity} 股 @ ${txn.price}`"></span>
+                                        <p class="text-xs text-gray-400 mt-1" x-text="txn.date"></p>
+                                    </div>
+                                    <div>
+                                        <button @click="editSubTransaction(txn)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
+                                        <button @click="deleteSubTransaction(txn.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
+                                    </div>
+                                </div>
+                            </template>
+                            <div x-show="!selectedTrade.transactions || selectedTrade.transactions.length === 0" class="text-center py-4 text-gray-500">
+                                <p>暫無子交易</p>
+                            </div>
+                        </div>
+
+                        <button @click="showTxnForm = !showTxnForm; resetTxnForm();" class="w-full text-left text-blue-400 mb-4" x-text="showTxnForm ? '▼ 隱藏表單' : '▶ 新增子交易'"></button>
+                        <form x-show="showTxnForm" @submit.prevent="saveSubTransaction" class="space-y-4 bg-gray-700/50 p-4 rounded-lg">
+                            <h3 class="font-semibold" x-text="editingTxnId ? '編輯子交易' : '新增子交易'"></h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label for="txnType" class="block text-sm">類型</label><select id="txnType" name="txnType" x-model="txnForm.type" class="w-full bg-gray-600 rounded p-2 mt-1"><option>Buy</option><option>Sell</option></select></div>
+                                <div><label for="txnDate" class="block text-sm">日期</label><input type="date" id="txnDate" name="txnDate" x-model="txnForm.date" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                                <div><label for="txnQty" class="block text-sm">數量</label><input type="number" id="txnQty" name="txnQty" x-model.number="txnForm.quantity" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            </div>
+                            <div><label for="txnPrice" class="block text-sm">價格</label><input type="number" id="txnPrice" name="txnPrice" step="any" x-model.number="txnForm.price" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            <div><label for="txnNotes" class="block text-sm">備註</label><input type="text" id="txnNotes" name="txnNotes" x-model="txnForm.notes" class="w-full bg-gray-600 rounded p-2 mt-1"></div>
+                            <div class="flex justify-end gap-2">
+                                <button type="button" @click="showTxnForm = false; resetTxnForm();" class="bg-gray-500 hover:bg-gray-400 text-white py-2 px-4 rounded-lg">取消</button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg" x-text="editingTxnId ? '更新' : '儲存'"></button>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="space-y-6">
                         <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯主交易' : '新增主交易'"></h2>
+                            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2" x-text="editingTradeId ? '編輯主交易' : '新增主交易 (開倉)'"></h2>
                             <form @submit.prevent="saveTrade" class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div><label for="entryDate" class="block text-sm">日期</label><input type="date" id="entryDate" name="entryDate" x-model="journalForm.entryDate" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
@@ -796,11 +834,25 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
 
                                 <div><label for="rationale" class="block text-sm">Rationale (交易理由)</label><textarea id="rationale" name="rationale" x-model="journalForm.rationale" rows="3" class="w-full bg-gray-700 rounded p-2 mt-1"></textarea></div>
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div><label for="grade" class="block text-sm">情緒 / 執行評分</label><input type="text" id="grade" name="grade" x-model="journalForm.grade" placeholder="A+, B-, C..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
-                                    <div><label for="tags" class="block text-sm">標籤 (Tags)</label><input type="text" id="tags" name="tags" x-model="journalForm.tags" placeholder="FOMO, 紀律, ..." class="w-full bg-gray-700 rounded p-2 mt-1"></div>
+                                <div class="pt-4 space-y-4">
+                                    <h3 class="text-md font-semibold text-gray-400 mb-1">深度複盤 (選填)</h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="grade" class="block text-sm">交易評分 (A, B, C...)</label>
+                                            <input type="text" id="grade" name="grade" x-model="journalForm.grade" placeholder="A+, B-, C..." class="w-full bg-gray-700 rounded p-2 mt-1">
+                                        </div>
+                                        <div>
+                                            <label for="tags" class="block text-sm">錯誤標籤 (Tags)</label>
+                                            <input type="text" id="tags" name="tags" x-model="journalForm.tags" placeholder="過早止盈, 紀律問題..." class="w-full bg-gray-700 rounded p-2 mt-1">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="marketCondition" class="block text-sm">當時市場狀況</label>
+                                        <input type="text" id="marketCondition" name="marketCondition" x-model="journalForm.marketCondition" placeholder="強勢上漲, 區間震盪..." class="w-full bg-gray-700 rounded p-2 mt-1">
+                                    </div>
                                 </div>
-                                
                                 <div>
                                     <label for="chartImage" class="block text-sm">股價圖片</label>
                                     <input type="file" id="chartImage" name="chartImage" @change="handleImageUpload($event, journalForm)" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
@@ -815,45 +867,7 @@ text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0
                             </form>
                         </div>
 
-                        <div x-show="selectedTradeId" x-cloak class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-                            <h2 class="text-xl font-semibold mb-4 border-b border-gray-600 pb-2">子交易 (Transactions)</h2>
-                            
-                            <div class="space-y-3 mb-4">
-                                <template x-for="txn in selectedTrade.transactions" :key="txn.id">
-                                    <div class="bg-gray-700/50 p-3 rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <span class="font-bold" :class="txn.type === 'Buy' ? 'text-green-400' : 'text-red-400'" x-text="txn.type"></span>
-                                            <span class="ml-2" x-text="`${txn.quantity} 股 @ ${txn.price}`"></span>
-                                            <p class="text-xs text-gray-400 mt-1" x-text="txn.date"></p>
-                                        </div>
-                                        <div>
-                                            <button @click="editSubTransaction(txn)" class="text-blue-400 hover:text-blue-300 text-sm">編輯</button>
-                                            <button @click="deleteSubTransaction(txn.id)" class="text-red-400 hover:text-red-300 text-sm ml-2">刪除</button>
-                                        </div>
-                                    </div>
-                                </template>
-                                <div x-show="!selectedTrade.transactions || selectedTrade.transactions.length === 0" class="text-center py-4 text-gray-500">
-                                    <p>暫無子交易</p>
-                                </div>
-                            </div>
-
-                            <button @click="showTxnForm = !showTxnForm; resetTxnForm();" class="w-full text-left text-blue-400 mb-4" x-text="showTxnForm ? '▼ 隱藏表單' : '▶ 新增子交易'"></button>
-                            <form x-show="showTxnForm" @submit.prevent="saveSubTransaction" class="space-y-4 bg-gray-700/50 p-4 rounded-lg">
-                                <h3 class="font-semibold" x-text="editingTxnId ? '編輯子交易' : '新增子交易'"></h3>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div><label for="txnType" class="block text-sm">類型</label><select id="txnType" name="txnType" x-model="txnForm.type" class="w-full bg-gray-600 rounded p-2 mt-1"><option>Buy</option><option>Sell</option></select></div>
-                                    <div><label for="txnDate" class="block text-sm">日期</label><input type="date" id="txnDate" name="txnDate" x-model="txnForm.date" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
-                                    <div><label for="txnQty" class="block text-sm">數量</label><input type="number" id="txnQty" name="txnQty" x-model.number="txnForm.quantity" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
-                                </div>
-                                <div><label for="txnPrice" class="block text-sm">價格</label><input type="number" id="txnPrice" name="txnPrice" step="any" x-model.number="txnForm.price" required class="w-full bg-gray-600 rounded p-2 mt-1"></div>
-                                <div><label for="txnNotes" class="block text-sm">筆記</label><input type="text" id="txnNotes" name="txnNotes" x-model="txnForm.notes" class="w-full bg-gray-600 rounded p-2 mt-1"></div>
-                                <div class="flex justify-end gap-2">
-                                    <button type="button" @click="showTxnForm = false; resetTxnForm();" class="bg-gray-500 hover:bg-gray-400 text-white py-2 px-4 rounded-lg">取消</button>
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg" x-text="editingTxnId ? '更新' : '儲存'"></button>
-                                </div>
-                            </form>
                         </div>
-                    </div>
                 </div>
 
                 <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-fit">
@@ -1133,9 +1147,8 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
        </div>
             </div>
         </div>
-        </div> 
-        
-        <div class="hidden 2xl:flex flex-col w-80 space-y-6 h-screen sticky top-8 pr-4">
+        </div>
+    <div class="hidden 2xl:flex flex-col w-80 space-y-6 h-screen sticky top-8 pr-4">
             
             <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 h-1/2 flex flex-col">
                 <h3 class="text-lg font-semibold text-blue-300 mb-3 border-b border-gray-600 pb-2">📈 觀察清單</h3>
@@ -1349,7 +1362,11 @@ overflow-y-auto">
                 editingReflectionId: null, 
                 reflectionForm: {},       
                 editingPlaybookId: null,  
-                playbookForm: {},         
+                playbookForm: {},
+                // [佈局修改]
+                showTxnForm: false, // 用於切換子交易表單
+                editingTxnId: null,
+                txnForm: {},
                 
                 // --- 搜尋 (Search) ---
                 searchTerm: '',      
@@ -1822,23 +1839,29 @@ overflow-y-auto">
                     return { status, totalPl, rMultiple, parent: trade };
                 },
                 
-               // index.html (L1494)
-async saveTrade() { 
-    if (this.journalForm.setup === '--custom--') { this.journalForm.setup = this.journalForm.customSetup || '自訂'; }
-    delete this.journalForm.customSetup; 
+                //
+                // [!!! 子交易 BUG 修復 !!!]
+                // 
+                // 我們不再儲存 journalForm (L1496)，因為它包含舊的 transactions 陣列。
+                // 我們建立一個 'mainTradeData' (L1497) 副本，
+                // 刪除 (L1498) 'transactions' 屬性，
+                // 這樣 'saveEntity' (L1502) 在合併 (merge: true) 時，
+                // 就只會更新主交易欄位，而*不會*覆蓋掉子交易。
+                //
+                async saveTrade() { 
+                    if (this.journalForm.setup === '--custom--') { this.journalForm.setup = this.journalForm.customSetup || '自訂'; }
+                    delete this.journalForm.customSetup; 
+                    
+                    // [修復] 複製一份 journalForm，並刪除 transactions 欄位
+                    const mainTradeData = { ...this.journalForm };
+                    delete mainTradeData.transactions; 
 
-    // [修復] 複製一份 journalForm，並刪除 transactions 欄位
-    // 這樣 saveEntity 就只會更新主交易的欄位，
-    // 而不會用舊的(或空的) transactions 陣列覆蓋掉子交易
-    const mainTradeData = { ...this.journalForm };
-    delete mainTradeData.transactions; 
-
-    // 使用修改後的數據進行儲存
-    await this.saveEntity('trades', this.editingTradeId, mainTradeData);
-    
-    this.resetForm();
-    this.selectedTradeId = null; 
-},
+                    // 使用修改後的數據進行儲存
+                    await this.saveEntity('trades', this.editingTradeId, mainTradeData);
+                    
+                    this.resetForm();
+                    this.selectedTradeId = null; // [REQ 2] 儲存後取消選中
+                },
                 editTrade(trade) { // [REQ 2] 此函數現在僅用於載入表單
                     this.editingTradeId = trade.id;
                     this.journalForm = {...this.getBlankForm('journal'), ...trade, transactions: trade.transactions || [] };
