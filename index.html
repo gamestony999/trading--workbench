@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        /* * [改進 2: 全局粗體] 
+        /* * [改進 4: 全局粗體] 
          * 設置 body 的默認字體，並加入 font-weight: 600 (semibold) 
          * 讓所有文字都如您所願顯示為粗體。
          */
@@ -20,7 +20,7 @@
             font-weight: 600; /* 全局粗體 */
         }
         
-        /* * [改進 4: 可拉伸的理由欄位] 
+        /* * [改進 7: 可拉伸的理由欄位] 
          * 允許 textarea 可以垂直拉伸。
          */
         textarea {
@@ -105,8 +105,8 @@ padding-left: 40px; }
         .compass-btn.sideways { background-color: #6B7280; color: white; }
         .compass-btn.sideways.active { border-color: #9CA3AF; box-shadow: 0 0 10px rgba(107, 114, 128, 0.7); }
 
-        /* * [改進 3: 卡片字體]
-         * 新增的 CSS 樣式，用於美化 "交易列表" 卡片
+        /* * [改進 5: 卡片字體]
+         * (保留) CSS 樣式，用於美化 "交易列表" 卡片
          */
         .journal-card {
             padding: 1rem;
@@ -143,7 +143,7 @@ padding-left: 40px; }
 
         /*
          * [改進 1: 策略核對清單]
-         * 新增的 CSS 樣式，用於 "Playbook" 和 "Buy Plan" 的核對清單
+         * (保留) CSS 樣式，用於 "Playbook" 和 "Buy Plan" 的核對清單
          */
         .checklist-item {
             display: flex;
@@ -177,6 +177,41 @@ padding-left: 40px; }
             padding: 0.5rem;
             color: white;
             border-radius: 0.25rem;
+        }
+
+        /* * [改進 D: 時鐘功能]
+         * (新增) 用於時鐘和時區選擇器的新樣式
+         */
+        .clock-widget {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            font-weight: 600; /* 保持粗體 */
+            color: #9ca3af; /* gray-400 */
+            text-align: right;
+        }
+        .clock-widget .time {
+            font-size: 1.5rem; /* 24px */
+            line-height: 2rem; /* 32px */
+            color: #d1d5db; /* gray-300 */
+            font-family: 'Inter', monospace;
+            letter-spacing: 0.025em;
+        }
+        .clock-widget .timezone-select {
+            background-color: transparent;
+            border: none;
+            color: #9ca3af; /* gray-400 */
+            font-weight: 600;
+            font-size: 0.875rem; /* 14px */
+            padding: 0;
+            margin-top: 0.25rem;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            text-align: right;
+        }
+        .clock-widget .timezone-select:focus {
+            outline: none;
+            color: white;
         }
     </style>
 </head>
@@ -217,9 +252,18 @@ padding-left: 40px; }
                         <p class="text-gray-400 mt-2">由 AI 驅動的整合式交易分析系統</p>
                      </div>
                      
-                     <div class="text-center text-yellow-400 font-bold text-sm hidden md:block">
-                        <p>長期（10 萬次交易） → 個別輸贏完全不重要，</p>
-                        <p>真正的輸贏來自「次數 + 紀律」的複利及精準買入點。</p>
+                     <div class="clock-widget hidden md:block">
+                        <div class="time" x-text="clockWidget.time">--:--:--</div>
+                        <select x-model="clockWidget.timezone" @change="saveSettings()" class="timezone-select">
+                            <option value="Asia/Hong_Kong">香港 (HKT)</option>
+                            <option value="Asia/Shanghai">上海 (CST)</option>
+                            <option value="Asia/Taipei">台北 (CST)</option>
+                            <option value="Asia/Tokyo">東京 (JST)</option>
+                            <option value="Europe/London">倫敦 (GMT/BST)</option>
+                            <option value="America/New_York">紐約 (EST/EDT)</option>
+                            <option value="America/Los_Angeles">洛杉磯 (PST/PDT)</option>
+                            <option value="UTC">世界標準時間 (UTC)</option>
+                        </select>
                      </div>
 
                      <div class="relative w-full">
@@ -284,7 +328,7 @@ padding-left: 40px; }
                         <p class="mt-2 text-2xl font-bold" x-text="performance.totalTrades"></p>
                     </div>
                 </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
                         <h2 class="text-2xl font-semibold mb-4 text-blue-300">交易者評分</h2>
@@ -345,14 +389,15 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                     <button @click="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
         </button>
+                                
                                 <select id="calendarYearSelect" name="calendarYearSelect" x-model.number="calendar.year" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm">
                                     <template x-for="y in Array.from({length: 11}, (_, i) => new Date().getFullYear() - 5 + i)">
-                                        <option :value="y" x-text="`${y} 年`"></option>
+                                        <option :value="y" x-text="`${y} 年`" :selected="y === calendar.year"></option>
                                     </template>
                                 </select>
                                 <select id="calendarMonthSelect" name="calendarMonthSelect" x-model.number="calendar.month" @change="generateCalendar()" class="bg-gray-700 text-white rounded px-2 py-1 text-sm">
                                     <template x-for="(m, i) in ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']">
-                                        <option :value="i" x-text="m"></option>
+                                        <option :value="i" x-text="m" :selected="i === calendar.month"></option>
                                     </template>
                                 </select>
                                 <button @click="calendar.year = new Date().getFullYear(); calendar.month = new Date().getMonth(); generateCalendar();" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm text-white">回到本月</button>
@@ -422,7 +467,6 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                         <label for="marketJournalFuturesContract" class="block text-sm">商品 (e.g. GC, CL, HSIF)</label>
                                         <input type="text" id="marketJournalFuturesContract" name="marketJournalFuturesContract" x-model="marketJournalForm.futuresContract" placeholder="黃金, 原油, HSIF..." class="w-full bg-gray-700 rounded p-2 mt-1">
                                     </div>
-
                                     <div>
                                         <label class="block text-sm">市場情緒 (Bull/Bear)</label>
                                         <div class="flex space-x-2 mt-1">
@@ -535,7 +579,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                                 <div x-show="marketJournals.filter(j => j.market === 'Futures').length === 0" class="text-center py-10 text-gray-500 text-sm">暫無期貨日誌</div>
                             </div>
                             
-                        </div>
+                            </div>
 
                         <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col">
                             <h2 class="text-2xl font-semibold mb-4 text-blue-300">AI 數據總結與對話</h2>
@@ -606,7 +650,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                     <form @submit.prevent="saveReflection" class="space-y-4">
                         <div><label for="reflectionDate" class="block text-sm">日期</label><input type="date" id="reflectionDate" name="reflectionDate" x-model="reflectionForm.date" required class="w-full bg-gray-700 rounded p-2 mt-1"></div>
                         <div><label for="reflectionProblem" class="block text-sm">需要改善的問題</label><input type="text" id="reflectionProblem" name="reflectionProblem" x-model="reflectionForm.problem" required class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="例如: 過早止盈、FOMO追高..."></div>
-                                          <div><label for="reflectionThoughts" class="block text-sm">詳細發現與思考</label><textarea id="reflectionThoughts" name="reflectionThoughts" x-model="reflectionForm.thoughts" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄下當時的想法、情緒和事後分析..."></textarea></div>
+                        <div><label for="reflectionThoughts" class="block text-sm">詳細發現與思考</label><textarea id="reflectionThoughts" name="reflectionThoughts" x-model="reflectionForm.thoughts" rows="5" class="w-full bg-gray-700 rounded p-2 mt-1" placeholder="記錄下當時的想法、情緒和事後分析..."></textarea></div>
                         <div class="flex justify-between items-center pt-2">
                              <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg" x-text="editingReflectionId ? '更新' : '儲存'"></button>
                              <button type="button" @click="resetReflectionForm" x-show="editingReflectionId" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">取消</button>
@@ -642,7 +686,7 @@ font-semibold mb-4 text-blue-300">帳戶狀況</h2>
                 </div>
    </div>
         </div>
-        <div x-show="activeTab === 'buyPlan'" x-cloak>
+    <div x-show="activeTab === 'buyPlan'" x-cloak>
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 
 h-fit">
@@ -1220,7 +1264,7 @@ class="prose prose-sm prose-invert max-w-none text-gray-300"></div>
                                 <th scope="col" class="px-4 py-3 rounded-l-lg">Playbook / Setup</th>
                                 <th scope="col" class="px-4 py-3 text-center">總交易數</th>
                                 <th scope="col" class="px-4 py-3 text-center">勝率 (%)</th>
-                                <th scope="col" class_ ="px-4 py-3 text-center">利潤因子</th>
+                                <th scope="col" class="px-4 py-3 text-center">利潤因子</th>
                                 <th scope="col" class="px-4 py-3 text-center">平均 R 倍數</th>
                                 <th scope="col" class="px-4 py-3 rounded-r-lg text-right">總 P&L (USD)</th>
                             </tr>
@@ -1423,7 +1467,7 @@ overflow-y-auto">
                 authView: 'login',       
                 authForm: { email: '', password: '' }, 
                 authError: '',           
-                appVersion: '9.0.1-checklist-card-ui', // 更新版本號
+                appVersion: '9.0.2-full-final', // 更新版本號
                 lastUpdated: '2025-11-16', 
 
                 // --- Firebase 實例 (保持不變) ---
@@ -1438,7 +1482,8 @@ overflow-y-auto">
                     customApiKey: '',      
                     customApiUrl: '',      
                     usdPrincipal: 35000,   
-                    displayCurrency: 'HKD', 
+                    displayCurrency: 'HKD',
+                    timezone: 'Asia/Hong_Kong' // [改進 D] 為時區新增默認值
                 },
                 
                 // --- 核心數據陣列 (Data Arrays) ---
@@ -1486,6 +1531,12 @@ overflow-y-auto">
                 showTxnForm: false, 
                 editingTxnId: null,
                 txnForm: {},
+                
+                // [改進 D: 時鐘功能] 新增 clockWidget 數據
+                clockWidget: {
+                    time: '--:--:--',
+                    timezone: 'Asia/Hong_Kong'
+                },
                 
                 // --- 搜尋 (Search) ---
                 searchTerm: '',      
@@ -1651,13 +1702,20 @@ overflow-y-auto">
                 init() {
                     const initializationTimeout = setTimeout(() => { if (!this.isInitialized) { console.warn("Firebase auth state did not respond..."); this.isInitialized = true; } }, 5000);
                     this.$watch('isInitialized', (value) => { if (value) { clearTimeout(initializationTimeout); } });
-                    this.loadSettings(); this.resetAllForms(); this.initFirebase(); 
+                    
+                    this.loadSettings(); 
+                    this.resetAllForms(); 
+                    this.initFirebase(); 
                     
                     // [改進 8: 日曆 BUG 修復]
                     // 確保 `generateCalendar()` 在 `init()` 的末尾被呼叫，
                     // 並且 `calendar.year` 和 `calendar.month` 已經被正確設置為 `new Date()`。
                     this.generateCalendar(); 
                     this.fetchExchangeRates(); 
+                    
+                    // [改進 D: 時鐘功能] 啟動時鐘
+                    this.updateClock();
+                    setInterval(() => this.updateClock(), 1000); // 每秒更新一次
                     
                     this.$watch('calendar.month', () => this.generateCalendar());
                     this.$watch('calendar.year', () => this.generateCalendar());
@@ -1683,8 +1741,14 @@ overflow-y-auto">
                 loadSettings() { 
                     const savedSettings = localStorage.getItem('tradingWorkbenchSettings_v3');
                     if (savedSettings) { this.settings = { ...this.settings, ...JSON.parse(savedSettings) }; } 
+                    // [改進 D] 載入時區
+                    if (this.settings.timezone) {
+                        this.clockWidget.timezone = this.settings.timezone;
+                    }
                 },
                 saveSettings(showAlert = false) { 
+                    // [改進 D] 儲存時區
+                    this.settings.timezone = this.clockWidget.timezone;
                     localStorage.setItem('tradingWorkbenchSettings_v3', JSON.stringify(this.settings));
                     if (showAlert) alert('設定已儲存！'); 
                 },
@@ -1872,14 +1936,14 @@ overflow-y-auto">
                 saveReflection() { this.saveEntity('reflections', this.editingReflectionId, this.reflectionForm); this.resetReflectionForm(); },
                 editReflection(entry) { this.editingReflectionId = entry.id; this.reflectionForm = { ...entry }; this.activeTab = 'reflection'; },
                 
-                // [改進 1] savePlaybook 已更新
+                // [改進 1] savePlaybook 已更新 (過濾空規則)
                 savePlaybook() { 
                     // 過濾掉空的規則
                     this.playbookForm.checklist = this.playbookForm.checklist.filter(item => item.rule.trim() !== '');
                     this.saveEntity('playbooks', this.editingPlaybookId, this.playbookForm); 
                     this.resetPlaybookForm(); 
                 },
-                // [改進 1] editPlaybook 已更新
+                // [改進 1] editPlaybook 已更新 (深度複製 checklist)
                 editPlaybook(playbook) { 
                     this.editingPlaybookId = playbook.id; 
                     // 確保 checklist 存在且是深度複製
@@ -1990,10 +2054,10 @@ overflow-y-auto">
                 // [改進 10: 子交易儲存 BUG 修復]
                 // 
                 // 這是最關鍵的修復。
-                // 我們不再儲存 journalForm (L1496)，因為它包含舊的 transactions 陣列。
-                // 我們建立一個 'mainTradeData' (L1497) 副本，
-                // 刪除 (L1498) 'transactions' 屬性，
-                // 這樣 'saveEntity' (L1502) 在合併 (merge: true) 時，
+                // 我們不再儲存 journalForm，因為它可能包含舊的 transactions 陣列。
+                // 我們建立一個 'mainTradeData' 副本，
+                // 刪除 'transactions' 屬性，
+                // 這樣 'saveEntity' 在合併 (merge: true) 時，
                 // 就只會更新主交易欄位，而*不會*覆蓋掉子交易。
                 //
                 async saveTrade() { 
@@ -2014,9 +2078,15 @@ overflow-y-auto">
                 // [改進 2] editTrade 現在只用於載入左側表單
                 editTrade(trade) { 
                     this.editingTradeId = trade.id;
-                    this.journalForm = {...this.getBlankForm('journal'), ...trade };
+                    // 從 "trade" 載入，而不是 "this.getBlankForm()"，以獲取所有數據
+                    this.journalForm = { ...trade }; 
+                    
+                    // 確保 transactions 屬性不會被汙染
+                    delete this.journalForm.transactions; 
+                    
                     const isKnownPlaybook = this.playbooks.some(p => p.name === trade.setup);
                     if (!isKnownPlaybook && trade.setup) { this.journalForm.customSetup = trade.setup; this.journalForm.setup = '--custom--'; }
+                    
                     this.activeTab = 'journal'; 
                     // 不再切換 selectedTradeId，只載入表單
                 },
@@ -2160,8 +2230,11 @@ overflow-y-auto">
                     if (canvasId === 'plChart') { this.plChart = new Chart(ctx, chartConfig); } 
                     else if (canvasId === 'dashboardPlChart') { this.dashboardPlChart = new Chart(ctx, chartConfig); }
                 },
-                // [修復 C.8: 日曆 BUG]
+
+                // [改進 8: 日曆 BUG 修復]
                 // 替換 L1918 - L1947 的整個舊函數
+                // 這個新版本使用了一個 "toLocalISOString" 輔助函數，
+                // 確保日期轉換不受 UTC 時區影響，修復了日期錯亂和 "今天" 高亮失敗的 BUG。
                 generateCalendar() { 
                     
                     // 輔助函數：安全地將本地日期轉為 YYYY-MM-DD 字串
@@ -2225,6 +2298,8 @@ overflow-y-auto">
                     days.forEach(day => { if (day.relatedTrades) { day.tradeCount = day.relatedTrades.size; } });
                     this.calendar.days = days;
                 },
+                // [改進 8 結束]
+                
                 showTradesForDate(date) { 
                     this.selectedDateForTrades = date;
                     const day = this.calendar.days.find(d => d.date === date);
@@ -2330,6 +2405,27 @@ overflow-y-auto">
                         `Playbooks: ${JSON.stringify(this.playbooks)}\nTrades: ${JSON.stringify(this.trades.map(t => ({ ...this.getTradeDetails(t).parent, rMultiple: this.getTradeDetails(t).rMultiple })))}`
                     );
                     this.isLoading = false;
+                },
+                
+                // [改進 D: 時鐘功能] 新增的時鐘更新函數
+                updateClock() {
+                    try {
+                        const now = new Date();
+                        const options = {
+                            timeZone: this.clockWidget.timezone,
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        };
+                        // 使用 'en-GB' 來強制 24 小時制 HH:MM:SS
+                        this.clockWidget.time = new Intl.DateTimeFormat('en-GB', options).format(now);
+                    } catch (e) {
+                        console.error("Invalid timezone:", e.message);
+                        // 如果用戶輸入了無效的時區，則回退到 UTC
+                        this.clockWidget.timezone = 'UTC'; 
+                        this.clockWidget.time = new Date().toLocaleTimeString('en-GB', { timeZone: 'UTC', hour12: false });
+                    }
                 }
             }
         }
