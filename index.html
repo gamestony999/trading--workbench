@@ -1980,16 +1980,22 @@ overflow-y-auto">
                     this.journalForm.riskAmount = this.rValueUsd;
                 },
 
-                // [改進 2: 卡片展開]
-                // 簡化 selectTrade，現在只切換 ID。
+                // [改進 2: 卡片展開] + [BUG 修復]
                 // "編輯" 功能由卡片上的 "編輯" 按鈕觸發
                 selectTrade(trade) {
-                    this.selectedTradeId = (this.selectedTradeId === trade.id) ? null : trade.id;
-                    if (this.selectedTradeId) {
-                        this.resetTxnForm(); // 展開時重置子交易表單
+                    // 檢查是否點擊了已經選中的卡片
+                    const isAlreadySelected = (this.selectedTradeId === trade.id);
+
+                    // [修復] 總是指向被點擊的卡片 ID，而不是切換為 null
+                    // 這樣即使用戶點擊已展開卡片的文字，它也會保持展開
+                    this.selectedTradeId = trade.id; 
+
+                    // [修復] 只有在 "新展開" 一張卡片時，才重置子交易表單
+                    // 如果是點擊已經展開的卡片 (例如為了複製文字)，則不重置
+                    if (!isAlreadySelected) {
+                        this.resetTxnForm(); 
                     }
                 },
-
                 // [改進 2: 卡片展開]
                 // saveSubTransaction 現在需要傳入 tradeId
                 async saveSubTransaction(tradeId) { 
